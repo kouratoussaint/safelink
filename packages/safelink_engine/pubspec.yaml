@@ -1,0 +1,17 @@
+name: safelink_engine
+description: >-
+  Moteur de détection de SafeLink : analyse locale des liens et des messages,
+  en Dart pur, sans accès réseau ni dépendance à Flutter.
+version: 0.1.0
+publish_to: none
+repository: https://github.com/kouratoussaint/safelink
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  meta: ^1.19.0
+
+dev_dependencies:
+  test: ^1.33.0
+  very_good_analysis: ^11.0.0
