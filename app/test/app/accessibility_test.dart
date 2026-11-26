@@ -1,0 +1,89 @@
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:safelink/core/settings/theme_mode_controller.dart';
+
+import '../helpers/pump_app.dart';
+
+/// Ouvre l'écran voulu à partir de l'accueil.
+typedef Navigate = Future<void> Function(WidgetTester tester);
+
+final screens = <String, Navigate>{
+  'Accueil': (tester) async {},
+  'Historique': (tester) => tapDestination(tester, 'Historique'),
+  'Conseils': (tester) => tapDestination(tester, 'Conseils'),
+  'Paramètres': (tester) => tapDestination(tester, 'Paramètres'),
+  'À propos': (tester) async {
+    await tapDestination(tester, 'Paramètres');
+    await tester.tap(find.text('À propos de SafeLink'));
+    await tester.pumpAndSettle();
+  },
+};
+
+void main() {
+  for (final theme in ['light', 'dark']) {
+    for (final MapEntry(key: name, value: navigate) in screens.entries) {
+      testWidgets('$name ($theme) respecte les règles d’accessibilité', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+        await pumpSafeLinkApp(
+          tester,
+          preferences: {ThemeModeController.storageKey: theme},
+        );
+        await navigate(tester);
+
+        // Zones tactiles d'au moins 48 × 48 dp.
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        // Chaque élément interactif a un libellé lu par TalkBack.
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        // Contraste du texte affiché.
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+        handle.dispose();
+      });
+    }
+  }
+
+  testWidgets('les titres de section sont annoncés comme en-têtes', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpSafeLinkApp(tester);
+    await tapDestination(tester, 'Paramètres');
+    expect(
+      tester.getSemantics(find.text('Apparence')),
+      matchesSemantics(label: 'Apparence', isHeader: true),
+    );
+    handle.dispose();
+  });
+
+  for (final (theme, asset) in [
+    ('light', 'assets/brand/safelink_mark_on_light.svg'),
+    ('dark', 'assets/brand/safelink_mark.svg'),
+  ]) {
+    testWidgets('le symbole adapté au thème $theme est affiché', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(
+        tester,
+        preferences: {ThemeModeController.storageKey: theme},
+      );
+      final picture = tester.widget<SvgPicture>(find.byType(SvgPicture).first);
+      final loader = picture.bytesLoader as SvgAssetLoader;
+      expect(loader.assetName, asset);
+    });
+  }
+
+  testWidgets('le logo a une description pour les lecteurs d’écran', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpSafeLinkApp(tester);
+    expect(
+      find.bySemanticsLabel('Logo SafeLink : bouclier et maillon de chaîne'),
+      findsWidgets,
+    );
+    expect(find.byType(AppBar), findsOneWidget);
+    handle.dispose();
+  });
+}
