@@ -1,4 +1,4 @@
-package com.safelink.fasosoft
+package com.fasosoft.safelink
 
 import io.flutter.embedding.android.FlutterActivity
 

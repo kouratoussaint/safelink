@@ -22,7 +22,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
   SharedPreferences.setMockInitialValues(preferences);
   PackageInfo.setMockInitialValues(
     appName: 'SafeLink',
-    packageName: 'com.safelink.fasosoft',
+    packageName: 'com.fasosoft.safelink',
     version: '0.0.1',
     buildNumber: '1',
     buildSignature: '',

@@ -12,7 +12,7 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   des liens et des messages, niveaux de synthèse, indices, limites, gestes
   recommandés, résultats de sources de réputation, contrat
   `ContentAnalyzer`), validés et couverts à 100 % par les tests.
-- Application Flutter `com.safelink.fasosoft` : quatre onglets (Accueil,
+- Application Flutter `com.fasosoft.safelink` : quatre onglets (Accueil,
   Historique, Conseils, Paramètres), thèmes clair et sombre aux contrastes
   WCAG AA vérifiés, polices Poppins et Inter embarquées, interface en
   français, choix du thème, écran « À propos ».

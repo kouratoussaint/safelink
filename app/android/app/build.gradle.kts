@@ -5,9 +5,10 @@ plugins {
 }
 
 android {
-    // Identifiant définitif de l'application : ne jamais le modifier après
-    // la première publication, sinon les mises à jour deviennent impossibles.
-    namespace = "com.safelink.fasosoft"
+    // Identifiant définitif de l'application (décision du 26/11/2026, nom
+    // de domaine inversé de FasoSoft) : ne jamais le modifier après la
+    // première publication, sinon les mises à jour deviennent impossibles.
+    namespace = "com.fasosoft.safelink"
 
     // Versions explicites plutôt que les valeurs par défaut de Flutter, pour
     // qu'une mise à jour du SDK ne les change pas à notre insu.
@@ -21,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.safelink.fasosoft"
+        applicationId = "com.fasosoft.safelink"
         minSdk = 24
         targetSdk = 36
         // Repris de pubspec.yaml. Pour les APK par architecture, Flutter

@@ -62,7 +62,7 @@ Règles de conception :
 
 ## Android
 
-- Identifiant : `com.safelink.fasosoft`, minSdk 24, targetSdk 36.
+- Identifiant : `com.fasosoft.safelink`, minSdk 24, targetSdk 36.
 - Aucune permission au lot A ; la CI vérifie l'APK release.
 - Sauvegardes cloud et transferts d'appareil désactivés
   (`allowBackup=false`, `data_extraction_rules.xml`).
