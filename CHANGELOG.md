@@ -28,3 +28,9 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   Dependabot.
 - Documentation : compilation, architecture, décisions (ADR), sources de
   réputation, charte d'interface.
+- Publication automatique des APK debug en pré-versions GitHub `dev-*`,
+  avec liens de téléchargement directs (`dev-apk.yml`).
+
+### Modifié
+
+- Identifiant Android : `com.fasosoft.safelink`, avant toute publication.

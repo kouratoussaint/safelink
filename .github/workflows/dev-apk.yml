@@ -1,0 +1,124 @@
+name: APK de développement
+
+# À chaque mise à jour de main ou d'une branche de lot, publie les APK debug
+# dans une pré-version GitHub « dev-<révision> », téléchargeable sans compte.
+# Ces versions servent aux essais du mainteneur : signées avec une clé de
+# débogage propre à chaque build, elles ne doivent pas être diffusées au
+# public. Les versions de distribution signées arrivent au lot D.
+on:
+  push:
+    branches:
+      - main
+      - 'lot-*/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publier les APK debug
+    # Jamais depuis une copie (fork) du dépôt.
+    if: github.repository == 'kouratoussaint/safelink'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      # Nécessaire pour créer la pré-version et son tag ; aucun autre secret
+      # que le jeton éphémère du workflow n'est utilisé.
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: ./.github/actions/setup-flutter
+
+      - name: Cache Gradle
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('app/android/**/*.gradle.kts', 'app/android/gradle/wrapper/gradle-wrapper.properties', '.flutter-version') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: APK debug par architecture (téléphones ARM 64 et 32 bits)
+        working-directory: app
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter build apk --debug --split-per-abi \
+            --target-platform android-arm,android-arm64 \
+            --dart-define=SAFELINK_GIT_SHA="${GITHUB_SHA::7}"
+
+      - name: Préparer les fichiers à publier
+        run: |
+          short="${GITHUB_SHA::7}"
+          version="$(sed -n 's/^version: *\([0-9.]*\).*/\1/p' app/pubspec.yaml)"
+          out=app/build/app/outputs/flutter-apk
+          mkdir dist
+          for abi in arm64-v8a armeabi-v7a; do
+            cp "$out/app-$abi-debug.apk" "dist/SafeLink-$version-dev-$short-$abi.apk"
+          done
+          (cd dist && sha256sum ./*.apk | sed 's# \./# #' > SHA256SUMS.txt)
+          cat dist/SHA256SUMS.txt
+          echo "SHORT_SHA=$short" >> "$GITHUB_ENV"
+
+      - name: Créer la pré-version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          tag="dev-$SHORT_SHA"
+          cat > notes.md <<EOF
+          **Version de développement — pour essai uniquement, ne pas diffuser.**
+
+          - Branche : \`$BRANCH\`, révision \`$GITHUB_SHA\`.
+          - Choisir **arm64-v8a** pour la plupart des téléphones ; **armeabi-v7a** si l'installation échoue (téléphones 32 bits, souvent Android Go).
+          - Chaque build est signé avec une clé de débogage différente : désinstaller la version précédente avant d'installer celle-ci.
+          - Un build debug contient la permission INTERNET, ajoutée par Flutter pour ses outils de développement ; l'application ne fait aucun appel réseau.
+          - Empreintes SHA-256 : fichier \`SHA256SUMS.txt\`.
+          EOF
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$tag" dist/* \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --prerelease \
+              --title "Développement $SHORT_SHA ($BRANCH)" \
+              --notes-file notes.md
+          fi
+
+      - name: Ne garder que les 5 dernières versions de développement
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 100 \
+            --json tagName,isPrerelease,createdAt \
+            --jq '[.[] | select(.isPrerelease and (.tagName | startswith("dev-")))]
+                  | sort_by(.createdAt) | reverse | .[5:] | .[].tagName' |
+          while read -r old; do
+            echo "Suppression de $old"
+            gh release delete "$old" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+          done
+
+      - name: Liens directs
+        run: |
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/dev-$SHORT_SHA"
+          {
+            echo "### APK de développement"
+            for f in dist/*.apk; do
+              name="$(basename "$f")"
+              echo "- [$name]($base/$name)"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

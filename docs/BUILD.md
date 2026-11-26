@@ -94,6 +94,17 @@ python3 tools/generate_brand_assets.py   # nécessite rsvg-convert (librsvg2-bin
 manifeste officiel des versions stables. Toutes les actions GitHub sont
 épinglées par SHA de commit et mises à jour par Dependabot.
 
+## APK de développement publiés
+
+`dev-apk.yml` compile les APK debug (arm64-v8a et armeabi-v7a) à chaque
+mise à jour de `main` ou d'une branche `lot-*`, puis crée la pré-version
+`dev-<7 premiers caractères de la révision>` avec les APK et
+`SHA256SUMS.txt`. Liens directs :
+`https://github.com/kouratoussaint/safelink/releases/download/dev-<révision>/<fichier>.apk`.
+Seules les cinq dernières pré-versions `dev-*` sont conservées. Le workflow
+n'utilise que le jeton éphémère de GitHub Actions, avec le droit d'écriture
+limité à ce job, et ne s'exécute jamais depuis une copie du dépôt.
+
 ## Mettre à jour Flutter
 
 1. Modifier `.flutter-version` et `environment.flutter` dans
