@@ -44,6 +44,11 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 - Moteur : Public Suffix List embarquée (sections ICANN et privée), mise à
   jour par `tools/update_psl.py`, validée par les tests officiels ; licence
   MPL-2.0 affichée dans l'application.
+- Moteur : lecteur d'URL conforme au standard du WHATWG pour http et https
+  (identifiants avant `@`, IPv4 décimales, octales et hexadécimales, IPv6,
+  ports, encodage `%XX`, barres inversées, segments `..`, caractères
+  invisibles) ; chaque transformation est notée pour être montrée ; schémas
+  non web, adresses e-mail et textes ordinaires refusés avec un motif.
 
 ### Modifié
 

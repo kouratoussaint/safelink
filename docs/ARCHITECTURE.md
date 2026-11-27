@@ -43,6 +43,9 @@ Briques d'analyse des liens (`lib/src/url/`) :
 | `Punycode` | Encodage et décodage RFC 3492, testés sur les vecteurs de la RFC ; entrée invalide refusée, jamais corrigée |
 | `Idna` | Nom de domaine Unicode ↔ ASCII : séparateurs Unicode, NFKC, minuscules, limites de 63 et 253 caractères |
 | `PublicSuffixList` | Domaine réellement enregistré (`example.co.uk`, `arnaque.blogspot.com`) ; liste embarquée, sections ICANN et privée, tests officiels |
+| `UrlParser`, `ParsedUrl` | Lecture d'un lien comme un navigateur (standard URL du WHATWG) : identifiants avant `@`, IPv4 sous toutes leurs formes, IPv6, ports, `%XX`, barres inversées, segments `..` ; 2 048 caractères au plus (réglable) |
+| `UrlNormalization` | Chaque transformation appliquée, avec un code et une explication montrés à l'utilisateur (ex. « https:// supposé ») |
+| `UrlParseFailure` | Refus motivé : schéma non web (`mailto:`, `tel:`, `javascript:`…), adresse e-mail, texte qui n'est pas un lien, hôte ou port invalide |
 
 Règles de conception :
 
