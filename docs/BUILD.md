@@ -130,8 +130,10 @@ celle des versions de distribution (lot D).
 - Gradle lit la clé dans `SAFELINK_DEV_KEYSTORE` et
   `SAFELINK_DEV_KEYSTORE_PASSWORD` ; sans ces variables (build local, CI des
   pull requests), il utilise la clé de débogage de la machine.
-- `dev-apk.yml` refuse de publier si les secrets sont absents et vérifie que
-  chaque APK porte l'empreinte de `tools/dev-signing-cert.sha256`.
+- `dev-apk.yml` vérifie que chaque APK porte l'empreinte de
+  `tools/dev-signing-cert.sha256`. Si les secrets sont absents, il publie
+  quand même, avec une signature temporaire annoncée en tête des notes de
+  la pré-version (désinstallation nécessaire).
 - Pour enregistrer les secrets : *Settings › Secrets and variables › Actions ›
   New repository secret*, une fois pour chacun des deux noms ci-dessus.
 - Changer de clé oblige à désinstaller l'application sur chaque téléphone de
