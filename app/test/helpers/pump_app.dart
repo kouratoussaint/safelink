@@ -10,6 +10,7 @@ import 'package:safelink/features/history/history_store.dart';
 import 'package:safelink/features/onboarding/onboarding_controller.dart';
 import 'package:safelink/features/online/online_checker.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/online/page_preview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_online.dart';
@@ -25,7 +26,8 @@ const referenceSize = Size(393, 852);
 /// considérée comme déjà vue. L'analyse se fait par défaut sans isolat, de
 /// façon synchrone : [analysisService] permet de la remplacer ; les
 /// vérifications en ligne sont simulées ([onlineChecker], sans connexion par
-/// défaut). L'historique
+/// défaut) ; les services Google sont désactivés sauf si [googleKey] est
+/// fournie. L'historique
 /// est gardé en mémoire ([historyBackend]).
 Future<SharedPreferences> pumpSafeLinkApp(
   WidgetTester tester, {
@@ -36,6 +38,8 @@ Future<SharedPreferences> pumpSafeLinkApp(
   OnlineChoice online = OnlineChoice.disabled,
   AnalysisService? analysisService,
   OnlineChecker? onlineChecker,
+  String googleKey = '',
+  PagePreviewClient? pagePreviewClient,
   HistoryBackend? historyBackend,
 }) async {
   SharedPreferences.setMockInitialValues({
@@ -70,6 +74,8 @@ Future<SharedPreferences> pumpSafeLinkApp(
                 useIsolates: false,
               ),
         ),
+        googleApiKeyProvider.overrideWithValue(googleKey),
+        pagePreviewClientProvider.overrideWithValue(pagePreviewClient),
         historyBackendProvider.overrideWithValue(
           historyBackend ?? MemoryHistoryBackend(),
         ),

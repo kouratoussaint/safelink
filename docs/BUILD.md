@@ -137,6 +137,18 @@ python3 tools/generate_brand_assets.py   # nécessite rsvg-convert (librsvg2-bin
 manifeste officiel des versions stables. Toutes les actions GitHub sont
 épinglées par SHA de commit et mises à jour par Dependabot.
 
+## Clé Google (facultative)
+
+Safe Browsing et la photo des pages utilisent une clé d'API Google
+([ADR 0011](adr/0011-services-google.md)), fournie à la compilation :
+
+```bash
+flutter build apk --release --dart-define=SAFELINK_GOOGLE_API_KEY=<clé>
+```
+
+En CI, elle vient du secret `SAFELINK_GOOGLE_API_KEY`. Sans clé, ces
+services sont désactivés et le reste de l'application fonctionne.
+
 ## APK de développement publiés
 
 `dev-apk.yml` compile les APK optimisés (`--release`, arm64-v8a et

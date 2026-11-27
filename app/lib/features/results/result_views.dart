@@ -6,6 +6,7 @@ import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/results/checklist.dart';
 import 'package:safelink/features/results/online_section.dart';
+import 'package:safelink/features/results/page_preview_card.dart';
 import 'package:safelink/features/results/result_summary.dart';
 import 'package:safelink/features/results/result_widgets.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
@@ -58,6 +59,7 @@ class LinkResultView extends StatelessWidget {
                 result.technicalDetails!.host,
           ),
         ],
+        PagePreviewCard(result: result),
         if (result.url != null) const OnlineOfferCard(),
         const SizedBox(height: 16),
         ResultSection(

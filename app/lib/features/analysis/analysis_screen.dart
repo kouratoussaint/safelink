@@ -6,6 +6,7 @@ import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_panel.dart';
+import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/result_views.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
@@ -84,7 +85,10 @@ class AnalysisScreen extends ConsumerWidget {
               onPressed: () => ref.invalidate(analysisProvider(request)),
             ),
           ),
-          _ => _Running(stage: ref.watch(analysisStageProvider(request))),
+          _ => _Running(
+            stage: ref.watch(analysisStageProvider(request)),
+            google: ref.watch(googleEnabledProvider),
+          ),
         },
       ),
     );
@@ -133,9 +137,12 @@ class LinkResultScreen extends StatelessWidget {
 }
 
 class _Running extends StatelessWidget {
-  const new({required this.stage});
+  const new({required this.stage, required this.google});
 
   final AnalysisStage stage;
+
+  /// Vrai si Google reçoit aussi le lien.
+  final bool google;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +168,9 @@ class _Running extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   online
-                      ? l10n.analysisOnlineRunningBody
+                      ? (google
+                            ? l10n.analysisOnlineGoogleRunningBody
+                            : l10n.analysisOnlineRunningBody)
                       : l10n.analysisRunningBody,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(

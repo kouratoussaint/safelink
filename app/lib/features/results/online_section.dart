@@ -4,6 +4,7 @@ import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/online_checker.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/online/safe_browsing.dart';
 import 'package:safelink/features/results/result_widgets.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
@@ -78,7 +79,11 @@ class OnlineOfferCard extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(l10n.onlineOfferBody),
+              Text(
+                ref.watch(googleEnabledProvider)
+                    ? l10n.onlineOfferGoogleBody
+                    : l10n.onlineOfferBody,
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -174,6 +179,25 @@ class OnlineSection extends ConsumerWidget {
           };
           children.add(_Row(title: source.label, value: label, level: level));
         }
+        final google = result.providerResults
+            .where((r) => r.providerId == SafeBrowsingClient.providerId)
+            .firstOrNull;
+        if (google != null) {
+          final (label, level) = switch (google.status) {
+            ProviderStatus.match => (
+              l10n.onlineGoogleReported,
+              RiskLevel.danger,
+            ),
+            ProviderStatus.noMatch => (
+              l10n.onlineNotReported,
+              RiskLevel.nothingObvious,
+            ),
+            _ => (l10n.onlineNoAnswer, RiskLevel.notAnalyzable),
+          };
+          children.add(
+            _Row(title: l10n.onlineSourceGoogle, value: label, level: level),
+          );
+        }
         final registration = result.registration;
         children.add(
           _Row(
@@ -214,6 +238,19 @@ class OnlineSection extends ConsumerWidget {
             },
           ),
         );
+        if (google != null) {
+          children.add(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                l10n.onlineGoogleAttribution,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+            ),
+          );
+        }
         final host = result.technicalDetails?.host;
         if (host != null) {
           children.add(

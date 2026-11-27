@@ -76,9 +76,13 @@ jobs:
         working-directory: app
         env:
           SAFELINK_DEV_KEYSTORE_PASSWORD: ${{ secrets.SAFELINK_DEV_KEYSTORE_PASSWORD }}
+          # Clé d'API Google (Safe Browsing, photo des pages). Absente : ces
+          # services sont simplement désactivés dans l'APK (ADR 0011).
+          SAFELINK_GOOGLE_API_KEY: ${{ secrets.SAFELINK_GOOGLE_API_KEY }}
         run: |
           flutter pub get --enforce-lockfile
           flutter build apk --release --split-per-abi \
+            --dart-define=SAFELINK_GOOGLE_API_KEY="$SAFELINK_GOOGLE_API_KEY" \
             --target-platform android-arm,android-arm64 \
             --dart-define=SAFELINK_GIT_SHA="${GITHUB_SHA::7}"
 
@@ -145,6 +149,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ github.ref_name }}
+          # Seule la présence du secret est indiquée, jamais sa valeur.
+          GOOGLE_KEY_PRESENT: ${{ secrets.SAFELINK_GOOGLE_API_KEY != '' && 'oui' || '' }}
         run: |
           tag="dev-$SHORT_SHA"
           base="https://github.com/$GITHUB_REPOSITORY/releases/download/$tag"
@@ -174,7 +180,12 @@ jobs:
             else
               echo "- Signature temporaire (certificat SHA-256 \`$CERT_SHA256\`)."
             fi
-            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne du nom des sites, si l’utilisateur l’active."
+            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne, si l’utilisateur l’active."
+            if [ -n "$GOOGLE_KEY_PRESENT" ]; then
+              echo "- Services Google (Safe Browsing, photo des pages) : activés."
+            else
+              echo "- Services Google (Safe Browsing, photo des pages) : désactivés, secret \`SAFELINK_GOOGLE_API_KEY\` absent."
+            fi
             echo "- Empreintes des fichiers : \`SHA256SUMS.txt\`."
           } > notes.md
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then

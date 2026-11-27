@@ -99,7 +99,10 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) et
 La seule permission Android est l'accès à Internet, utilisé uniquement par
 la vérification en ligne, que vous activez ou non : le nom du site
 (`exemple.com`) est envoyé, en HTTPS, à Quad9 et Cloudflare et au registre
-du domaine ; jamais le lien complet ni le texte d'un message. La caméra ne
+du domaine ; Google Safe Browsing ne reçoit que des empreintes partielles ;
+Google reçoit le lien pour photographier la page, sauf s'il contient un
+code personnel ([ADR 0011](docs/adr/0011-services-google.md)). Le texte
+d'un message n'est jamais envoyé. La caméra ne
 sera demandée qu'au moment de scanner un QR code. Pas de compte, pas de
 publicité, pas de mesure d'audience. Les sauvegardes cloud de
 l'application sont désactivées et l'historique, facultatif, est chiffré.

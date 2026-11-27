@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:safelink/features/online/dns_message.dart';
 import 'package:safelink/features/online/rdap_bootstrap.g.dart';
+import 'package:safelink/features/online/safe_browsing.dart';
 import 'package:safelink/features/online/transports.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
@@ -56,9 +57,13 @@ final class OnlineChecker {
   new({
     this.dns = const Http2DohTransport(),
     this.json = const IoJsonTransport(),
+    this.safeBrowsing,
     DateTime Function()? clock,
     this.budget = const Duration(seconds: 10),
   }) : _clock = clock ?? (() => DateTime.now().toUtc());
+
+  /// Google Safe Browsing, si une clé d'API est configurée.
+  final SafeBrowsingClient? safeBrowsing;
 
   /// Transport DNS sur HTTPS.
   final DohTransport dns;
@@ -75,7 +80,52 @@ final class OnlineChecker {
   /// même question (gardées en mémoire seulement).
   final _cache = <OnlineLookupTarget, OnlineEvidence>{};
 
-  /// Consulte les sources pour [target].
+  /// Consulte les sources pour chaque lien de [urls] : une fois par nom de
+  /// site pour le DNS et le registre, une fois par lien pour Google Safe
+  /// Browsing (qui ne reçoit que des préfixes d'empreintes). Les éléments
+  /// sont rangés par adresse normalisée (`ParsedUrl.href`).
+  Future<Map<String, OnlineEvidence>> checkAll(List<ParsedUrl> urls) async {
+    final targetOf = {
+      for (final url in urls) url.href: OnlineLookupTarget.of(url),
+    };
+    final targets = targetOf.values.nonNulls.toSet().toList();
+    final domainAnswers = await Future.wait(targets.map(check));
+    final byTarget = {
+      for (final (i, target) in targets.indexed) target: domainAnswers[i],
+    };
+    final browsing = safeBrowsing;
+    final checkedAt = _clock();
+    final googleAnswers = browsing == null
+        ? null
+        : await Future.wait([
+            for (final url in urls) browsing.check(url, checkedAt),
+          ]).timeout(
+            budget,
+            onTimeout: () => [
+              for (final _ in urls)
+                ProviderResult(
+                  providerId: SafeBrowsingClient.providerId,
+                  status: ProviderStatus.unavailable,
+                  checkedAt: checkedAt,
+                ),
+            ],
+          );
+    return {
+      for (final (i, url) in urls.indexed)
+        url.href: _merge(byTarget[targetOf[url.href]], googleAnswers?[i]),
+    };
+  }
+
+  static OnlineEvidence _merge(
+    OnlineEvidence? domain,
+    ProviderResult? google,
+  ) => OnlineEvidence(
+    reputation: [...?domain?.reputation, ?google],
+    registration: domain?.registration,
+    resolution: domain?.resolution,
+  );
+
+  /// Consulte le DNS et le registre pour [target].
   Future<OnlineEvidence> check(OnlineLookupTarget target) async {
     final cached = _cache[target];
     if (cached != null) return cached;
