@@ -43,6 +43,13 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   positions d'origine, phrases, citations, négations, langue) et extraction
   des liens (y compris `www.`, domaines nus et formes déguisées `hxxp`,
   `[.]`), numéros, codes USSD et montants en francs CFA.
+- Moteur : règles de signaux des messages et dictionnaire français versionné
+  (`fr-1.0.0`) — demande de code ou de PIN, saisie d'un secret, paiement
+  anticipé, gain, menace de blocage, sortie du canal officiel, lien qui ne
+  correspond pas à la marque citée, organisme cité, urgence, et variantes
+  locales (transfert « par erreur », code USSD de transfert). Négations et
+  citations prises en compte, extraits expurgés. Référence :
+  `docs/MESSAGE_RULES.md`.
 
 ### Ajouté — lot B (analyse locale des liens)
 

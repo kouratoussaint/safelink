@@ -59,6 +59,8 @@ Briques d'analyse des messages (`lib/src/message/`) :
 | --- | --- |
 | `FoldedText`, `MessageSpan` | Texte replié pour la recherche (minuscules, sans accents, apostrophes et guillemets unifiés, invisibles retirés) ; chaque caractère garde sa position d'origine pour surligner l'extrait exact |
 | `MessagePreprocessor`, `PreparedMessage` | Phrases, propositions, passages cités (guillemets, lignes « > »), négations (« ne… jamais », « aucun ») sans confondre « n'hésitez pas » ou « si vous ne payez pas », évaluation rudimentaire de la langue |
+| `MessageDictionary` | Dictionnaire français versionné (`fr-1.0.0`), injectable : verbes de transmission, secrets, paiements, gains, menaces, organismes, messageries, urgence, variantes locales |
+| `MessageRules`, `MessageFinding` | Indices des huit catégories du cahier des charges et des variantes locales, avec passages à surligner et extraits expurgés ; liste dans [MESSAGE_RULES.md](MESSAGE_RULES.md) |
 | `MessageExtractor` | Liens (protocole, `www.`, domaines nus validés par la Public Suffix List, formes déguisées `hxxp`, `[.]`, `(dot)`…), numéros de téléphone, codes USSD (avec repérage des codes de transfert), montants en francs CFA |
 
 Règles de conception :
