@@ -1,22 +1,29 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
+import 'package:safelink/core/motion/appear.dart';
+import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/results/checklist.dart';
 import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/page_preview_card.dart';
+import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/features/results/result_summary.dart';
 import 'package:safelink/features/results/result_widgets.dart';
+import 'package:safelink/features/results/verdict_hero.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
-/// Contenu du résultat d'un lien : verdict, pourquoi, ce qui n'a pas été
-/// vérifié, que faire, détails techniques. Aucun bouton pour ouvrir le
-/// lien : SafeLink ne l'ouvre jamais.
-class LinkResultView extends StatelessWidget {
+/// Contenu du résultat d'un lien : verdict en grand, aperçu de la page,
+/// raisons et gestes en pictogrammes ; explications et détails techniques
+/// repliés hors du mode expert. Aucun bouton pour ouvrir le lien :
+/// SafeLink ne l'ouvre jamais.
+class LinkResultView extends ConsumerWidget {
   const new({
     required this.result,
     this.online = OnlineStatus.notRequested,
@@ -37,67 +44,127 @@ class LinkResultView extends StatelessWidget {
   final List<Widget> footer;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final expert = ref.watch(expertModeProvider);
+    final offer = ref.watch(onlineChoiceProvider) == OnlineChoice.undecided;
     final presentation = VerdictPresentation.forUrl(result, l10n);
-    final displayed = result.technicalDetails?.displayUrl;
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      children: [
-        VerdictHeader(
-          presentation: presentation,
-          confidence: result.verdict == UrlVerdict.invalid
-              ? null
-              : result.confidence,
-        ),
-        if (displayed != null) ...[
-          const SizedBox(height: 12),
-          HighlightedUrl(
-            displayed: displayed,
-            domain:
-                result.technicalDetails!.registrableDomain ??
-                result.technicalDetails!.host,
+    final details = result.technicalDetails;
+    final explanations = [
+      if (result.url != null) ...[
+        OnlineSection(result: result, status: online, onRetry: onRetry),
+        ChecklistSection(items: urlChecklist(result, l10n)),
+      ],
+      ResultSection(
+        title: l10n.sectionNotChecked,
+        children: [
+          BulletList(
+            icon: Icons.info_outline,
+            items: [for (final l in result.limitations) l.description],
           ),
         ],
-        PagePreviewCard(result: result),
-        if (result.url != null) const OnlineOfferCard(),
-        const SizedBox(height: 16),
-        ResultSection(
-          title: l10n.sectionWhy,
-          children: result.signals.isEmpty
-              ? [Text(l10n.sectionWhyEmpty)]
-              : [for (final s in result.signals) SignalTile(signal: s)],
+      ),
+    ];
+    final children = <Widget>[
+      VerdictHero(
+        presentation: presentation,
+        expert: expert,
+        confidence: result.verdict == UrlVerdict.invalid
+            ? null
+            : result.confidence,
+        speech: verdictSpeech(
+          l10n,
+          presentation,
+          signals: result.signals,
+          actions: result.recommendedActions,
         ),
-        const SizedBox(height: 12),
-        ResultSection(
-          title: l10n.sectionWhatToDo,
-          children: [
-            BulletList(
-              icon: Icons.check_circle_outline,
-              items: [for (final a in result.recommendedActions) a.description],
-            ),
-          ],
+      ),
+      if (details != null)
+        AddressBar(
+          displayed: details.displayUrl,
+          domain: details.registrableDomain ?? details.host,
+          color: VerdictPresentation.colorOf(context, presentation.level),
         ),
-        if (result.url != null) ...[
-          const SizedBox(height: 12),
-          OnlineSection(result: result, status: online, onRetry: onRetry),
-          const SizedBox(height: 12),
-          ChecklistSection(items: urlChecklist(result, l10n)),
+      if (PagePreviewCard.applies(result, ref)) PagePreviewCard(result: result),
+      if (result.url != null && offer) const OnlineOfferCard(),
+      ResultSection(
+        title: l10n.sectionWhy,
+        children: [
+          ReasonList(
+            signals: result.signals,
+            expert: expert,
+            emptyText: l10n.sectionWhyEmpty,
+          ),
         ],
-        const SizedBox(height: 12),
-        ResultSection(
-          title: l10n.sectionNotChecked,
-          children: [
-            BulletList(
-              icon: Icons.info_outline,
-              items: [for (final l in result.limitations) l.description],
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
+      ),
+      ResultSection(
+        title: l10n.sectionWhatToDo,
+        children: [
+          ActionGrid(actions: result.recommendedActions, expert: expert),
+        ],
+      ),
+      if (expert) ...[
+        ...explanations,
         TechnicalDetailsSection(rows: urlDetailRows(result, l10n)),
-        ...footer,
-      ],
+      ] else
+        MoreSection(children: explanations),
+      ...footer,
+    ];
+    return ResultList(children: children);
+  }
+}
+
+/// Liste d'un résultat : les blocs apparaissent l'un après l'autre.
+class ResultList extends StatelessWidget {
+  const new({required this.children, super.key});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => ListView(
+    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+    children: [
+      for (final (i, child) in children.indexed)
+        Padding(
+          padding: EdgeInsets.only(top: i == 0 ? 0 : 12),
+          child: Appear(index: i, child: child),
+        ),
+    ],
+  );
+}
+
+/// Adresse du lien, comme dans la barre d'un navigateur, avec le vrai nom
+/// du site en gras.
+class AddressBar extends StatelessWidget {
+  const new({
+    required this.displayed,
+    required this.domain,
+    required this.color,
+    super.key,
+  });
+
+  final String displayed;
+  final String domain;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Row(
+        children: [
+          ExcludeSemantics(child: Icon(Icons.link_rounded, color: color)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: HighlightedUrl(displayed: displayed, domain: domain),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -136,9 +203,10 @@ class HighlightedUrl extends StatelessWidget {
   }
 }
 
-/// Contenu du résultat d'un message : synthèse, indices dans le texte,
-/// liens repérés et leurs résultats, limites, gestes recommandés.
-class MessageResultView extends StatelessWidget {
+/// Contenu du résultat d'un message : synthèse en grand, indices du texte
+/// et liens en pictogrammes, aperçu du premier lien, gestes ; limites et
+/// détails repliés hors du mode expert.
+class MessageResultView extends ConsumerWidget {
   const new({
     required this.result,
     required this.onOpenLink,
@@ -158,122 +226,92 @@ class MessageResultView extends StatelessWidget {
   final List<Widget> footer;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final expert = ref.watch(expertModeProvider);
+    final offer = ref.watch(onlineChoiceProvider) == OnlineChoice.undecided;
     final message = result.message;
-    final levelColor = VerdictPresentation.colorOf(context, result.level);
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      children: [
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: levelColor, width: 2),
+    final presentation = VerdictPresentation.forCombined(result.level, l10n);
+    final firstLink = result.links.firstOrNull;
+    final explanations = [
+      if (message.verdict != MessageVerdict.invalidMessage)
+        ChecklistSection(items: messageChecklist(message, l10n)),
+      ResultSection(
+        title: l10n.sectionNotChecked,
+        children: [
+          BulletList(
+            icon: Icons.info_outline,
+            items: [for (final l in result.limitations) l.description],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Semantics(
-              container: true,
-              header: true,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(
-                      VerdictPresentation.iconOf(result.level),
-                      color: levelColor,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.combinedTitle(
-                            VerdictPresentation.levelLabel(l10n, result.level),
-                          ),
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: levelColor,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(l10n.combinedBody),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        VerdictHeader(
-          presentation: VerdictPresentation.forMessage(message, l10n),
-          confidence: message.verdict == MessageVerdict.invalidMessage
-              ? null
-              : message.confidence,
-          compact: true,
-        ),
-        if (result.links.isNotEmpty) const OnlineOfferCard(),
-        const SizedBox(height: 16),
-        ResultSection(
-          title: l10n.sectionTextSignals,
-          children: message.signals.isEmpty
-              ? [Text(l10n.sectionTextSignalsEmpty)]
-              : [for (final s in message.signals) SignalTile(signal: s)],
-        ),
-        const SizedBox(height: 12),
-        ResultSection(
-          title: l10n.sectionLinks,
-          children: [
-            if (result.links.isEmpty) Text(l10n.sectionLinksEmpty),
-            for (final link in result.links) _LinkTile(link, onOpenLink),
-            if (result.unanalyzedLinkCount > 0)
-              Text(l10n.linksNotAnalyzed(result.unanalyzedLinkCount)),
-            if (result.links.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4, bottom: 8),
-                child: Text(
-                  switch (online) {
-                    OnlineStatus.done => l10n.onlineMessageDone,
-                    OnlineStatus.unreachable => l10n.onlineMessageUnreachable,
-                    _ => l10n.onlineMessageDisabled,
-                  },
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: SafeLinkColors.of(context).textSecondary,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ResultSection(
-          title: l10n.sectionWhatToDo,
-          children: [
-            BulletList(
-              icon: Icons.check_circle_outline,
-              items: [for (final a in result.recommendedActions) a.description],
-            ),
-          ],
-        ),
-        if (message.verdict != MessageVerdict.invalidMessage) ...[
-          const SizedBox(height: 12),
-          ChecklistSection(items: messageChecklist(message, l10n)),
         ],
-        const SizedBox(height: 12),
-        ResultSection(
-          title: l10n.sectionNotChecked,
-          children: [
-            BulletList(
-              icon: Icons.info_outline,
-              items: [for (final l in result.limitations) l.description],
-            ),
+      ),
+    ];
+    final children = <Widget>[
+      VerdictHero(
+        presentation: presentation,
+        expert: expert,
+        speech: verdictSpeech(
+          l10n,
+          presentation,
+          signals: [
+            ...message.signals,
+            for (final link in result.links) ...link.result.signals,
           ],
+          actions: result.recommendedActions,
         ),
-        const SizedBox(height: 12),
+      ),
+      if (result.links.isNotEmpty && offer) const OnlineOfferCard(),
+      ResultSection(
+        title: l10n.sectionTextSignals,
+        children: [
+          VerdictHeader(
+            presentation: VerdictPresentation.forMessage(message, l10n),
+            confidence: message.verdict == MessageVerdict.invalidMessage
+                ? null
+                : message.confidence,
+            compact: true,
+            showConfidence: expert,
+          ),
+          const SizedBox(height: 12),
+          ReasonList(
+            signals: message.signals,
+            expert: expert,
+            emptyText: l10n.sectionTextSignalsEmpty,
+          ),
+        ],
+      ),
+      ResultSection(
+        title: l10n.sectionLinks,
+        children: [
+          if (result.links.isEmpty) Text(l10n.sectionLinksEmpty),
+          for (final link in result.links) _LinkTile(link, onOpenLink),
+          if (result.unanalyzedLinkCount > 0)
+            Text(l10n.linksNotAnalyzed(result.unanalyzedLinkCount)),
+          if (result.links.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, bottom: 8),
+              child: Text(
+                switch (online) {
+                  OnlineStatus.done => l10n.onlineMessageDone,
+                  OnlineStatus.unreachable => l10n.onlineMessageUnreachable,
+                  _ => l10n.onlineMessageDisabled,
+                },
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: SafeLinkColors.of(context).textSecondary),
+              ),
+            ),
+        ],
+      ),
+      if (firstLink != null && PagePreviewCard.applies(firstLink.result, ref))
+        PagePreviewCard(result: firstLink.result),
+      ResultSection(
+        title: l10n.sectionWhatToDo,
+        children: [
+          ActionGrid(actions: result.recommendedActions, expert: expert),
+        ],
+      ),
+      if (expert) ...[
+        ...explanations,
         TechnicalDetailsSection(
           rows: commonDetailRows(
             signals: message.signals,
@@ -283,9 +321,11 @@ class MessageResultView extends StatelessWidget {
             online: online == OnlineStatus.done,
           ),
         ),
-        ...footer,
-      ],
-    );
+      ] else
+        MoreSection(children: explanations),
+      ...footer,
+    ];
+    return ResultList(children: children);
   }
 }
 
@@ -306,7 +346,7 @@ class _LinkTile extends StatelessWidget {
     return ListTile(
       key: ValueKey('link-${link.link.span.start}'),
       contentPadding: EdgeInsets.zero,
-      leading: ExcludeSemantics(child: Icon(presentation.icon, color: color)),
+      leading: PictoBadge(icon: presentation.icon, color: color),
       title: Text(shown, maxLines: 2, overflow: TextOverflow.ellipsis),
       subtitle: Text(
         [
@@ -333,7 +373,7 @@ class ResultActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.only(top: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

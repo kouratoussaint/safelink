@@ -45,6 +45,41 @@ Future<void> visitAnalysisScreens(WidgetTester tester) async {
   expect(tester.takeException(), isNull, reason: 'lien du message');
 }
 
+/// Mode simple : déplie chaque raison, chaque geste et les explications.
+Future<void> visitSimpleScreens(WidgetTester tester) async {
+  Future<void> openAll() async {
+    for (final label in [
+      'Lettres trompeuses',
+      'Ne touchez pas le lien',
+      'Voir les explications',
+    ]) {
+      final finder = find.text(label);
+      if (finder.evaluate().isEmpty) {
+        await flow.scrollTo(tester, finder);
+      }
+      await tester.ensureVisible(finder.first);
+      await tester.pumpAndSettle();
+      await tester.tap(finder.first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: label);
+    }
+  }
+
+  await flow.enterText(tester, 'xn--pypal-4ve.com');
+  await flow.analyze(tester, 'Analyser le lien');
+  expect(tester.takeException(), isNull, reason: 'lien');
+  await openAll();
+  await flow.pressBack(tester);
+  await flow.selectMessageMode(tester);
+  await flow.enterText(tester, flow.scamMessage);
+  await flow.analyze(tester, 'Analyser le message');
+  expect(tester.takeException(), isNull, reason: 'message');
+  await flow.scrollTo(tester, find.text('Voir les explications'));
+  await tester.tap(find.text('Voir les explications'));
+  await tester.pumpAndSettle();
+  expect(tester.takeException(), isNull, reason: 'message déplié');
+}
+
 Future<void> visitOnboarding(WidgetTester tester) async {
   for (var step = 0; step < 3; step++) {
     expect(tester.takeException(), isNull, reason: 'étape ${step + 1}');
@@ -118,6 +153,23 @@ void main() {
   testWidgets('analyse et résultats : 320 dp, texte à 200 %', (tester) async {
     await pumpSafeLinkApp(tester, size: const Size(320, 640), textScale: 2);
     await visitAnalysisScreens(tester);
+  });
+
+  testWidgets('mode simple : 320 dp, texte à 200 %, tout déplié', (
+    tester,
+  ) async {
+    await pumpSafeLinkApp(
+      tester,
+      size: const Size(320, 640),
+      textScale: 2,
+      expert: false,
+    );
+    await visitSimpleScreens(tester);
+  });
+
+  testWidgets('mode simple : format de référence, tout déplié', (tester) async {
+    await pumpSafeLinkApp(tester, expert: false);
+    await visitSimpleScreens(tester);
   });
 
   testWidgets('présentation : 320 dp, texte à 200 %', (tester) async {

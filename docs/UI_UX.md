@@ -60,22 +60,54 @@ Logique : `app/lib/app/tab_history.dart` et `app/lib/app/shell.dart` ;
 tests : `app/test/app/back_navigation_test.dart`, qui simulent le bouton
 Retour exactement comme Android l'envoie à Flutter.
 
+## Images d'abord, mots simples
+
+Le public visé lit peu. L'application parle donc d'abord par images, par
+couleurs et par la voix ; les phrases et le vocabulaire technique ne sont
+montrés qu'à qui le demande.
+
+- **Mode simple (par défaut)** : verdict en grand, raisons et gestes en
+  pictogrammes avec deux à cinq mots ; un appui sur une vignette montre la
+  phrase complète. Sources, vérifications et limites sont repliées sous
+  « Voir les explications » ; les détails techniques sont absents.
+- **Mode expert** (Paramètres) : tout est déplié, avec la gravité de
+  chaque indice, la confiance et les détails techniques.
+- **Verdict** : jauge en demi-cercle du vert au rouge dont l'aiguille
+  rejoint le niveau, pictogramme dans un disque de couleur qui rebondit,
+  mot d'alerte (« Danger ! », « Attention ! », « Prudence », « Rien de
+  suspect », « Illisible »), libellé précis et phrase simple. Le téléphone
+  vibre en cas de danger ou d'alerte.
+- **« Écouter »** : la voix du téléphone lit le verdict, les raisons et
+  les gestes en mots courts, sans connexion ; un second appui arrête.
+- **Aperçu du lien** : photo de la page dans un cadre de téléphone
+  (ADR 0011), aussi pour le premier lien d'un message.
+- **Mouvement** : les blocs du résultat arrivent l'un après l'autre ;
+  l'analyse montre un radar qui tourne et les étapes « Sur le téléphone »
+  puis « En ligne ». Si Android demande de réduire les animations, tout
+  est affiché d'emblée.
+- **Accueil** : bouclier animé, deux grandes vignettes « Lien » et
+  « Message » avec un exemple (« Un SMS, un message WhatsApp »), grands
+  boutons « Coller » et « Analyser ».
+
 ## Analyse et résultats
 
 - Première ouverture : trois étapes (mission, limites, confidentialité),
   puis l'Accueil. Rien n'est demandé : ni compte, ni autorisation.
-- Accueil : choix « Lien » ou « Message », champ de saisie, « Coller »,
-  « Analyser ». Le presse-papiers n'est lu qu'à l'appui sur « Coller ».
+- Accueil : vignettes « Lien » ou « Message », champ de saisie,
+  « Coller », « Analyser ». Le presse-papiers n'est lu qu'à l'appui sur « Coller ».
   Quand `https://` est ajouté d'office, l'adresse réellement analysée est
   affichée sous le champ.
-- Pendant l'analyse : indicateur indéterminé et « Analyse en cours… ». En
+- Pendant l'analyse : radar animé, sans pourcentage inventé, et « Analyse
+  en cours… ». En
   cas d'erreur : aucun résultat affiché, bouton « Réessayer ».
 - Verdict : libellé, icône et couleur disent la même chose ; un libellé
   rassurant est toujours accompagné de sa limite (« Cela ne garantit pas
-  que le lien soit sûr. »). La confiance est affichée en toutes lettres.
-- Ordre des sections : verdict, lien avec le domaine enregistré en gras,
-  « Pourquoi ce résultat ? », « Que faire ? », « Ce qui n'a pas été
-  vérifié », « Détails techniques » repliés.
+  que le lien soit sûr. »). La confiance est lue par TalkBack et affichée
+  en mode expert.
+- Ordre des sections : verdict, adresse avec le domaine enregistré en
+  gras, aperçu de la page, « Pourquoi ce résultat ? », « Que faire ? »,
+  puis les explications (repliées en mode simple) et, en mode expert, les
+  « Détails techniques ».
 - Message : bandeau « Synthèse : <niveau> » au niveau le plus sévère entre
   le texte et ses liens, puis le verdict du texte, ses indices et chaque
   lien repéré avec son propre résultat, ouvrable en détail.
@@ -126,7 +158,11 @@ Retour exactement comme Android l'envoie à Flutter.
   barre de navigation plafonne ce grossissement, au plus 130 %, et moins sur
   les écrans étroits, pour que « Historique » ou « Paramètres » ne se coupent
   pas au milieu du mot. Les libellés restent lus en entier par TalkBack.
-- Les mises en page sont testées à 320 dp de large avec un texte à 200 %.
+- Les mises en page sont testées à 320 dp de large avec un texte à 200 %,
+  en mode simple tout déplié comme en mode expert ; les règles
+  d'accessibilité sont vérifiées dans les deux modes.
+- Les pictogrammes sont toujours accompagnés de mots ; la jauge a un
+  libellé TalkBack (« Niveau de risque : Danger »).
 - Les valeurs à copier (détails techniques, contenu conservé) sont du
   texte ordinaire dans une zone de sélection (`SelectionArea`) : copiables
   par appui long, sans devenir autant de champs de saisie pour TalkBack.

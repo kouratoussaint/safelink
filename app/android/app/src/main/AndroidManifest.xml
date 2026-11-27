@@ -47,7 +47,8 @@
     </application>
     <!--
       Visibilité limitée aux applications qui traitent du texte sélectionné
-      (menu « Traduire », etc. dans les champs de saisie Flutter).
+      (menu « Traduire », etc. dans les champs de saisie Flutter) et aux
+      moteurs de synthèse vocale.
       Ce n'est pas une permission et cela ne donne pas accès à la liste des
       applications installées.
     -->
@@ -55,6 +56,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
+        </intent>
+        <!-- Voix du téléphone, pour le bouton « Écouter » (lecture à voix
+             haute, sans connexion). -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
     </queries>
 </manifest>

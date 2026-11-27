@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
+import 'package:safelink/core/motion/appear.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/history/history_controller.dart';
@@ -159,11 +162,11 @@ class _Running extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(),
-                const SizedBox(height: 16),
+                Scanner(online: online),
+                const SizedBox(height: 20),
                 Text(
                   online ? l10n.analysisOnlineRunning : l10n.analysisRunning,
-                  style: theme.textTheme.titleMedium,
+                  style: theme.textTheme.titleLarge,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -177,6 +180,25 @@ class _Running extends StatelessWidget {
                     color: SafeLinkColors.of(context).textSecondary,
                   ),
                 ),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    _Step(
+                      icon: Icons.phone_android_rounded,
+                      label: l10n.analysisStepPhone,
+                      done: online,
+                    ),
+                    if (online)
+                      _Step(
+                        icon: Icons.public_rounded,
+                        label: l10n.analysisStepOnline,
+                        done: false,
+                      ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -184,6 +206,188 @@ class _Running extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Étape de l'analyse : coche verte une fois faite.
+class _Step extends StatelessWidget {
+  const new({required this.icon, required this.label, required this.done});
+
+  final IconData icon;
+  final String label;
+  final bool done;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final success = SafeLinkColors.of(context).success;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: done ? success : theme.colorScheme.outlineVariant,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 20),
+          const SizedBox(width: 6),
+          Text(label, style: theme.textTheme.bodyMedium),
+          const SizedBox(width: 6),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            transitionBuilder: (child, animation) =>
+                ScaleTransition(scale: animation, child: child),
+            child: done
+                ? Icon(
+                    Icons.check_circle_rounded,
+                    key: const ValueKey('done'),
+                    size: 20,
+                    color: success,
+                  )
+                : const Icon(
+                    Icons.more_horiz_rounded,
+                    key: ValueKey('working'),
+                    size: 20,
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Animation d'analyse : un faisceau tourne autour d'un bouclier, comme un
+/// radar ; pendant la vérification en ligne, un globe remplace le
+/// téléphone.
+class Scanner extends StatefulWidget {
+  const new({required this.online, super.key});
+
+  final bool online;
+
+  @override
+  State<Scanner> createState() => _ScannerState();
+}
+
+class _ScannerState extends State<Scanner> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (reduceMotion(context)) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      _controller.repeat().ignore();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox.square(
+      dimension: 150,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => CustomPaint(
+          painter: _ScanPainter(
+            t: _controller.value,
+            color: scheme.primary,
+            track: scheme.outlineVariant,
+          ),
+          child: child,
+        ),
+        child: Center(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) =>
+                ScaleTransition(scale: animation, child: child),
+            child: Icon(
+              widget.online
+                  ? Icons.travel_explore_rounded
+                  : Icons.shield_rounded,
+              key: ValueKey(widget.online),
+              size: 56,
+              color: scheme.primary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ScanPainter extends CustomPainter {
+  new({required this.t, required this.color, required this.track});
+
+  final double t;
+  final Color color;
+  final Color track;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final radius = size.shortestSide / 2 - 6;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    final start = 2 * math.pi * t - math.pi / 2;
+    canvas
+      ..drawCircle(
+        center,
+        radius,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = track,
+      )
+      // Onde qui s'élargit.
+      ..drawCircle(
+        center,
+        radius * (0.45 + 0.55 * t),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..color = color.withValues(alpha: 0.35 * (1 - t)),
+      )
+      // Faisceau qui tourne.
+      ..drawArc(
+        rect,
+        start,
+        math.pi / 2,
+        true,
+        Paint()
+          ..shader = SweepGradient(
+            endAngle: math.pi / 2,
+            colors: [color.withValues(alpha: 0), color.withValues(alpha: 0.28)],
+            transform: GradientRotation(start),
+          ).createShader(rect),
+      )
+      ..drawArc(
+        rect,
+        start + math.pi / 2 - 0.08,
+        0.08,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 5
+          ..strokeCap = StrokeCap.round
+          ..color = color,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_ScanPainter old) =>
+      old.t != t || old.color != color || old.track != track;
 }
 
 class _Message extends StatelessWidget {

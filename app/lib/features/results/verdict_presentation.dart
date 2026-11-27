@@ -15,6 +15,7 @@ final class VerdictPresentation {
     required this.subtitle,
     required this.icon,
     required this.level,
+    this.simple = '',
   });
 
   /// Présentation du verdict d'un lien.
@@ -39,18 +40,21 @@ final class VerdictPresentation {
       subtitle: l10n.subtitleKnownThreat,
       icon: Icons.gpp_bad_outlined,
       level: verdict.level,
+      simple: l10n.simpleKnownThreat,
     ),
     UrlVerdict.suspicious => VerdictPresentation(
       label: l10n.verdictSuspicious,
       subtitle: l10n.subtitleSuspicious,
       icon: Icons.warning_amber_rounded,
       level: verdict.level,
+      simple: l10n.simpleSuspicious,
     ),
     UrlVerdict.noKnownThreat => VerdictPresentation(
       label: l10n.verdictNoKnownThreat,
       subtitle: l10n.subtitleNoKnownThreat,
       icon: Icons.shield_outlined,
       level: verdict.level,
+      simple: l10n.simpleNoKnownThreat,
     ),
     UrlVerdict.inconclusive => VerdictPresentation(
       label: l10n.verdictInconclusive,
@@ -59,12 +63,14 @@ final class VerdictPresentation {
           : l10n.subtitleInconclusiveSignals,
       icon: Icons.help_outline,
       level: verdict.level,
+      simple: l10n.simpleInconclusive,
     ),
     UrlVerdict.invalid => VerdictPresentation(
       label: l10n.verdictInvalid,
       subtitle: invalidReason ?? '',
       icon: Icons.block_outlined,
       level: verdict.level,
+      simple: l10n.simpleInvalid,
     ),
   };
 
@@ -87,32 +93,53 @@ final class VerdictPresentation {
       subtitle: l10n.subtitleHighRisk,
       icon: Icons.gpp_bad_outlined,
       level: verdict.level,
+      simple: l10n.simpleHighRisk,
     ),
     MessageVerdict.suspiciousMessage => VerdictPresentation(
       label: l10n.verdictSuspiciousMessage,
       subtitle: l10n.subtitleSuspiciousMessage,
       icon: Icons.warning_amber_rounded,
       level: verdict.level,
+      simple: l10n.simpleSuspiciousMessage,
     ),
     MessageVerdict.noObviousSignals => VerdictPresentation(
       label: l10n.verdictNoObviousSignals,
       subtitle: l10n.subtitleNoObviousSignals,
       icon: Icons.shield_outlined,
       level: verdict.level,
+      simple: l10n.simpleNoObviousSignals,
     ),
     MessageVerdict.inconclusiveMessage => VerdictPresentation(
       label: l10n.verdictInconclusiveMessage,
       subtitle: l10n.subtitleInconclusiveMessage,
       icon: Icons.help_outline,
       level: verdict.level,
+      simple: l10n.simpleInconclusiveMessage,
     ),
     MessageVerdict.invalidMessage => VerdictPresentation(
       label: l10n.verdictInvalidMessage,
       subtitle: invalidReason ?? '',
       icon: Icons.block_outlined,
       level: verdict.level,
+      simple: l10n.simpleInvalidMessage,
     ),
   };
+
+  /// Présentation de la synthèse d'un message et de ses liens.
+  factory forCombined(RiskLevel level, AppLocalizations l10n) =>
+      VerdictPresentation(
+        label: l10n.combinedTitle(levelLabel(l10n, level)),
+        subtitle: l10n.combinedBody,
+        icon: iconOf(level),
+        level: level,
+        simple: switch (level) {
+          RiskLevel.danger => l10n.simpleCombinedDanger,
+          RiskLevel.attention => l10n.simpleCombinedAttention,
+          RiskLevel.uncertain => l10n.simpleCombinedUncertain,
+          RiskLevel.nothingObvious => l10n.simpleCombinedNothingObvious,
+          RiskLevel.notAnalyzable => l10n.simpleCombinedNotAnalyzable,
+        },
+      );
 
   /// Libellé du verdict.
   final String label;
@@ -125,6 +152,19 @@ final class VerdictPresentation {
 
   /// Niveau de synthèse, qui fixe la couleur.
   final RiskLevel level;
+
+  /// Phrase courte en mots simples, affichée hors du mode expert.
+  final String simple;
+
+  /// Mot d'alerte, très court, affiché en grand.
+  static String heroWord(AppLocalizations l10n, RiskLevel level) =>
+      switch (level) {
+        RiskLevel.danger => l10n.heroDanger,
+        RiskLevel.attention => l10n.heroAttention,
+        RiskLevel.uncertain => l10n.heroUncertain,
+        RiskLevel.nothingObvious => l10n.heroNothingObvious,
+        RiskLevel.notAnalyzable => l10n.heroNotAnalyzable,
+      };
 
   /// Couleur du niveau [level] dans le thème courant.
   static Color colorOf(BuildContext context, RiskLevel level) {

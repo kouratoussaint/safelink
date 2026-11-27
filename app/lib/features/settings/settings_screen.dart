@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
+import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/history/history_controller.dart';
@@ -43,6 +44,14 @@ class SettingsScreen extends ConsumerWidget {
                     RadioListTile<ThemeMode>(value: value, title: Text(label)),
                 ],
               ),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.tune),
+              title: Text(l10n.settingsExpertSwitch),
+              subtitle: Text(l10n.settingsExpertBody),
+              value: ref.watch(expertModeProvider),
+              onChanged: (value) =>
+                  ref.read(expertModeProvider.notifier).select(enabled: value),
             ),
             const Divider(),
             _SectionHeader(l10n.settingsOnlineSection),

@@ -6,6 +6,20 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Images d'abord, mots simples, voix
+
+- Mode simple par défaut : verdict en grand avec jauge animée du vert au
+  rouge, pictogramme et mot d'alerte ; raisons et gestes en pictogrammes
+  avec quelques mots, phrase complète au toucher ; explications repliées
+  sous « Voir les explications ». Mode expert dans les Paramètres.
+- Bouton « Écouter » : lecture à voix haute du verdict et des gestes, avec
+  la voix du téléphone (flutter_tts, MIT), sans connexion.
+- Animations : blocs qui arrivent l'un après l'autre, radar pendant
+  l'analyse, bouclier animé à l'accueil ; vibration en cas de danger ;
+  aucune animation si Android demande de les réduire.
+- Accueil : grandes vignettes « Lien » / « Message » et grands boutons.
+- Aperçu automatique du premier lien d'un message.
+
 ### Ajouté — Google Safe Browsing et photo des pages (ADR 0011)
 
 - Google Safe Browsing v5 : canonicalisation et expressions selon les

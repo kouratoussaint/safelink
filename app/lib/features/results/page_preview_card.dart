@@ -89,54 +89,45 @@ class _PagePreviewCardState extends ConsumerState<PagePreviewCard> {
         _ => const _Capturing(),
       };
     }
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Semantics(
-                header: true,
-                child: Row(
-                  children: [
-                    ExcludeSemantics(
-                      child: Icon(
-                        Icons.photo_camera_outlined,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Semantics(
+              header: true,
+              child: Row(
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.photo_camera_outlined,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.previewTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                switchInCurve: Curves.easeOutCubic,
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(
-                    scale: Tween<double>(
-                      begin: 0.96,
-                      end: 1,
-                    ).animate(animation),
-                    child: child,
                   ),
-                ),
-                child: KeyedSubtree(
-                  key: ValueKey(body.runtimeType),
-                  child: body,
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.previewTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              switchInCurve: Curves.easeOutCubic,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.96, end: 1).animate(animation),
+                  child: child,
                 ),
               ),
-            ],
-          ),
+              child: KeyedSubtree(key: ValueKey(body.runtimeType), child: body),
+            ),
+          ],
         ),
       ),
     );

@@ -41,7 +41,8 @@ chaque analyse de lien, quand la vérification en ligne est acceptée.
   Automatique après l'analyse d'un lien, **sauf** si le lien porte un code
   personnel (jeton, identifiant, numéro), qu'une visite pourrait consommer
   ou valider : l'utilisateur décide alors (« Prendre la photo quand
-  même »). Pour un message, la photo est prise quand on ouvre un lien.
+  même »). Pour un message, la photo du premier lien est prise
+  automatiquement ; celle des autres liens, quand on les ouvre.
 - **Destination réelle** : si l'adresse finale change de domaine (lien
   raccourci, redirection), l'application l'affiche et propose de la
   vérifier.
