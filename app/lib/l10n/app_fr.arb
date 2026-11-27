@@ -9,26 +9,18 @@
   "navSettings": "Paramètres",
   "openSettingsTooltip": "Ouvrir les paramètres",
   "backAgainToExit": "Appuyez de nouveau sur Retour pour quitter SafeLink",
-  "homeTitle": "Vérifiez un lien ou un message avant d'agir",
-  "homeIntro": "SafeLink examinera, sur votre téléphone, les liens et les messages que vous choisirez de lui soumettre. Il vous dira ce qu'il a vérifié, ce qu'il ne sait pas et les précautions à prendre.",
-  "homeDevNoticeTitle": "Version de développement",
-  "homeDevNoticeBody": "L'analyse des liens et des messages n'est pas encore disponible dans cette version. Elle arrivera avec les prochaines étapes du projet. En attendant, aucune vérification n'est simulée.",
-  "homeCommitmentsTitle": "Nos engagements",
-  "homeCommitmentFree": "Gratuit, sans publicité et sans compte.",
-  "homeCommitmentLocal": "Analyse sur votre téléphone : vos messages ne sont envoyés à personne.",
-  "homeCommitmentHonest": "Jamais de « 100 % sûr » : chaque résultat dira aussi ce qui n'a pas été vérifié.",
+  "homeTitle": "Vérifiez un lien ou un message avant d’agir",
   "historyTitle": "Historique",
   "historyEmptyTitle": "Aucune vérification enregistrée",
-  "historyEmptyBody": "L'historique est désactivé par défaut. Quand l'analyse sera disponible, SafeLink vous demandera si vous souhaitez conserver vos vérifications sur ce téléphone. Vous pourrez les supprimer à tout moment.",
   "tipsTitle": "Conseils",
   "tipsIntro": "Quelques réflexes simples pour éviter les arnaques les plus courantes.",
   "tipCodesTitle": "Ne partagez jamais un code reçu par SMS",
-  "tipCodesBody": "Un code de confirmation, un code PIN ou un mot de passe ne se donne à personne, même à quelqu'un qui dit appeler de la part de votre banque ou de votre opérateur.",
-  "tipUrgencyTitle": "Méfiez-vous de l'urgence",
+  "tipCodesBody": "Un code de confirmation, un code PIN ou un mot de passe ne se donne à personne, même à quelqu’un qui dit appeler de la part de votre banque ou de votre opérateur.",
+  "tipUrgencyTitle": "Méfiez-vous de l’urgence",
   "tipUrgencyBody": "Les messages qui pressent (« dernier délai », « compte bloqué dans 24 h ») cherchent à vous faire agir sans réfléchir. Prenez le temps de vérifier.",
   "tipChannelTitle": "Vérifiez par un canal que vous connaissez déjà",
-  "tipChannelBody": "En cas de doute, contactez l'organisme par son application officielle ou par un numéro que vous connaissiez avant de recevoir le message.",
-  "tipsMoreSoon": "D'autres fiches arriveront dans une prochaine version : liens raccourcis, QR codes, faux services Mobile Money, que faire après avoir partagé un mot de passe.",
+  "tipChannelBody": "En cas de doute, contactez l’organisme par son application officielle ou par un numéro que vous connaissiez avant de recevoir le message.",
+  "tipsMoreSoon": "D’autres fiches arriveront dans une prochaine version : liens raccourcis, QR codes, faux services Mobile Money, que faire après avoir partagé un mot de passe.",
   "settingsTitle": "Paramètres",
   "settingsAppearanceSection": "Apparence",
   "settingsThemeLabel": "Thème",
@@ -38,9 +30,9 @@
   "settingsAboutSection": "Informations",
   "settingsAboutTile": "À propos de SafeLink",
   "settingsAboutSubtitle": "Version, licence et code source",
-  "settingsPrivacyNote": "SafeLink ne collecte aucune donnée personnelle et n'affiche aucune publicité.",
+  "settingsPrivacyNote": "SafeLink ne collecte aucune donnée personnelle et n’affiche aucune publicité.",
   "aboutTitle": "À propos",
-  "aboutDisclaimer": "SafeLink aide à repérer des indices de fraude. Il ne garantit jamais qu'un lien ou un message est sûr.",
+  "aboutDisclaimer": "SafeLink aide à repérer des indices de fraude. Il ne garantit jamais qu’un lien ou un message est sûr.",
   "aboutVersionLabel": "Version",
   "aboutRevisionLabel": "Révision du code",
   "aboutRevisionLocal": "Build local",
@@ -49,9 +41,208 @@
   "aboutSourceLabel": "Code source",
   "aboutFontsLabel": "Polices",
   "aboutFontsValue": "Poppins et Inter, SIL Open Font License 1.1",
-  "aboutCopySource": "Copier l'adresse du code source",
+  "aboutCopySource": "Copier l’adresse du code source",
   "aboutSourceCopied": "Adresse copiée.",
   "aboutComponentLicenses": "Licences des composants",
   "aboutLoading": "Chargement…",
-  "aboutVersionUnavailable": "Indisponible"
+  "aboutVersionUnavailable": "Indisponible",
+  "historyEmptyBody": "L’historique n’est pas encore disponible dans cette version. Vos analyses ne sont conservées nulle part.",
+  "onboardingMissionTitle": "Vérifiez avant de cliquer",
+  "onboardingMissionBody": "Collez un lien ou un message reçu : SafeLink y cherche, sur votre téléphone, les indices d’arnaque courants et vous dit quoi faire.",
+  "onboardingMissionPoint1": "Liens : faux sites, imitations de marques, adresses déguisées.",
+  "onboardingMissionPoint2": "Messages : demandes de code, faux gains, transferts « par erreur ».",
+  "onboardingLimitsTitle": "Ce que SafeLink ne peut pas promettre",
+  "onboardingLimitsBody": "SafeLink repère des indices, il ne lit pas les intentions.",
+  "onboardingLimitsPoint1": "Un résultat sans signalement n’est pas une preuve de fiabilité : une arnaque nouvelle peut passer inaperçue.",
+  "onboardingLimitsPoint2": "Dans cette version, aucune liste de sites signalés n’est consultée : l’analyse est entièrement locale.",
+  "onboardingLimitsPoint3": "SafeLink n’ouvre jamais les liens qu’il analyse.",
+  "onboardingPrivacyTitle": "Vos données restent sur votre téléphone",
+  "onboardingPrivacyBody": "Pas de compte, pas de publicité, aucun envoi.",
+  "onboardingPrivacyPoint1": "SafeLink ne lit jamais vos SMS ni vos conversations : vous choisissez ce que vous lui confiez.",
+  "onboardingPrivacyPoint2": "Le presse-papiers n’est lu que lorsque vous appuyez sur « Coller ».",
+  "onboardingPrivacyPoint3": "Aucun lien ni message n’est transmis à qui que ce soit.",
+  "onboardingNext": "Suivant",
+  "onboardingStart": "Commencer",
+  "onboardingStep": "Étape {current} sur {total}",
+  "@onboardingStep": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeModeLabel": "Que voulez-vous vérifier ?",
+  "homeModeLink": "Lien",
+  "homeModeMessage": "Message",
+  "homeLinkFieldLabel": "Lien à vérifier",
+  "homeLinkFieldHint": "Collez un lien ici (https://…)",
+  "homeMessageFieldLabel": "Message à vérifier",
+  "homeMessageFieldHint": "Collez le texte du message reçu",
+  "homePaste": "Coller",
+  "homeClear": "Effacer le texte",
+  "homeAnalyzeLink": "Analyser le lien",
+  "homeAnalyzeMessage": "Analyser le message",
+  "homeSchemePreview": "Sera analysé comme : {url}",
+  "@homeSchemePreview": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClipboardEmpty": "Le presse-papiers ne contient pas de texte.",
+  "homeLocalNote": "L’analyse se fait sur votre téléphone. Rien n’est envoyé.",
+  "homeHistoryShortcut": "Voir l’historique",
+  "homeComingSoonTitle": "Bientôt",
+  "homeComingSoon": "Scanner un QR code et partager un texte vers SafeLink arrivent dans une prochaine version.",
+  "analysisTitle": "Analyse",
+  "analysisRunning": "Analyse en cours…",
+  "analysisRunningBody": "Sur votre téléphone, sans connexion.",
+  "analysisErrorTitle": "L’analyse n’a pas abouti",
+  "analysisErrorBody": "Une erreur inattendue s’est produite. SafeLink préfère n’afficher aucun résultat plutôt qu’un résultat faux.",
+  "analysisRetry": "Réessayer",
+  "analysisMissing": "Aucune analyse en cours. Revenez à l’accueil pour vérifier un lien ou un message.",
+  "analysisBackHome": "Retour à l’accueil",
+  "resultTitle": "Résultat de l’analyse",
+  "resultLinkTitle": "Résultat du lien",
+  "verdictKnownThreat": "Menace connue détectée",
+  "verdictSuspicious": "Lien suspect",
+  "verdictNoKnownThreat": "Aucun danger connu détecté",
+  "verdictInconclusive": "Analyse insuffisante",
+  "verdictInvalid": "Adresse non analysable",
+  "verdictHighRisk": "Forts indices d’arnaque",
+  "verdictSuspiciousMessage": "Message suspect",
+  "verdictNoObviousSignals": "Aucun indice évident relevé",
+  "verdictInconclusiveMessage": "Analyse insuffisante",
+  "verdictInvalidMessage": "Message non analysable",
+  "subtitleKnownThreat": "Une source de réputation récente signale ce lien. Ne l’ouvrez pas.",
+  "subtitleSuspicious": "Des indices d’arnaque ont été repérés. N’ouvrez pas ce lien sans vérifier.",
+  "subtitleNoKnownThreat": "Cela ne garantit pas que le lien soit sûr.",
+  "subtitleInconclusiveQuiet": "Aucun indice repéré localement · Réputation non vérifiée",
+  "subtitleInconclusiveSignals": "Quelques indices, pas assez pour conclure · Réputation non vérifiée",
+  "subtitleHighRisk": "Ce message emploie des procédés typiques d’arnaque.",
+  "subtitleSuspiciousMessage": "Ce message présente des indices qui appellent la prudence.",
+  "subtitleNoObviousSignals": "Cela ne prouve pas que le message soit honnête.",
+  "subtitleInconclusiveMessage": "Le texte ne permet pas de conclure.",
+  "confidence": "Confiance : {level}",
+  "@confidence": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "confidenceLow": "faible",
+  "confidenceMedium": "moyenne",
+  "confidenceHigh": "élevée",
+  "levelDanger": "Danger",
+  "levelAttention": "Attention",
+  "levelUncertain": "Incertain",
+  "levelNothingObvious": "Rien d’évident",
+  "levelNotAnalyzable": "Non analysable",
+  "combinedTitle": "Synthèse : {level}",
+  "@combinedTitle": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "combinedBody": "Niveau le plus sévère entre le texte et ses liens : un texte rassurant ne masque jamais un lien dangereux.",
+  "sectionWhy": "Pourquoi ce résultat ?",
+  "sectionWhyEmpty": "Aucun indice repéré par les règles locales.",
+  "sectionTextSignals": "Indices dans le texte",
+  "sectionTextSignalsEmpty": "Aucun indice repéré dans le texte.",
+  "sectionLinks": "Liens repérés et leurs résultats",
+  "sectionLinksEmpty": "Aucun lien dans ce message.",
+  "sectionNotChecked": "Ce qui n’a pas été vérifié",
+  "sectionWhatToDo": "Que faire ?",
+  "sectionTechnical": "Détails techniques",
+  "severityHigh": "Indice fort",
+  "severityMedium": "Indice moyen",
+  "severityLow": "Indice faible",
+  "severityInfo": "Information",
+  "signalExcerpt": "Extrait : {excerpt}",
+  "@signalExcerpt": {
+    "placeholders": {
+      "excerpt": {
+        "type": "String"
+      }
+    }
+  },
+  "linkDefanged": "Écrit sous forme déguisée",
+  "linksNotAnalyzed": "{count, plural, =1{1 autre lien n’a pas été analysé.} other{{count} autres liens n’ont pas été analysés.}}",
+  "@linksNotAnalyzed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openLinkResult": "Voir le résultat de ce lien",
+  "techDisplayedUrl": "Lien (données sensibles masquées)",
+  "techMasked": "{count, plural, =0{Aucune valeur masquée} =1{1 valeur masquée} other{{count} valeurs masquées}}",
+  "@techMasked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "techHost": "Nom technique",
+  "techHostUnicode": "Nom lisible",
+  "techRegistrable": "Domaine enregistré",
+  "techSuffix": "Extension",
+  "techSharedHosting": "plateforme où chacun peut créer une page",
+  "techPort": "Port",
+  "techScripts": "Alphabets du nom",
+  "techNormalizations": "Transformations appliquées",
+  "techBrands": "Marques de référence rapprochées",
+  "techSignals": "Codes des indices",
+  "techFailure": "Motif",
+  "techRules": "Version des règles",
+  "techAnalyzedAt": "Analysé le",
+  "techSource": "Source",
+  "techSourceLocal": "Règles locales, sur ce téléphone ; aucune source de réputation consultée",
+  "techNone": "Aucun",
+  "brandKindOfficial": "domaine officiel connu (ne garantit pas la sécurité)",
+  "brandKindDomainInSubdomain": "domaine officiel recopié au début du nom",
+  "brandKindLookalike": "caractères qui imitent le nom",
+  "brandKindTypo": "nom à une faute de frappe",
+  "brandKindInDomain": "nom cité dans un domaine tiers",
+  "brandKindInSubdomain": "nom cité dans un sous-domaine",
+  "brandKindOtherSuffix": "même nom, autre extension",
+  "copySummary": "Copier le résumé",
+  "summaryCopied": "Résumé copié, sans le texte du message ni les données sensibles.",
+  "newAnalysis": "Nouvelle analyse",
+  "summaryHeader": "SafeLink — résultat d’analyse",
+  "summaryAnalyzedAt": "Analysé le {date}",
+  "@summaryAnalyzedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryLink": "Lien : {url}",
+  "@summaryLink": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryVerdict": "Verdict : {verdict}",
+  "@summaryVerdict": {
+    "placeholders": {
+      "verdict": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryMessage": "Message analysé (texte non reproduit)",
+  "summaryFooter": "Analyse locale par SafeLink. Un résultat ne garantit jamais qu’un lien ou un message est sûr."
 }

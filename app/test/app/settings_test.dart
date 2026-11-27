@@ -91,7 +91,7 @@ void main() {
     await tapDestination(tester, 'Paramètres');
     await tester.tap(find.text('À propos de SafeLink'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip("Copier l'adresse du code source"));
+    await tester.tap(find.byTooltip('Copier l’adresse du code source'));
     await tester.pumpAndSettle();
 
     expect(copied, ['https://github.com/kouratoussaint/safelink']);

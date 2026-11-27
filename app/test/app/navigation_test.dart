@@ -51,12 +51,12 @@ void main() {
     expect(appBarTitle('Paramètres'), findsOneWidget);
   });
 
-  testWidgets('l’accueil ne présente aucune analyse comme disponible', (
+  testWidgets('l’accueil propose l’analyse d’un lien ou d’un message', (
     tester,
   ) async {
     await pumpSafeLinkApp(tester);
-    expect(find.text('Version de développement'), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
-    expect(find.textContaining('Analyser'), findsNothing);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Analyser le lien'), findsOneWidget);
+    expect(find.text('Version de développement'), findsNothing);
   });
 }

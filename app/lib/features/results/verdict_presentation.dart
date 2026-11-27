@@ -1,0 +1,175 @@
+import 'package:material_ui/material_ui.dart';
+import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/l10n/generated/app_localizations.dart';
+import 'package:safelink_engine/safelink_engine.dart';
+
+/// Présentation d'un verdict : libellé, sous-titre, icône et couleur.
+///
+/// La couleur n'est jamais seule : le libellé et l'icône disent la même
+/// chose (cahier des charges, F07).
+@immutable
+final class VerdictPresentation {
+  /// Crée une présentation.
+  const new({
+    required this.label,
+    required this.subtitle,
+    required this.icon,
+    required this.level,
+  });
+
+  /// Présentation du verdict d'un lien.
+  factory forUrl(UrlAnalysisResult result, AppLocalizations l10n) {
+    final quiet = result.signals.every((s) => s.severity.rank < 2);
+    return switch (result.verdict) {
+      UrlVerdict.knownThreat => VerdictPresentation(
+        label: l10n.verdictKnownThreat,
+        subtitle: l10n.subtitleKnownThreat,
+        icon: Icons.gpp_bad_outlined,
+        level: result.level,
+      ),
+      UrlVerdict.suspicious => VerdictPresentation(
+        label: l10n.verdictSuspicious,
+        subtitle: l10n.subtitleSuspicious,
+        icon: Icons.warning_amber_rounded,
+        level: result.level,
+      ),
+      UrlVerdict.noKnownThreat => VerdictPresentation(
+        label: l10n.verdictNoKnownThreat,
+        subtitle: l10n.subtitleNoKnownThreat,
+        icon: Icons.shield_outlined,
+        level: result.level,
+      ),
+      UrlVerdict.inconclusive => VerdictPresentation(
+        label: l10n.verdictInconclusive,
+        subtitle: quiet
+            ? l10n.subtitleInconclusiveQuiet
+            : l10n.subtitleInconclusiveSignals,
+        icon: Icons.help_outline,
+        level: result.level,
+      ),
+      UrlVerdict.invalid => VerdictPresentation(
+        label: l10n.verdictInvalid,
+        subtitle: result.failure?.error.description ?? '',
+        icon: Icons.block_outlined,
+        level: result.level,
+      ),
+    };
+  }
+
+  /// Présentation du verdict du texte d'un message.
+  factory forMessage(MessageAnalysisResult result, AppLocalizations l10n) =>
+      switch (result.verdict) {
+        MessageVerdict.highRiskMessage => VerdictPresentation(
+          label: l10n.verdictHighRisk,
+          subtitle: l10n.subtitleHighRisk,
+          icon: Icons.gpp_bad_outlined,
+          level: result.level,
+        ),
+        MessageVerdict.suspiciousMessage => VerdictPresentation(
+          label: l10n.verdictSuspiciousMessage,
+          subtitle: l10n.subtitleSuspiciousMessage,
+          icon: Icons.warning_amber_rounded,
+          level: result.level,
+        ),
+        MessageVerdict.noObviousSignals => VerdictPresentation(
+          label: l10n.verdictNoObviousSignals,
+          subtitle: l10n.subtitleNoObviousSignals,
+          icon: Icons.shield_outlined,
+          level: result.level,
+        ),
+        MessageVerdict.inconclusiveMessage => VerdictPresentation(
+          label: l10n.verdictInconclusiveMessage,
+          subtitle: l10n.subtitleInconclusiveMessage,
+          icon: Icons.help_outline,
+          level: result.level,
+        ),
+        MessageVerdict.invalidMessage => VerdictPresentation(
+          label: l10n.verdictInvalidMessage,
+          subtitle: result.limitations.first.description,
+          icon: Icons.block_outlined,
+          level: result.level,
+        ),
+      };
+
+  /// Libellé du verdict.
+  final String label;
+
+  /// Précision affichée sous le libellé.
+  final String subtitle;
+
+  /// Icône du verdict.
+  final IconData icon;
+
+  /// Niveau de synthèse, qui fixe la couleur.
+  final RiskLevel level;
+
+  /// Couleur du niveau [level] dans le thème courant.
+  static Color colorOf(BuildContext context, RiskLevel level) {
+    final colors = SafeLinkColors.of(context);
+    return switch (level) {
+      RiskLevel.danger => colors.danger,
+      RiskLevel.attention => colors.warning,
+      RiskLevel.uncertain => colors.info,
+      RiskLevel.nothingObvious => colors.success,
+      RiskLevel.notAnalyzable => colors.textSecondary,
+    };
+  }
+
+  /// Icône du niveau [level].
+  static IconData iconOf(RiskLevel level) => switch (level) {
+    RiskLevel.danger => Icons.gpp_bad_outlined,
+    RiskLevel.attention => Icons.warning_amber_rounded,
+    RiskLevel.uncertain => Icons.help_outline,
+    RiskLevel.nothingObvious => Icons.shield_outlined,
+    RiskLevel.notAnalyzable => Icons.block_outlined,
+  };
+
+  /// Libellé court du niveau [level].
+  static String levelLabel(AppLocalizations l10n, RiskLevel level) =>
+      switch (level) {
+        RiskLevel.danger => l10n.levelDanger,
+        RiskLevel.attention => l10n.levelAttention,
+        RiskLevel.uncertain => l10n.levelUncertain,
+        RiskLevel.nothingObvious => l10n.levelNothingObvious,
+        RiskLevel.notAnalyzable => l10n.levelNotAnalyzable,
+      };
+
+  /// Libellé de la confiance.
+  static String confidenceLabel(AppLocalizations l10n, Confidence confidence) =>
+      l10n.confidence(switch (confidence) {
+        Confidence.low => l10n.confidenceLow,
+        Confidence.medium => l10n.confidenceMedium,
+        Confidence.high => l10n.confidenceHigh,
+      });
+
+  /// Libellé de la gravité d'un indice.
+  static String severityLabel(AppLocalizations l10n, Severity severity) =>
+      switch (severity) {
+        Severity.high => l10n.severityHigh,
+        Severity.medium => l10n.severityMedium,
+        Severity.low => l10n.severityLow,
+        Severity.info => l10n.severityInfo,
+      };
+
+  /// Niveau de synthèse correspondant à la gravité d'un indice, pour sa
+  /// couleur et son icône.
+  static RiskLevel levelOfSeverity(Severity severity) => switch (severity) {
+    Severity.high => RiskLevel.danger,
+    Severity.medium => RiskLevel.attention,
+    Severity.low => RiskLevel.uncertain,
+    Severity.info => RiskLevel.notAnalyzable,
+  };
+
+  /// Libellé de la nature d'un rapprochement de marque.
+  static String brandKindLabel(AppLocalizations l10n, BrandMatchKind kind) =>
+      switch (kind) {
+        BrandMatchKind.official => l10n.brandKindOfficial,
+        BrandMatchKind.officialDomainInSubdomain =>
+          l10n.brandKindDomainInSubdomain,
+        BrandMatchKind.lookalike => l10n.brandKindLookalike,
+        BrandMatchKind.typo => l10n.brandKindTypo,
+        BrandMatchKind.keywordInDomain => l10n.brandKindInDomain,
+        BrandMatchKind.keywordInSubdomain => l10n.brandKindInSubdomain,
+        BrandMatchKind.sameNameOtherSuffix => l10n.brandKindOtherSuffix,
+      };
+}

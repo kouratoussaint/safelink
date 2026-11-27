@@ -705,9 +705,42 @@ final class _Context {
       severity: severity,
       confidence: confidence,
       reason: reason,
-      span: message.folded.toOriginal(foldedSpan.start, foldedSpan.end),
+      span: _wholeWords(
+        message.folded.toOriginal(foldedSpan.start, foldedSpan.end),
+      ),
       quoted: message.isQuoted(foldedSpan),
     ));
+  }
+
+  static final _wordChar = RegExp(r'[\p{L}\p{N}\p{M}]', unicode: true);
+
+  /// Somme écrite après un chiffre : groupes de milliers et devise.
+  static final _amountTail = RegExp(
+    r'(?:[ \u00A0\u202F.,]\d+)*(?:[ \u00A0\u202F]?(?:FCFA|F CFA|CFA|francs?|F)'
+    r'(?![\p{L}\p{N}]))?',
+    unicode: true,
+    caseSensitive: false,
+  );
+
+  /// Étend [span] aux mots entiers, et à toute la somme quand il s'arrête
+  /// sur un chiffre : l'extrait affiché ne coupe jamais un mot ni un
+  /// montant (« gagné 500 000 FCFA » plutôt que « gagné 5 »).
+  MessageSpan _wholeWords(MessageSpan span) {
+    final text = message.original;
+    var start = span.start;
+    var end = span.end;
+    bool isWord(int i) => _wordChar.hasMatch(text[i]);
+    while (start > 0 && isWord(start - 1) && isWord(start)) {
+      start--;
+    }
+    while (end < text.length && end > start && isWord(end - 1) && isWord(end)) {
+      end++;
+    }
+    if (end > start && RegExp(r'\d').hasMatch(text[end - 1])) {
+      final tail = _amountTail.matchAsPrefix(text, end);
+      if (tail != null) end = tail.end;
+    }
+    return MessageSpan(start, end);
   }
 
   /// Un indice par code : l'occurrence hors citation la plus grave fixe la

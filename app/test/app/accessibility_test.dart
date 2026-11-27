@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 
+import '../features/analysis_flow_test.dart' as flow;
 import '../helpers/pump_app.dart';
 
 /// Ouvre l'écran voulu à partir de l'accueil.
@@ -16,6 +17,24 @@ final screens = <String, Navigate>{
   'À propos': (tester) async {
     await tapDestination(tester, 'Paramètres');
     await tester.tap(find.text('À propos de SafeLink'));
+    await tester.pumpAndSettle();
+  },
+  'Résultat d’un lien': (tester) async {
+    await flow.enterText(tester, 'xn--pypal-4ve.com');
+    await flow.analyze(tester, 'Analyser le lien');
+  },
+  'Résultat d’un message': (tester) async {
+    await flow.selectMessageMode(tester);
+    await flow.enterText(tester, flow.scamMessage);
+    await flow.analyze(tester, 'Analyser le message');
+  },
+  'Résultat d’un lien du message': (tester) async {
+    await flow.selectMessageMode(tester);
+    await flow.enterText(tester, flow.scamMessage);
+    await flow.analyze(tester, 'Analyser le message');
+    final link = find.text('http://orange-gain.xyz/retrait');
+    await flow.scrollTo(tester, link);
+    await tester.tap(link);
     await tester.pumpAndSettle();
   },
 };
@@ -43,6 +62,43 @@ void main() {
       });
     }
   }
+
+  for (final theme in ['light', 'dark']) {
+    testWidgets('Présentation ($theme) respecte les règles d’accessibilité', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpSafeLinkApp(
+        tester,
+        onboarded: false,
+        preferences: {ThemeModeController.storageKey: theme},
+      );
+      for (var step = 0; step < 3; step++) {
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+        if (step < 2) {
+          await tester.tap(find.text('Suivant'));
+          await tester.pumpAndSettle();
+        }
+      }
+      handle.dispose();
+    });
+  }
+
+  testWidgets('le verdict est annoncé comme en-tête, avec son libellé', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpSafeLinkApp(tester);
+    await flow.enterText(tester, 'xn--pypal-4ve.com');
+    await flow.analyze(tester, 'Analyser le lien');
+    final node = tester.getSemantics(find.text('Lien suspect'));
+    expect(node, isSemantics(isHeader: true));
+    expect(node.label, startsWith('Lien suspect'));
+    expect(node.label, contains('Confiance : élevée'));
+    handle.dispose();
+  });
 
   testWidgets('les titres de section sont annoncés comme en-têtes', (
     tester,
