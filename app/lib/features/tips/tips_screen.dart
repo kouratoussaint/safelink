@@ -2,7 +2,9 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/motion/appear.dart';
+import 'package:safelink/core/theme/app_theme.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/results/listen_button.dart';
 import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
@@ -22,36 +24,31 @@ class TipsScreen extends StatelessWidget {
     final urgent = sheets.first;
     final others = sheets.skip(1).toList();
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tipsTitle)),
+      appBar: TabAppBar(title: l10n.tipsTitle),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           children: [
-            Text(l10n.tipsIntro, style: theme.textTheme.bodyLarge),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                l10n.tipsIntro,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: SafeLinkColors.of(context).textSecondary,
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             Appear(child: _UrgentTile(sheet: urgent)),
             const SizedBox(height: 12),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final scale = MediaQuery.textScalerOf(context).scale(1);
-                final columns = constraints.maxWidth >= 280 * scale ? 2 : 1;
-                final width =
-                    (constraints.maxWidth - 12 * (columns - 1)) / columns;
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    for (final (i, sheet) in others.indexed)
-                      SizedBox(
-                        width: width,
-                        child: Appear(
-                          index: i + 1,
-                          child: _SheetTile(sheet: sheet),
-                        ),
-                      ),
-                  ],
-                );
-              },
+            TileGrid(
+              children: [
+                for (final (i, sheet) in others.indexed)
+                  Appear(
+                    index: i + 1,
+                    child: _SheetTile(sheet: sheet),
+                  ),
+              ],
             ),
           ],
         ),
@@ -73,31 +70,22 @@ class _SheetTile extends StatelessWidget {
     return Semantics(
       button: true,
       onTapHint: AppLocalizations.of(context).tipOpen,
-      child: Material(
-        type: MaterialType.transparency,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: color.withValues(alpha: 0.45)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.go(AppRoutes.tip(sheet.id)),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              children: [
-                PictoBadge(icon: sheet.icon, color: color, size: 60),
-                const SizedBox(height: 10),
-                Text(
-                  sheet.title,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+      child: SoftCard(
+        onTap: () => context.go(AppRoutes.tip(sheet.id)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PictoBadge(icon: sheet.icon, color: color, size: 48),
+            const SizedBox(height: 14),
+            Text(
+              sheet.title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                height: 1.3,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -113,45 +101,56 @@ class _UrgentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = SafeLinkColors.of(context).danger;
+    // Rouge plein, texte blanc : la fiche d'urgence se voit d'abord. En
+    // sombre, un rouge profond garde le texte blanc lisible.
+    final background = theme.brightness == Brightness.dark
+        ? const Color(0xFF8B1A1A)
+        : SafeLinkColors.of(context).danger;
+    const onColor = Colors.white;
     return Semantics(
       button: true,
       onTapHint: AppLocalizations.of(context).tipOpen,
-      child: Material(
-        type: MaterialType.transparency,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: color, width: 2),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.go(AppRoutes.tip(sheet.id)),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                PictoBadge(icon: sheet.icon, color: color, size: 60),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        sheet.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: color,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(sheet.trap, style: theme.textTheme.bodyMedium),
-                    ],
-                  ),
+      child: SoftCard(
+        color: background,
+
+        onTap: () => context.go(AppRoutes.tip(sheet.id)),
+        child: Row(
+          children: [
+            ExcludeSemantics(
+              child: Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: onColor.withValues(alpha: 0.18),
                 ),
-                const ExcludeSemantics(child: Icon(Icons.chevron_right)),
-              ],
+                child: Icon(sheet.icon, color: onColor, size: 28),
+              ),
             ),
-          ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sheet.title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontFamily: AppTheme.headingFont,
+                      color: onColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    sheet.trap,
+                    style: theme.textTheme.bodyMedium?.copyWith(color: onColor),
+                  ),
+                ],
+              ),
+            ),
+            const ExcludeSemantics(
+              child: Icon(Icons.chevron_right, color: onColor),
+            ),
+          ],
         ),
       ),
     );

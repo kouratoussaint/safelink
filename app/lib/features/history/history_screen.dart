@@ -3,11 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_dialogs.dart';
 import 'package:safelink/features/history/history_entry.dart';
 import 'package:safelink/features/history/history_presentation.dart';
+import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
@@ -43,8 +45,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final history = ref.watch(historyProvider);
     final entries = history.value ?? const <HistoryEntry>[];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.historyTitle),
+      appBar: TabAppBar(
+        title: l10n.historyTitle,
         actions: [
           if (entries.isNotEmpty)
             IconButton(
@@ -112,27 +114,31 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         ),
       );
     }
-    String? day;
+    // Une carte par jour, chaque vérification sur une ligne.
+    final days = <(String, List<HistoryEntry>)>[];
     for (final entry in shown) {
       final entryDay = historyDay(entry.analyzedAt, now, l10n);
-      if (entryDay != day) {
-        day = entryDay;
-        rows.add(
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Semantics(
-              header: true,
-              child: Text(
-                entryDay,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ),
-          ),
-        );
+      if (days.isEmpty || days.last.$1 != entryDay) {
+        days.add((entryDay, [entry]));
+      } else {
+        days.last.$2.add(entry);
       }
-      rows.add(_EntryTile(entry));
+    }
+    for (final (day, dayEntries) in days) {
+      rows.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GroupLabel(day),
+              GroupedCard(
+                children: [for (final entry in dayEntries) _EntryTile(entry)],
+              ),
+            ],
+          ),
+        ),
+      );
     }
     rows.add(
       Padding(
@@ -280,20 +286,17 @@ class _EntryTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final presentation = historyVerdict(entry, l10n);
     final color = VerdictPresentation.colorOf(context, entry.level);
-    return ListTile(
+    return CardRow(
       key: ValueKey('history-${entry.id}'),
-      leading: ExcludeSemantics(
-        child: Icon(VerdictPresentation.iconOf(entry.level), color: color),
+      leading: PictoBadge(
+        icon: VerdictPresentation.iconOf(entry.level),
+        color: color,
+        filled: true,
+        round: true,
+        size: 40,
       ),
-      title: Text(
-        historyTitle(entry, l10n),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        '${presentation.label} · ${historyTime(entry.analyzedAt)}',
-      ),
-      trailing: const ExcludeSemantics(child: Icon(Icons.chevron_right)),
+      title: historyTitle(entry, l10n),
+      subtitle: '${presentation.label} · ${historyTime(entry.analyzedAt)}',
       onTap: () => context.go(AppRoutes.historyEntry(entry.id)),
     );
   }

@@ -5,6 +5,7 @@ import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_dialogs.dart';
 import 'package:safelink/features/online/online_controller.dart';
@@ -25,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
       (ThemeMode.dark, l10n.themeDark),
     ];
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      appBar: TabAppBar(title: l10n.settingsTitle),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8),
