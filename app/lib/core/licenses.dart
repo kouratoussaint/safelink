@@ -1,16 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// Ajoute les licences des polices embarquées à la page « Licences des
-/// composants », à côté de celles que Flutter collecte pour les packages.
+/// Composants embarqués hors packages Dart, avec le fichier de leur licence.
+const embeddedLicenseAssets = [
+  ('Poppins', 'assets/fonts/OFL-Poppins.txt'),
+  ('Inter', 'assets/fonts/OFL-Inter.txt'),
+  ('Public Suffix List', 'assets/licenses/public_suffix_list.txt'),
+];
+
+/// Ajoute les licences des polices et des données embarquées à la page
+/// « Licences des composants », à côté de celles que Flutter collecte pour
+/// les packages.
 void registerAssetLicenses() {
   LicenseRegistry.addLicense(() async* {
-    for (final (font, asset) in const [
-      ('Poppins', 'assets/fonts/OFL-Poppins.txt'),
-      ('Inter', 'assets/fonts/OFL-Inter.txt'),
-    ]) {
+    for (final (component, asset) in embeddedLicenseAssets) {
       final text = await rootBundle.loadString(asset);
-      yield LicenseEntryWithLineBreaks([font], text);
+      yield LicenseEntryWithLineBreaks([component], text);
     }
   });
 }

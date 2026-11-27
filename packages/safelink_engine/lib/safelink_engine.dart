@@ -11,3 +11,6 @@ export 'src/common/notes.dart';
 export 'src/common/provider_result.dart';
 export 'src/common/signal.dart';
 export 'src/common/verdicts.dart';
+export 'src/url/idna.dart';
+export 'src/url/public_suffix_list.dart';
+export 'src/url/punycode.dart';

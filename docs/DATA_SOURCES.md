@@ -33,3 +33,12 @@ solide.
 Une correspondance dans une liste périmée donne au plus « Lien suspect »,
 avec la date du signalement. « Aucun danger connu détecté » n'est affiché
 que si une liste à jour a été consultée.
+
+## Données embarquées pour l'analyse locale
+
+Ces données ne sont pas des listes de menaces : elles servent à comprendre
+la structure d'un lien, sur l'appareil.
+
+| Donnée | Usage | Licence | Mise à jour |
+| --- | --- | --- | --- |
+| [Public Suffix List](https://publicsuffix.org/list/) | Trouver le domaine réellement enregistré d'un lien | MPL-2.0, notice dans l'application (Paramètres › À propos › Licences) | `tools/update_psl.py`, par pull request |
