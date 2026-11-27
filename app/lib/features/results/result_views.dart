@@ -7,7 +7,6 @@ import 'package:safelink/core/motion/appear.dart';
 import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
-import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink/features/results/checklist.dart';
 import 'package:safelink/features/results/destination_card.dart';
@@ -53,7 +52,6 @@ class LinkResultView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final expert = ref.watch(expertModeProvider);
-    final offer = ref.watch(onlineChoiceProvider) == OnlineChoice.undecided;
     final destination = this.destination;
     final presentation = VerdictPresentation.forLinkWithDestination(
       result,
@@ -105,6 +103,7 @@ class LinkResultView extends ConsumerWidget {
           actions: actions,
         ),
       ),
+      if (online == OnlineStatus.unreachable) OfflineBanner(onRetry: onRetry),
       if (details != null)
         AddressBar(
           displayed: details.displayUrl,
@@ -123,7 +122,6 @@ class LinkResultView extends ConsumerWidget {
           level: presentation.level,
           showRedirect: destination == null,
         ),
-      if (result.url != null && offer) const OnlineOfferCard(),
       ResultSection(
         title: l10n.sectionWhy,
         children: [
@@ -247,9 +245,13 @@ class MessageResultView extends ConsumerWidget {
     required this.onOpenLink,
     this.destinations = const {},
     this.online = OnlineStatus.notRequested,
+    this.onRetry,
     this.footer = const [],
     super.key,
   });
+
+  /// Relance l'analyse si les services en ligne n'ont pas répondu.
+  final VoidCallback? onRetry;
 
   final CombinedResult result;
 
@@ -268,7 +270,6 @@ class MessageResultView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final expert = ref.watch(expertModeProvider);
-    final offer = ref.watch(onlineChoiceProvider) == OnlineChoice.undecided;
     final message = result.message;
     final presentation = VerdictPresentation.forCombined(
       RiskLevel.mostSevere([
@@ -306,7 +307,7 @@ class MessageResultView extends ConsumerWidget {
           actions: result.recommendedActions,
         ),
       ),
-      if (result.links.isNotEmpty && offer) const OnlineOfferCard(),
+      if (online == OnlineStatus.unreachable) OfflineBanner(onRetry: onRetry),
       ResultSection(
         title: l10n.sectionTextSignals,
         children: [
@@ -476,6 +477,69 @@ class ResultActions extends StatelessWidget {
             onPressed: () => context.go(AppRoutes.home),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Bandeau « Pas de connexion » : la vérification en ligne, prioritaire,
+/// n'a pas pu se faire ; seul le téléphone a vérifié.
+class OfflineBanner extends StatelessWidget {
+  const new({this.onRetry, super.key});
+
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final color = SafeLinkColors.of(context).warning;
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: color),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                PictoBadge(icon: Icons.cloud_off_rounded, color: color),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          l10n.offlineTitle,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Text(l10n.offlineBody, style: theme.textTheme.bodyMedium),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.tonalIcon(
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.onlineRetry),
+                  onPressed: onRetry,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

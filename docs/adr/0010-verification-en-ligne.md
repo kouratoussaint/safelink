@@ -32,7 +32,9 @@ quelques jours plus tôt est l'un des meilleurs indices d'hameçonnage.
 - **Consentement** : choix proposé à la dernière étape de la présentation
   (« Activer la vérification en ligne » ou « Rester hors ligne »), sous un
   résultat tant qu'il n'est pas fait, et modifiable dans les paramètres.
-  Sans accord, aucune requête n'est envoyée.
+  Sans accord, aucune requête n'est envoyée. *Modifié par
+  [0013](0013-en-ligne-par-defaut.md) : activée par défaut, refus
+  possible.*
 - **Données envoyées** : uniquement le nom du site (`www.exemple.com`)
   aux résolveurs, et le domaine enregistré (`exemple.com`) au serveur RDAP
   de son registre. Jamais le chemin, les paramètres, le lien complet, ni le

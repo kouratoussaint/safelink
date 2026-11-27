@@ -6,13 +6,10 @@ import 'package:safelink/features/online/safe_browsing.dart';
 
 /// Choix de l'utilisateur pour la vérification en ligne.
 enum OnlineChoice {
-  /// Pas encore choisi : rien n'est envoyé.
-  undecided,
-
-  /// Les noms de sites sont vérifiés en ligne.
+  /// Les liens sont vérifiés en ligne (par défaut, ADR 0013).
   enabled,
 
-  /// Aucune vérification en ligne.
+  /// Aucune vérification en ligne : analyse sur le téléphone seulement.
   disabled,
 }
 
@@ -22,18 +19,18 @@ onlineChoiceProvider = NotifierProvider(OnlineChoiceController.new);
 
 /// Lit et enregistre le choix pour la vérification en ligne.
 class OnlineChoiceController extends Notifier<OnlineChoice> {
-  /// Clé de stockage dans les préférences. Version 2 : l'accord couvre
-  /// aussi Google (photo de la page et Safe Browsing) ; un accord donné
-  /// avant cet ajout est redemandé.
+  /// Clé de stockage dans les préférences. Un refus enregistré est
+  /// toujours respecté.
   static const storageKey = 'online_checks_v2';
 
+  /// Activée par défaut (décision du porteur, ADR 0013) : seul un refus
+  /// explicite la coupe.
   @override
   OnlineChoice build() {
     final stored = ref.watch(sharedPreferencesProvider).getString(storageKey);
-    return OnlineChoice.values.firstWhere(
-      (choice) => choice.name == stored && choice != OnlineChoice.undecided,
-      orElse: () => OnlineChoice.undecided,
-    );
+    return stored == OnlineChoice.disabled.name
+        ? OnlineChoice.disabled
+        : OnlineChoice.enabled;
   }
 
   /// Active ou désactive la vérification en ligne.

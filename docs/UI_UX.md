@@ -120,10 +120,12 @@ montrés qu'à qui le demande.
 
 ## Vérification en ligne
 
-- Choix à la dernière étape de la présentation (« Activer la vérification
-  en ligne » ou « Rester hors ligne »), proposé sous un résultat tant qu'il
-  n'est pas fait (« Vérifier aussi en ligne ? »), modifiable dans les
-  paramètres. L'activer depuis un résultat relance l'analyse affichée.
+- Activée par défaut (ADR 0013) : la dernière étape de la présentation
+  l'annonce (« Vérification en ligne activée ») avec « Continuer » ou
+  « Rester hors ligne » ; interrupteur dans les paramètres. La réactiver
+  depuis un résultat (« Activer ») relance l'analyse affichée.
+- Sans connexion : bandeau « Pas de connexion — Vérifié seulement sur le
+  téléphone » en haut du résultat, avec « Réessayer ».
 - Pendant la consultation : « Vérification en ligne… » et « Seul le nom du
   site est envoyé, de façon chiffrée. »
 - Section « Vérifications en ligne » : Quad9 et Cloudflare (« Non

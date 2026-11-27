@@ -3,8 +3,8 @@
   Manifeste de SafeLink.
 
   Principe : le minimum de permissions. INTERNET sert uniquement à la
-  vérification en ligne, que l'utilisateur active ou non (ADR 0010) : seul
-  le nom du site est envoyé, en HTTPS. CAMERA sera ajoutée avec le scanner
+  vérification en ligne, activée par défaut et désactivable (ADR 0010 à
+  0013), toujours en HTTPS. CAMERA sera ajoutée avec le scanner
   QR (lot E). La CI échoue si l'APK release contient une permission hors de
   la liste autorisée (tools/check_apk_permissions.sh).
 

@@ -184,4 +184,49 @@ void main() {
     final (uri, _) = (preview.http as FakeHttpTransport).requests.single;
     expect(uri.queryParameters['url'], play);
   });
+
+  group('pas de connexion', () {
+    testWidgets('lien : bandeau visible, « Réessayer » relance', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(
+        tester,
+        expert: false,
+        online: OnlineChoice.enabled,
+      );
+      await history.analyzeLink(tester, 'https://lefaso.net/');
+      expect(find.text('Pas de connexion'), findsOneWidget);
+      expect(
+        find.textContaining('Vérifié seulement sur le téléphone'),
+        findsOneWidget,
+      );
+      await tester.tap(flow.button('Réessayer').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Pas de connexion'), findsOneWidget);
+    });
+
+    testWidgets('message avec lien : bandeau visible', (tester) async {
+      await pumpSafeLinkApp(
+        tester,
+        expert: false,
+        online: OnlineChoice.enabled,
+      );
+      await history.analyzeMessage(
+        tester,
+        'Votre colis vous attend : https://lefaso.net/colis',
+      );
+      expect(find.text('Pas de connexion'), findsOneWidget);
+    });
+
+    testWidgets('connexion revenue : pas de bandeau', (tester) async {
+      await pumpSafeLinkApp(
+        tester,
+        expert: false,
+        online: null,
+        onlineChecker: fakeChecker(),
+      );
+      await history.analyzeLink(tester, 'https://lefaso.net/');
+      expect(find.text('Pas de connexion'), findsNothing);
+    });
+  });
 }

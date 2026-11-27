@@ -117,13 +117,24 @@ void main() {
     expect(find.text('Aperçu de la page'), findsNothing);
   });
 
-  testWidgets('textes d’accord : Google nommé', (tester) async {
-    await pumpGoogle(tester, online: OnlineChoice.undecided);
-    await history.analyzeLink(tester, 'https://lefaso.net/');
+  testWidgets('textes d’information : Google nommé', (tester) async {
+    await pumpSafeLinkApp(
+      tester,
+      onboarded: false,
+      online: null,
+      googleKey: 'test-key',
+    );
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(flow.button('Suivant'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Vérification en ligne activée'), findsOneWidget);
     expect(
-      find.textContaining('et à Google une photo de la page'),
+      find.textContaining('Google reçoit le lien pour prendre une photo'),
       findsOneWidget,
     );
+    await tester.tap(flow.button('Continuer'));
+    await tester.pumpAndSettle();
     await tapDestination(tester, 'Paramètres');
     await tester.scrollUntilVisible(
       find.textContaining('Google reçoit le lien'),

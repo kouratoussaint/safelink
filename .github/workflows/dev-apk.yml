@@ -62,13 +62,16 @@ jobs:
 
       - uses: ./.github/actions/setup-flutter
 
+      # Clé : fichiers Gradle et greffons Flutter (pubspec.lock), qui apportent
+      # leurs propres dépendances ; sinon chaque build retélécharge depuis
+      # Maven Central (erreurs 429 observées le 27/11/2026).
       - name: Cache Gradle
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('app/android/**/*.gradle.kts', 'app/android/gradle/wrapper/gradle-wrapper.properties', '.flutter-version') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('app/android/**/*.gradle.kts', 'app/android/gradle/wrapper/gradle-wrapper.properties', '.flutter-version', 'app/pubspec.lock') }}
           restore-keys: |
             gradle-${{ runner.os }}-
 
@@ -180,7 +183,7 @@ jobs:
             else
               echo "- Signature temporaire (certificat SHA-256 \`$CERT_SHA256\`)."
             fi
-            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne, si l’utilisateur l’active."
+            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne (activée par défaut, désactivable)."
             if [ -n "$GOOGLE_KEY_PRESENT" ]; then
               echo "- Services Google (Safe Browsing, photo des pages) : activés."
             else
