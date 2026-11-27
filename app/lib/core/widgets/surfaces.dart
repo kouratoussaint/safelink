@@ -191,3 +191,102 @@ class CardRow extends StatelessWidget {
     );
   }
 }
+
+/// Barre d'en-tête des onglets (Historique, Conseils, Paramètres) : grand
+/// titre à gauche, comme une page.
+class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const new({required this.title, this.actions = const [], super.key});
+
+  final String title;
+  final List<Widget> actions;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(68);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AppBar(
+      toolbarHeight: 68,
+      titleSpacing: 20,
+      title: Text(
+        title,
+        style: theme.textTheme.headlineSmall?.copyWith(
+          fontSize: 26,
+          letterSpacing: -0.3,
+        ),
+      ),
+      actions: [...actions, const SizedBox(width: 8)],
+    );
+  }
+}
+
+/// Grand pictogramme dans un disque plein, entouré d'un halo de sa
+/// couleur ; barré d'un signe « interdit » si [forbid].
+class HaloIcon extends StatelessWidget {
+  const new({
+    required this.icon,
+    required this.color,
+    this.forbid = false,
+    super.key,
+  });
+
+  final IconData icon;
+  final Color color;
+  final bool forbid;
+
+  @override
+  Widget build(BuildContext context) {
+    final onColor =
+        ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+        ? Colors.white
+        : const Color(0xFF081E33);
+    final colors = SafeLinkColors.of(context);
+    return ExcludeSemantics(
+      child: SizedBox.square(
+        dimension: 108,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color.withValues(alpha: 0.10),
+              ),
+            ),
+            Container(
+              width: 74,
+              height: 74,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color,
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.30),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Icon(icon, color: onColor, size: 36),
+            ),
+            if (forbid)
+              Positioned(
+                right: 12,
+                top: 12,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
+                  padding: const EdgeInsets.all(2),
+                  child: Icon(Icons.block, color: colors.danger, size: 30),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}

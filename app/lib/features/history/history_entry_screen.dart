@@ -70,7 +70,14 @@ class _EntryDetails extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
-        VerdictHeader(presentation: historyVerdict(entry, l10n)),
+        Container(
+          decoration: BoxDecoration(
+            color: VerdictPresentation.softColorOf(context, entry.level),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: VerdictHeader(presentation: historyVerdict(entry, l10n)),
+        ),
         const SizedBox(height: 16),
         ResultSection(
           title: l10n.historyEntryInfo,

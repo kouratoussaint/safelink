@@ -6,6 +6,17 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Refonte « Clarté », étape 2 : partage, historique, conseils
+
+- Grands titres pour les onglets Historique, Conseils et Paramètres.
+- Historique : filtres en segments, une carte par jour, chaque
+  vérification avec sa pastille de couleur ; fiche avec le verdict sur
+  fond teinté.
+- Conseils : vignettes blanches de même hauteur, « Déjà piégé ? » en carte
+  rouge pleine.
+- Partage reçu : grand pictogramme entouré d'un halo, choix en cartes ;
+  champs de saisie sur fond blanc.
+
 ### Modifié — Refonte « Clarté », étape 1 : accueil et résultats
 
 - Nouveau style clair et épuré (piste A des maquettes) : fond gris très

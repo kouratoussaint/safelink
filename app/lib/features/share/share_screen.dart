@@ -238,7 +238,7 @@ class _Hero extends StatelessWidget {
       children: [
         const SizedBox(height: 8),
         Appear(
-          child: PictoBadge(icon: icon, color: color, size: 96, forbid: forbid),
+          child: HaloIcon(icon: icon, color: color, forbid: forbid),
         ),
         const SizedBox(height: 16),
         Semantics(
@@ -320,50 +320,55 @@ class _BigChoice extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      child: Material(
-        color: selected ? scheme.primaryContainer : scheme.surface,
-        shape: RoundedRectangleBorder(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: selected ? scheme.primary : scheme.outlineVariant,
-            width: selected ? 2.5 : 1,
-          ),
+          boxShadow: colors.cardShadow,
         ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 88),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  PictoBadge(icon: icon, color: scheme.primary, size: 56),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          label,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (hint.isNotEmpty)
+        child: Material(
+          color: selected ? scheme.primaryContainer : scheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: selected
+                ? BorderSide(color: scheme.primary, width: 2)
+                : BorderSide.none,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 88),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  children: [
+                    PictoBadge(icon: icon, color: scheme.primary, size: 56),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            hint,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.textSecondary,
+                            label,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                      ],
+                          if (hint.isNotEmpty)
+                            Text(
+                              hint,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                  ExcludeSemantics(
-                    child: Icon(Icons.chevron_right, color: scheme.primary),
-                  ),
-                ],
+                    ExcludeSemantics(
+                      child: Icon(Icons.chevron_right, color: scheme.primary),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

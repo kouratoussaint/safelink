@@ -151,7 +151,7 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.surfaceContainerLow,
+        fillColor: scheme.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -204,6 +204,17 @@ abstract final class AppTheme {
           (states) => states.contains(WidgetState.selected)
               ? Colors.transparent
               : scheme.outline,
+        ),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: SegmentedButton.styleFrom(
+          backgroundColor: scheme.surface,
+          foregroundColor: scheme.onSurface,
+          selectedBackgroundColor: scheme.onSurface,
+          selectedForegroundColor: scheme.surface,
+          side: BorderSide(color: scheme.outlineVariant),
+          minimumSize: const Size(0, 44),
+          textStyle: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
       chipTheme: ChipThemeData(
