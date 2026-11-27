@@ -72,7 +72,8 @@ flutter build apk --debug
 ## Versions de développement
 
 À chaque mise à jour de `main` ou d'une branche de lot, le workflow
-[`dev-apk.yml`](.github/workflows/dev-apk.yml) publie les APK debug dans une
+[`dev-apk.yml`](.github/workflows/dev-apk.yml) publie les APK optimisés
+(environ 20 Mo) dans une
 [pré-version GitHub](https://github.com/kouratoussaint/safelink/releases)
 nommée `dev-<révision>`, téléchargeable sans compte. Ces versions servent aux
 essais et ne doivent pas être diffusées au public. Elles sont toutes signées

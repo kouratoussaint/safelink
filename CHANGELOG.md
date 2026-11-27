@@ -37,6 +37,13 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   taille de chaque APK indiquée dans les notes de pré-version. Sans la clé,
   la publication continue avec une signature temporaire signalée.
 
+### Modifié — APK de développement
+
+- Les pré-versions `dev-*` publient désormais des APK optimisés (build
+  release) : environ 19 Mo au lieu de 100 Mo (arm64-v8a) et 17 Mo au lieu
+  de 79 Mo (armeabi-v7a), même clé de signature, aucune permission Android ;
+  permissions et alignement 16 Ko vérifiés avant publication.
+
 ### Ajouté — lot C (analyse locale des messages)
 
 - Moteur : prétraitement des messages sur l'appareil (texte replié avec

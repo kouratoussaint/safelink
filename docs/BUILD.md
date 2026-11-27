@@ -59,7 +59,13 @@ flutter build apk --debug
 ```
 
 L'APK debug est produit dans `app/build/app/outputs/flutter-apk/app-debug.apk`
-et s'installe avec `adb install`.
+et s'installe avec `adb install`. Il pèse environ 100 Mo, car il contient le
+code non compilé et les outils de diagnostic. Pour un APK optimisé d'environ
+20 Mo par architecture, comme ceux des pré-versions de développement :
+
+```bash
+flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64
+```
 
 ### Contrôle des permissions
 
@@ -127,8 +133,10 @@ manifeste officiel des versions stables. Toutes les actions GitHub sont
 
 ## APK de développement publiés
 
-`dev-apk.yml` compile les APK debug (arm64-v8a et armeabi-v7a) à chaque
-mise à jour de `main` ou d'une branche `lot-*`, puis crée la pré-version
+`dev-apk.yml` compile les APK optimisés (`--release`, arm64-v8a et
+armeabi-v7a) à chaque mise à jour de `main` ou d'une branche `lot-*`,
+vérifie leur signature, leurs permissions (aucune) et leur alignement 16 Ko,
+puis crée la pré-version
 `dev-<7 premiers caractères de la révision>` avec les APK et
 `SHA256SUMS.txt`. Liens directs :
 `https://github.com/kouratoussaint/safelink/releases/download/dev-<révision>/<fichier>.apk`.
