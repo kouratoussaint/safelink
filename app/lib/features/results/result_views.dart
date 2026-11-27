@@ -8,7 +8,9 @@ import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink/features/results/checklist.dart';
+import 'package:safelink/features/results/destination_card.dart';
 import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/page_preview_card.dart';
 import 'package:safelink/features/results/reason_tiles.dart';
@@ -26,6 +28,7 @@ import 'package:safelink_engine/safelink_engine.dart';
 class LinkResultView extends ConsumerWidget {
   const new({
     required this.result,
+    this.destination,
     this.online = OnlineStatus.notRequested,
     this.onRetry,
     this.footer = const [],
@@ -33,6 +36,9 @@ class LinkResultView extends ConsumerWidget {
   });
 
   final UrlAnalysisResult result;
+
+  /// Vraie destination analysée, si le lien est raccourci.
+  final UrlAnalysisResult? destination;
 
   /// État de la vérification en ligne de ce lien.
   final OnlineStatus online;
@@ -48,8 +54,28 @@ class LinkResultView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final expert = ref.watch(expertModeProvider);
     final offer = ref.watch(onlineChoiceProvider) == OnlineChoice.undecided;
-    final presentation = VerdictPresentation.forUrl(result, l10n);
+    final destination = this.destination;
+    final presentation = VerdictPresentation.forLinkWithDestination(
+      result,
+      destination,
+      l10n,
+    );
     final details = result.technicalDetails;
+    final url = result.url;
+    final shortened = url != null && ShortLinkResolver.isShortener(url);
+    final looked =
+        online == OnlineStatus.done || online == OnlineStatus.unreachable;
+    // Raisons et gestes du lien et, s'il est raccourci, de sa destination.
+    final signals = {
+      for (final s in [...result.signals, ...?destination?.signals])
+        '${s.code}|${s.evidence}': s,
+    }.values.toList();
+    // Gestes : ceux de la destination quand elle est plus grave (« Ouvrez
+    // seulement si vous l'attendiez » n'a plus de sens face à un danger).
+    final actions =
+        destination != null && destination.level.rank > result.level.rank
+        ? destination.recommendedActions
+        : result.recommendedActions;
     final explanations = [
       if (result.url != null) ...[
         OnlineSection(result: result, status: online, onRetry: onRetry),
@@ -75,23 +101,33 @@ class LinkResultView extends ConsumerWidget {
         speech: verdictSpeech(
           l10n,
           presentation,
-          signals: result.signals,
-          actions: result.recommendedActions,
+          signals: signals,
+          actions: actions,
         ),
       ),
       if (details != null)
         AddressBar(
           displayed: details.displayUrl,
           domain: details.registrableDomain ?? details.host,
-          color: VerdictPresentation.colorOf(context, presentation.level),
+          color: VerdictPresentation.colorOf(
+            context,
+            VerdictPresentation.forUrl(result, l10n).level,
+          ),
         ),
-      if (PagePreviewCard.applies(result, ref)) PagePreviewCard(result: result),
+      if (shortened && (destination != null || looked))
+        DestinationCard(destination: destination),
+      if (PagePreviewCard.applies(result, ref))
+        PagePreviewCard(
+          result: result,
+          level: presentation.level,
+          showRedirect: destination == null,
+        ),
       if (result.url != null && offer) const OnlineOfferCard(),
       ResultSection(
         title: l10n.sectionWhy,
         children: [
           ReasonList(
-            signals: result.signals,
+            signals: signals,
             expert: expert,
             emptyText: l10n.sectionWhyEmpty,
           ),
@@ -99,9 +135,7 @@ class LinkResultView extends ConsumerWidget {
       ),
       ResultSection(
         title: l10n.sectionWhatToDo,
-        children: [
-          ActionGrid(actions: result.recommendedActions, expert: expert),
-        ],
+        children: [ActionGrid(actions: actions, expert: expert)],
       ),
       if (expert) ...[
         ...explanations,
@@ -210,12 +244,16 @@ class MessageResultView extends ConsumerWidget {
   const new({
     required this.result,
     required this.onOpenLink,
+    this.destinations = const {},
     this.online = OnlineStatus.notRequested,
     this.footer = const [],
     super.key,
   });
 
   final CombinedResult result;
+
+  /// Vraie destination analysée des liens raccourcis, par adresse du lien.
+  final Map<String, UrlAnalysisResult> destinations;
 
   /// État de la vérification en ligne des liens du message.
   final OnlineStatus online;
@@ -231,7 +269,13 @@ class MessageResultView extends ConsumerWidget {
     final expert = ref.watch(expertModeProvider);
     final offer = ref.watch(onlineChoiceProvider) == OnlineChoice.undecided;
     final message = result.message;
-    final presentation = VerdictPresentation.forCombined(result.level, l10n);
+    final presentation = VerdictPresentation.forCombined(
+      RiskLevel.mostSevere([
+        result.level,
+        for (final d in destinations.values) d.level,
+      ]),
+      l10n,
+    );
     final firstLink = result.links.firstOrNull;
     final explanations = [
       if (message.verdict != MessageVerdict.invalidMessage)
@@ -256,6 +300,7 @@ class MessageResultView extends ConsumerWidget {
           signals: [
             ...message.signals,
             for (final link in result.links) ...link.result.signals,
+            for (final d in destinations.values) ...d.signals,
           ],
           actions: result.recommendedActions,
         ),
@@ -284,7 +329,12 @@ class MessageResultView extends ConsumerWidget {
         title: l10n.sectionLinks,
         children: [
           if (result.links.isEmpty) Text(l10n.sectionLinksEmpty),
-          for (final link in result.links) _LinkTile(link, onOpenLink),
+          for (final link in result.links)
+            _LinkTile(
+              link,
+              onOpenLink,
+              destination: destinations[link.result.url?.href],
+            ),
           if (result.unanalyzedLinkCount > 0)
             Text(l10n.linksNotAnalyzed(result.unanalyzedLinkCount)),
           if (result.links.isNotEmpty)
@@ -303,7 +353,14 @@ class MessageResultView extends ConsumerWidget {
         ],
       ),
       if (firstLink != null && PagePreviewCard.applies(firstLink.result, ref))
-        PagePreviewCard(result: firstLink.result),
+        PagePreviewCard(
+          result: firstLink.result,
+          level: VerdictPresentation.forLinkWithDestination(
+            firstLink.result,
+            destinations[firstLink.result.url?.href],
+            l10n,
+          ).level,
+        ),
       ResultSection(
         title: l10n.sectionWhatToDo,
         children: [
@@ -330,15 +387,23 @@ class MessageResultView extends ConsumerWidget {
 }
 
 class _LinkTile extends StatelessWidget {
-  const new(this.link, this.onOpen);
+  const new(this.link, this.onOpen, {this.destination});
 
   final LinkAssessment link;
   final void Function(LinkAssessment link) onOpen;
 
+  /// Vraie destination, si le lien est raccourci.
+  final UrlAnalysisResult? destination;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final presentation = VerdictPresentation.forUrl(link.result, l10n);
+    final presentation = VerdictPresentation.forLinkWithDestination(
+      link.result,
+      destination,
+      l10n,
+    );
+    final destDetails = destination?.technicalDetails;
     final color = VerdictPresentation.colorOf(context, presentation.level);
     final shown =
         link.result.technicalDetails?.displayUrl ??
@@ -351,6 +416,10 @@ class _LinkTile extends StatelessWidget {
       subtitle: Text(
         [
           presentation.label,
+          if (destDetails != null)
+            l10n.destLinkTile(
+              destDetails.registrableDomain ?? destDetails.host,
+            ),
           if (link.link.isDefanged) l10n.linkDefanged,
         ].join(' · '),
         style: TextStyle(color: color),

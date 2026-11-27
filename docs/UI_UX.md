@@ -80,7 +80,10 @@ montrés qu'à qui le demande.
 - **« Écouter »** : la voix du téléphone lit le verdict, les raisons et
   les gestes en mots courts, sans connexion ; un second appui arrête.
 - **Aperçu du lien** : photo de la page dans un cadre de téléphone
-  (ADR 0011), aussi pour le premier lien d'un message.
+  (ADR 0011), aussi pour le premier lien d'un message. Pour un lien
+  raccourci, carte « Ce lien raccourci mène à : » avec la vraie
+  destination, son verdict en image et « Voir ce site en détail »
+  (ADR 0012) ; le verdict en grand prend le plus grave des deux.
 - **Mouvement** : les blocs du résultat arrivent l'un après l'autre ;
   l'analyse montre un radar qui tourne et les étapes « Sur le téléphone »
   puis « En ligne ». Si Android demande de réduire les animations, tout

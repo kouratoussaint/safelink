@@ -29,9 +29,22 @@ final pagePreviewProvider = FutureProvider.autoDispose
 /// pour un lien qui porte un code personnel (jeton, numéro…), qu'une visite
 /// pourrait utiliser : l'utilisateur décide alors.
 class PagePreviewCard extends ConsumerStatefulWidget {
-  const new({required this.result, super.key});
+  const new({
+    required this.result,
+    this.level,
+    this.showRedirect = true,
+    super.key,
+  });
 
   final UrlAnalysisResult result;
+
+  /// Niveau affiché (celui de la destination d'un lien raccourci s'il est
+  /// plus grave) ; par défaut, celui de [result].
+  final RiskLevel? level;
+
+  /// Affiche la vraie destination sous la photo ; faux si elle est déjà
+  /// montrée ailleurs.
+  final bool showRedirect;
 
   /// Vrai si un aperçu peut être pris pour [result] dans ces conditions.
   static bool applies(UrlAnalysisResult result, WidgetRef ref) {
@@ -71,7 +84,12 @@ class _PagePreviewCardState extends ConsumerState<PagePreviewCard> {
     } else {
       final preview = ref.watch(pagePreviewProvider(url.href));
       body = switch (preview) {
-        AsyncData(:final value) => _Shot(preview: value, result: widget.result),
+        AsyncData(:final value) => _Shot(
+          preview: value,
+          result: widget.result,
+          level: widget.level ?? widget.result.level,
+          showRedirect: widget.showRedirect,
+        ),
         AsyncError(:final error) => _Notice(
           icon:
               error is PagePreviewException && error.code == 'PAGE_UNREACHABLE'
@@ -210,10 +228,17 @@ class _CapturingState extends State<_Capturing>
 }
 
 class _Shot extends StatelessWidget {
-  const new({required this.preview, required this.result});
+  const new({
+    required this.preview,
+    required this.result,
+    required this.level,
+    required this.showRedirect,
+  });
 
   final PagePreview preview;
   final UrlAnalysisResult result;
+  final RiskLevel level;
+  final bool showRedirect;
 
   @override
   Widget build(BuildContext context) {
@@ -224,9 +249,8 @@ class _Shot extends StatelessWidget {
         result.technicalDetails?.registrableDomain ??
         result.technicalDetails?.host ??
         '';
-    final risky =
-        result.level == RiskLevel.danger || result.level == RiskLevel.attention;
-    final levelColor = VerdictPresentation.colorOf(context, result.level);
+    final risky = level == RiskLevel.danger || level == RiskLevel.attention;
+    final levelColor = VerdictPresentation.colorOf(context, level);
     final finalUrl = preview.finalUrl;
     final finalParsed = finalUrl == null ? null : UrlParser().parse(finalUrl);
     final finalDomain = finalParsed is ParsedUrl
@@ -308,7 +332,9 @@ class _Shot extends StatelessWidget {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              domain,
+                              // La page photographiée : celle où le lien
+                              // mène réellement.
+                              finalDomain ?? domain,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.labelLarge?.copyWith(
@@ -367,7 +393,7 @@ class _Shot extends StatelessWidget {
             color: colors.textSecondary,
           ),
         ),
-        if (redirected) ...[
+        if (redirected && showRedirect) ...[
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),

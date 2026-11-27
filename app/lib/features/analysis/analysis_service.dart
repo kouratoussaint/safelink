@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safelink/features/online/online_checker.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
 /// Ce que l'utilisateur veut vérifier.
@@ -72,10 +73,20 @@ enum AnalysisStage {
 
 /// Résultat d'une analyse.
 sealed class AnalysisOutcome {
-  const new({this.online = OnlineStatus.notRequested});
+  const new({
+    this.online = OnlineStatus.notRequested,
+    this.destinations = const {},
+  });
 
-  /// Niveau de synthèse.
-  RiskLevel get level;
+  /// Niveau de synthèse : le plus sévère entre le contenu analysé et la
+  /// vraie destination de ses liens raccourcis.
+  RiskLevel get level => RiskLevel.mostSevere([
+    ownLevel,
+    for (final d in destinations.values) d.level,
+  ]);
+
+  /// Niveau du contenu lui-même, sans les destinations.
+  RiskLevel get ownLevel;
 
   /// Moment de l'analyse, en UTC.
   DateTime get analyzedAt;
@@ -83,46 +94,69 @@ sealed class AnalysisOutcome {
   /// État de la vérification en ligne.
   final OnlineStatus online;
 
+  /// Analyse de la vraie destination de chaque lien raccourci, par adresse
+  /// du lien (`ParsedUrl.href`).
+  final Map<String, UrlAnalysisResult> destinations;
+
+  /// Destination analysée du lien [result], s'il est raccourci.
+  UrlAnalysisResult? destinationOf(UrlAnalysisResult result) =>
+      destinations[result.url?.href];
+
   /// Copie avec un autre état de vérification en ligne.
   AnalysisOutcome withOnline(OnlineStatus online);
+
+  /// Copie avec les destinations [destinations].
+  AnalysisOutcome withDestinations(Map<String, UrlAnalysisResult> destinations);
 }
 
 /// Résultat de l'analyse d'un lien.
 final class LinkOutcome extends AnalysisOutcome {
   /// Crée un résultat.
-  const new(this.result, {super.online});
+  const new(this.result, {super.online, super.destinations});
 
   /// Analyse du lien.
   final UrlAnalysisResult result;
 
   @override
-  RiskLevel get level => result.level;
+  RiskLevel get ownLevel => result.level;
 
   @override
   DateTime get analyzedAt => result.analyzedAt;
 
+  /// Destination analysée de ce lien, s'il est raccourci.
+  UrlAnalysisResult? get destination => destinationOf(result);
+
   @override
   LinkOutcome withOnline(OnlineStatus online) =>
-      LinkOutcome(result, online: online);
+      LinkOutcome(result, online: online, destinations: destinations);
+
+  @override
+  LinkOutcome withDestinations(Map<String, UrlAnalysisResult> destinations) =>
+      LinkOutcome(result, online: online, destinations: destinations);
 }
 
 /// Résultat de l'analyse d'un message et de ses liens.
 final class MessageOutcome extends AnalysisOutcome {
   /// Crée un résultat.
-  const new(this.result, {super.online});
+  const new(this.result, {super.online, super.destinations});
 
   /// Analyse combinée.
   final CombinedResult result;
 
   @override
-  RiskLevel get level => result.level;
+  RiskLevel get ownLevel => result.level;
 
   @override
   DateTime get analyzedAt => result.analyzedAt;
 
   @override
   MessageOutcome withOnline(OnlineStatus online) =>
-      MessageOutcome(result, online: online);
+      MessageOutcome(result, online: online, destinations: destinations);
+
+  @override
+  MessageOutcome withDestinations(
+    Map<String, UrlAnalysisResult> destinations,
+  ) => MessageOutcome(result, online: online, destinations: destinations);
 }
 
 /// Analyse un lien ou un message.
@@ -144,11 +178,14 @@ abstract interface class AnalysisService {
 /// l'écran reste fluide même avec un message de 10 000 caractères.
 final class DeviceAnalysisService implements AnalysisService {
   /// Crée le service.
-  new({OnlineChecker? checker, this.useIsolates = true})
+  new({OnlineChecker? checker, this.shortLinks, this.useIsolates = true})
     : checker = checker ?? OnlineChecker();
 
   /// Vérificateur en ligne.
   final OnlineChecker checker;
+
+  /// Résolveur des liens raccourcis ; `null` : destinations non cherchées.
+  final ShortLinkResolver? shortLinks;
 
   /// Faux dans les tests de l'interface, qui n'ont pas de vrais isolats.
   final bool useIsolates;
@@ -168,18 +205,39 @@ final class DeviceAnalysisService implements AnalysisService {
     // que ce code s'exécute pendant la construction du fournisseur.
     final local = await _run(() => analyzeNow(kind, text));
     if (!online) return local;
-    final urls = onlineUrls(local);
-    final checkable = checker.safeBrowsing != null
-        ? urls
-        : [
-            for (final url in urls)
-              if (OnlineLookupTarget.of(url) != null) url,
-          ];
-    if (checkable.isEmpty) {
+    final links = onlineUrls(local);
+    bool isCheckable(ParsedUrl url) =>
+        checker.safeBrowsing != null || OnlineLookupTarget.of(url) != null;
+    if (!links.any(isCheckable)) {
       return local.withOnline(OnlineStatus.notApplicable);
     }
 
     onStage?.call(AnalysisStage.online);
+    // Vraie destination des liens raccourcis : seul le raccourcisseur est
+    // contacté. Les destinations sont ensuite vérifiées comme les liens.
+    final resolver = shortLinks;
+    final resolved = <String, String>{};
+    if (resolver != null) {
+      await Future.wait([
+        for (final link in links)
+          if (ShortLinkResolver.isShortener(link))
+            resolver.resolve(link).then((destination) {
+              if (destination != null && destination.href != link.href) {
+                resolved[link.href] = destination.href;
+              }
+            }),
+      ]);
+    }
+    final parser = UrlParser();
+    final checkable = {
+      for (final url in [
+        ...links,
+        for (final href in resolved.values)
+          if (parser.parse(href) case final ParsedUrl parsed) parsed,
+      ])
+        if (isCheckable(url)) url.href: url,
+    }.values.toList();
+
     final evidence = await checker.checkAll(checkable);
     final answered = evidence.values.any(
       (e) =>
@@ -187,11 +245,21 @@ final class DeviceAnalysisService implements AnalysisService {
           e.resolution?.status != LookupStatus.unavailable ||
           e.registration?.status != LookupStatus.unavailable,
     );
-    if (!answered) return local.withOnline(OnlineStatus.unreachable);
-    final outcome = await _run(
-      () => analyzeNow(kind, text, evidence: evidence),
+    final used = answered ? evidence : const <String, OnlineEvidence>{};
+    final outcome = await _run(() {
+      final analyzed = analyzeNow(kind, text, evidence: used);
+      return analyzed.withDestinations({
+        for (final MapEntry(key: link, value: destination) in resolved.entries)
+          link: (analyzeNow(
+            AnalysisKind.link,
+            destination,
+            evidence: used,
+          ) as LinkOutcome).result,
+      });
+    });
+    return outcome.withOnline(
+      answered ? OnlineStatus.done : OnlineStatus.unreachable,
     );
-    return outcome.withOnline(OnlineStatus.done);
   }
 
   /// Analyse immédiate, dans le fil courant, avec les éléments recueillis
@@ -237,7 +305,10 @@ final class DeviceAnalysisService implements AnalysisService {
 
 /// Service d'analyse ; remplacé dans les tests.
 final Provider<AnalysisService> analysisServiceProvider = Provider(
-  (ref) => DeviceAnalysisService(checker: ref.watch(onlineCheckerProvider)),
+  (ref) => DeviceAnalysisService(
+    checker: ref.watch(onlineCheckerProvider),
+    shortLinks: ref.watch(shortLinkResolverProvider),
+  ),
 );
 
 /// Étape en cours de l'analyse d'une demande.

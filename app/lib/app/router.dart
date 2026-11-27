@@ -56,6 +56,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                           (
                             final UrlAnalysisResult result,
                             final OnlineStatus online,
+                            final UrlAnalysisResult? destination,
+                          ) =>
+                            LinkResultScreen(
+                              result: result,
+                              online: online,
+                              destination: destination,
+                            ),
+                          (
+                            final UrlAnalysisResult result,
+                            final OnlineStatus online,
                           ) =>
                             LinkResultScreen(result: result, online: online),
                           final UrlAnalysisResult result => LinkResultScreen(

@@ -11,8 +11,10 @@ disponible » et l'analyse repose sur les règles locales.
 Seul le nom du site (`www.exemple.com`) est envoyé aux résolveurs, et seul
 le domaine enregistré (`exemple.com`) au registre. Si la clé Google est
 configurée, Safe Browsing ne reçoit que des préfixes d'empreintes, et
-PageSpeed Insights reçoit le lien complet pour photographier la page. Le
-texte d'un message n'est jamais envoyé. Toutes les requêtes partent du téléphone, en
+PageSpeed Insights reçoit le lien complet pour photographier la page. Un
+lien raccourci est envoyé à son raccourcisseur, qui indique la destination
+sans que celle-ci soit contactée. Le texte d'un message n'est jamais
+envoyé. Toutes les requêtes partent du téléphone, en
 HTTPS, sans serveur intermédiaire du projet.
 
 | Service | Ce qui est demandé | Réponse utilisée | Conditions |
@@ -22,6 +24,7 @@ HTTPS, sans serveur intermédiaire du projet.
 | Cloudflare 1.1.1.1 `cloudflare-dns.com` | Adresse du nom | Le nom existe ou non (NXDOMAIN) | Idem |
 | Serveur RDAP du registre (Verisign pour `.com`, CentralNic pour `.xyz`…) | Données publiques du domaine | Date de l'évènement « registration » | Protocole public RFC 9083 ; aucune clé |
 | [Google Safe Browsing v5](https://developers.google.com/safe-browsing) `hashes:search` (si clé configurée, [ADR 0011](adr/0011-services-google.md)) | Préfixes de 4 octets des empreintes SHA-256 de l'adresse | Empreintes complètes des menaces, comparées sur le téléphone | Usage non commercial gratuit ; attribution « Avertissement fourni par Google » |
+| Raccourcisseur du lien (bit.ly, tinyurl.com…, [ADR 0012](adr/0012-liens-raccourcis.md)) | Lien raccourci | Adresse de redirection, non suivie | Service public des raccourcisseurs |
 | [PageSpeed Insights](https://developers.google.com/speed/docs/insights/v5/get-started) (si clé configurée) | **Lien complet** (sauf code personnel, sur demande) | Capture d'écran mobile et adresse finale | Gratuit, 25 000 requêtes par jour et par projet |
 
 La table des serveurs RDAP vient du [registre d'amorçage de

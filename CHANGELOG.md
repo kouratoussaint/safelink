@@ -6,6 +6,15 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Vraie destination des liens raccourcis (ADR 0012)
+
+- Pour bit.ly, tinyurl.com et les autres raccourcisseurs connus, la vraie
+  destination est demandée au service, sans jamais être ouverte, puis
+  vérifiée et analysée. Le verdict prend le plus grave des deux ; carte
+  « Ce lien raccourci mène à : » avec « Voir ce site en détail ».
+- Photo : cadre au nom de la page réellement photographiée ; délai porté
+  à 2 minutes.
+
 ### Corrigé — Services Google vérifiés en conditions réelles
 
 - Safe Browsing : la requête demandait du JSON, que `hashes:search`
