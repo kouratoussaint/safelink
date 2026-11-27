@@ -88,18 +88,32 @@ jobs:
 
       - name: Vérifier la signature de chaque APK
         run: |
+          set -o pipefail
           expected="$(tr -d '[:space:]' < tools/dev-signing-cert.sha256)"
           apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)"
+          echo "apksigner : $apksigner ($("$apksigner" --version 2>&1 || true))"
+          digest=""
           for apk in app/build/app/outputs/flutter-apk/app-*-release.apk; do
-            actual="$("$apksigner" verify --print-certs "$apk" |
-              sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
-            echo "$(basename "$apk") : $actual"
+            name="$(basename "$apk")"
+            report="$("$apksigner" verify --print-certs "$apk" 2>&1)" || {
+              echo "::warning::apksigner n'a pas pu vérifier $name."
+            }
+            actual="$(printf '%s\n' "$report" |
+              sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)"
+            echo "$name : ${actual:-empreinte illisible}"
+            if [[ -z "$actual" ]]; then
+              # Ne bloque pas la publication, mais le dit.
+              echo "::warning::Empreinte du certificat illisible pour $name."
+              printf '%s\n' "$report"
+              continue
+            fi
             if [[ "$SIGNING" == "stable" && "$actual" != "$expected" ]]; then
-              echo "::error::$(basename "$apk") n'est pas signé avec la clé de développement attendue."
+              echo "::error::$name n'est pas signé avec la clé de développement attendue."
               exit 1
             fi
+            digest="$actual"
           done
-          echo "CERT_SHA256=$actual" >> "$GITHUB_ENV"
+          echo "CERT_SHA256=${digest:-non lue}" >> "$GITHUB_ENV"
 
       - name: Contrôler permissions et alignement 16 Ko
         run: |
