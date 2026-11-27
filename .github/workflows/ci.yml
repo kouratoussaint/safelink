@@ -104,7 +104,8 @@ jobs:
         run: flutter build apk --release --dart-define=SAFELINK_GIT_SHA=${{ github.sha }}
 
       - name: Aucune permission hors liste autorisée
-        run: ../tools/check_apk_permissions.sh build/app/outputs/flutter-apk/app-release.apk
+        # INTERNET : vérification en ligne du nom des sites (ADR 0010).
+        run: ../tools/check_apk_permissions.sh build/app/outputs/flutter-apk/app-release.apk android.permission.INTERNET
 
       - name: Compatibilité avec les pages mémoire de 16 Ko
         run: python3 ../tools/check_16kb_alignment.py build/app/outputs/flutter-apk/app-release.apk

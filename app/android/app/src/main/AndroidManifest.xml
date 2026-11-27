@@ -2,21 +2,23 @@
 <!--
   Manifeste de SafeLink.
 
-  Principe : aucune permission n'est déclarée ici. La permission CAMERA
-  sera ajoutée avec le scanner QR (lot E) et INTERNET uniquement si une
-  source de réputation est autorisée (lot F). La CI échoue si l'APK release
-  contient une permission hors de la liste autorisée
-  (tools/check_apk_permissions.sh).
+  Principe : le minimum de permissions. INTERNET sert uniquement à la
+  vérification en ligne, que l'utilisateur active ou non (ADR 0010) : seul
+  le nom du site est envoyé, en HTTPS. CAMERA sera ajoutée avec le scanner
+  QR (lot E). La CI échoue si l'APK release contient une permission hors de
+  la liste autorisée (tools/check_apk_permissions.sh).
 
   Les sauvegardes cloud et les transferts d'appareil sont désactivés :
   l'historique local ne doit jamais quitter le téléphone.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="SafeLink"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
+        android:usesCleartextTraffic="false"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true">

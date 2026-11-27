@@ -198,8 +198,14 @@ void main() {
         for (final entry in corpus)
           ...analyzer.analyze(entry.url, context).signals.map((s) => s.code),
       };
-      expect(produced, containsAll(UrlSignalCodes.all));
-      expect(UrlSignalCodes.all, containsAll(produced));
+      // Les indices en ligne viennent des consultations de l'application,
+      // couvertes par test/url/online_rules_test.dart.
+      final local = [
+        for (final code in UrlSignalCodes.all)
+          if (!UrlSignalCodes.online.contains(code)) code,
+      ];
+      expect(produced, containsAll(local));
+      expect(local, containsAll(produced));
     });
 
     test('le moteur n’effectue aucune entrée-sortie', () {

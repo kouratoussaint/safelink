@@ -5,6 +5,10 @@ import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
+/// Date seule, à l'heure du téléphone : « 24 novembre 2026 ».
+String formatDay(DateTime utc) =>
+    DateFormat('d MMMM y', 'fr').format(utc.toLocal());
+
 /// Date et heure d'analyse, à l'heure du téléphone.
 String formatAnalysisDate(DateTime utc) =>
     DateFormat("d MMMM y 'à' HH:mm", 'fr').format(utc.toLocal());
@@ -323,6 +327,7 @@ List<DetailRow> urlDetailRows(UrlAnalysisResult result, AppLocalizations l10n) {
       rulesVersion: result.rulesVersion,
       analyzedAt: result.analyzedAt,
       l10n: l10n,
+      online: result.processing == Processing.localAndNetwork,
     ),
   );
   return rows;
@@ -334,6 +339,7 @@ List<DetailRow> commonDetailRows({
   required String rulesVersion,
   required DateTime analyzedAt,
   required AppLocalizations l10n,
+  bool online = false,
 }) => [
   DetailRow(
     label: l10n.techSignals,
@@ -349,5 +355,8 @@ List<DetailRow> commonDetailRows({
   ),
   DetailRow(label: l10n.techRules, value: rulesVersion),
   DetailRow(label: l10n.techAnalyzedAt, value: formatAnalysisDate(analyzedAt)),
-  DetailRow(label: l10n.techSource, value: l10n.techSourceLocal),
+  DetailRow(
+    label: l10n.techSource,
+    value: online ? l10n.techSourceOnline : l10n.techSourceLocal,
+  ),
 ];

@@ -189,7 +189,11 @@ final class SqfliteHistoryStore implements HistoryStore {
           : await _cipher.encrypt(content, entry.id, _content),
     };
     await _db.transaction((txn) async {
-      await txn.insert('entries', row);
+      await txn.insert(
+        'entries',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
       // Au-delà du plafond, les plus anciennes sont effacées.
       await txn.rawDelete(
         'DELETE FROM entries WHERE id NOT IN '

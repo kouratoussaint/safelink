@@ -12,7 +12,7 @@ void main() {
 
   group('résumé copié', () {
     test('lien : verdict, raisons, lien masqué, limites', () {
-      final outcome = LocalAnalysisService.analyzeNow(
+      final outcome = DeviceAnalysisService.analyzeNow(
         AnalysisKind.link,
         'http://orange-money-bf.secure-login.xyz/verify'
         '?token=abcdefghijklmnopqrstuvwxyz123456',
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('adresse non analysable : aucun lien recopié', () {
-      final outcome = LocalAnalysisService.analyzeNow(
+      final outcome = DeviceAnalysisService.analyzeNow(
         AnalysisKind.link,
         'mailto:contact@exemple.bf',
       );
@@ -48,7 +48,7 @@ void main() {
           'Bonjour Awa, ton colis est bloqué. Paie 2 000 F de frais de '
           'livraison sur https://colis-bf.example/pay?phone=70123456 '
           'et envoie le code reçu par SMS.';
-      final outcome = LocalAnalysisService.analyzeNow(
+      final outcome = DeviceAnalysisService.analyzeNow(
         AnalysisKind.message,
         text,
       );

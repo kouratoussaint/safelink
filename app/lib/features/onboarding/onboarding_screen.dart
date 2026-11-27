@@ -4,10 +4,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/widgets/brand.dart';
 import 'package:safelink/features/onboarding/onboarding_controller.dart';
+import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 
-/// Présentation de première ouverture, en trois étapes : mission, limites,
-/// confidentialité. Aucun compte, aucune autorisation demandée.
+/// Présentation de première ouverture, en quatre étapes : mission, limites,
+/// confidentialité, puis choix de la vérification en ligne. Aucun compte,
+/// aucune autorisation Android demandée.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const new({super.key});
 
@@ -16,7 +18,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  static const _pageCount = 3;
+  static const _pageCount = 4;
 
   final _controller = PageController();
   int _page = 0;
@@ -27,14 +29,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.dispose();
   }
 
-  Future<void> _next() async {
-    if (_page < _pageCount - 1) {
-      await _controller.nextPage(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-      return;
-    }
+  Future<void> _next() => _controller.nextPage(
+    duration: const Duration(milliseconds: 250),
+    curve: Curves.easeOut,
+  );
+
+  /// Dernière étape : retient le choix pour la vérification en ligne.
+  Future<void> _finish({required bool online}) async {
+    await ref.read(onlineChoiceProvider.notifier).select(enabled: online);
     await ref.read(onboardingDoneProvider.notifier).complete();
     if (mounted) context.go(AppRoutes.home);
   }
@@ -70,6 +72,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           l10n.onboardingPrivacyPoint3,
         ],
       ),
+      _OnboardingPage(
+        icon: Icons.travel_explore,
+        title: l10n.onboardingOnlineTitle,
+        body: l10n.onboardingOnlineBody,
+        points: [
+          l10n.onboardingOnlinePoint1,
+          l10n.onboardingOnlinePoint2,
+          l10n.onboardingOnlinePoint3,
+        ],
+      ),
     ];
     final last = _page == _pageCount - 1;
     return PopScope<Object?>(
@@ -96,22 +108,35 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.onboardingStep(_page + 1, _pageCount),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                child: last
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          FilledButton(
+                            onPressed: () => _finish(online: true),
+                            child: Text(l10n.onboardingOnlineEnable),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () => _finish(online: false),
+                            child: Text(l10n.onboardingOnlineDecline),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              l10n.onboardingStep(_page + 1, _pageCount),
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                          FilledButton(
+                            onPressed: _next,
+                            child: Text(l10n.onboardingNext),
+                          ),
+                        ],
                       ),
-                    ),
-                    FilledButton(
-                      onPressed: _next,
-                      child: Text(
-                        last ? l10n.onboardingStart : l10n.onboardingNext,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

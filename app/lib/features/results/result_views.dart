@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/results/checklist.dart';
+import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/result_summary.dart';
 import 'package:safelink/features/results/result_widgets.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
@@ -14,9 +16,21 @@ import 'package:safelink_engine/safelink_engine.dart';
 /// vérifié, que faire, détails techniques. Aucun bouton pour ouvrir le
 /// lien : SafeLink ne l'ouvre jamais.
 class LinkResultView extends StatelessWidget {
-  const new({required this.result, this.footer = const [], super.key});
+  const new({
+    required this.result,
+    this.online = OnlineStatus.notRequested,
+    this.onRetry,
+    this.footer = const [],
+    super.key,
+  });
 
   final UrlAnalysisResult result;
+
+  /// État de la vérification en ligne de ce lien.
+  final OnlineStatus online;
+
+  /// Relance l'analyse si les services en ligne n'ont pas répondu.
+  final VoidCallback? onRetry;
 
   /// Éléments ajoutés en bas (actions).
   final List<Widget> footer;
@@ -44,6 +58,7 @@ class LinkResultView extends StatelessWidget {
                 result.technicalDetails!.host,
           ),
         ],
+        if (result.url != null) const OnlineOfferCard(),
         const SizedBox(height: 16),
         ResultSection(
           title: l10n.sectionWhy,
@@ -61,6 +76,12 @@ class LinkResultView extends StatelessWidget {
             ),
           ],
         ),
+        if (result.url != null) ...[
+          const SizedBox(height: 12),
+          OnlineSection(result: result, status: online, onRetry: onRetry),
+          const SizedBox(height: 12),
+          ChecklistSection(items: urlChecklist(result, l10n)),
+        ],
         const SizedBox(height: 12),
         ResultSection(
           title: l10n.sectionNotChecked,
@@ -119,11 +140,15 @@ class MessageResultView extends StatelessWidget {
   const new({
     required this.result,
     required this.onOpenLink,
+    this.online = OnlineStatus.notRequested,
     this.footer = const [],
     super.key,
   });
 
   final CombinedResult result;
+
+  /// État de la vérification en ligne des liens du message.
+  final OnlineStatus online;
 
   /// Ouvre le résultat détaillé d'un lien.
   final void Function(LinkAssessment link) onOpenLink;
@@ -190,6 +215,7 @@ class MessageResultView extends StatelessWidget {
               : message.confidence,
           compact: true,
         ),
+        if (result.links.isNotEmpty) const OnlineOfferCard(),
         const SizedBox(height: 16),
         ResultSection(
           title: l10n.sectionTextSignals,
@@ -205,6 +231,20 @@ class MessageResultView extends StatelessWidget {
             for (final link in result.links) _LinkTile(link, onOpenLink),
             if (result.unanalyzedLinkCount > 0)
               Text(l10n.linksNotAnalyzed(result.unanalyzedLinkCount)),
+            if (result.links.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 8),
+                child: Text(
+                  switch (online) {
+                    OnlineStatus.done => l10n.onlineMessageDone,
+                    OnlineStatus.unreachable => l10n.onlineMessageUnreachable,
+                    _ => l10n.onlineMessageDisabled,
+                  },
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: SafeLinkColors.of(context).textSecondary,
+                  ),
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 12),
@@ -217,6 +257,10 @@ class MessageResultView extends StatelessWidget {
             ),
           ],
         ),
+        if (message.verdict != MessageVerdict.invalidMessage) ...[
+          const SizedBox(height: 12),
+          ChecklistSection(items: messageChecklist(message, l10n)),
+        ],
         const SizedBox(height: 12),
         ResultSection(
           title: l10n.sectionNotChecked,
@@ -234,6 +278,7 @@ class MessageResultView extends StatelessWidget {
             rulesVersion: message.rulesVersion,
             analyzedAt: message.analyzedAt,
             l10n: l10n,
+            online: online == OnlineStatus.done,
           ),
         ),
         ...footer,

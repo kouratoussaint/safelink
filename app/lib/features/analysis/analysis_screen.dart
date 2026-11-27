@@ -6,6 +6,7 @@ import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_panel.dart';
+import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/result_views.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
@@ -50,6 +51,8 @@ class AnalysisScreen extends ConsumerWidget {
           AsyncData(:final value) => switch (value) {
             LinkOutcome(:final result) => LinkResultView(
               result: result,
+              online: linkOnlineStatus(result, value.online),
+              onRetry: () => ref.invalidate(analysisProvider(request)),
               footer: [
                 HistoryPanel(request: request),
                 ResultActions(outcome: value),
@@ -57,8 +60,14 @@ class AnalysisScreen extends ConsumerWidget {
             ),
             MessageOutcome(:final result) => MessageResultView(
               result: result,
-              onOpenLink: (link) =>
-                  context.push(AppRoutes.linkResult, extra: link.result),
+              online: value.online,
+              onOpenLink: (link) => context.push(
+                AppRoutes.linkResult,
+                extra: (
+                  link.result,
+                  linkOnlineStatus(link.result, value.online),
+                ),
+              ),
               footer: [
                 HistoryPanel(request: request),
                 ResultActions(outcome: value),
@@ -75,7 +84,7 @@ class AnalysisScreen extends ConsumerWidget {
               onPressed: () => ref.invalidate(analysisProvider(request)),
             ),
           ),
-          _ => const _Running(),
+          _ => _Running(stage: ref.watch(analysisStageProvider(request))),
         },
       ),
     );
@@ -84,9 +93,16 @@ class AnalysisScreen extends ConsumerWidget {
 
 /// Résultat détaillé d'un lien repéré dans un message.
 class LinkResultScreen extends StatelessWidget {
-  const new({required this.result, super.key});
+  const new({
+    required this.result,
+    this.online = OnlineStatus.notRequested,
+    super.key,
+  });
 
   final UrlAnalysisResult? result;
+
+  /// État de la vérification en ligne de ce lien.
+  final OnlineStatus online;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +122,10 @@ class LinkResultScreen extends StatelessWidget {
               )
             : LinkResultView(
                 result: result,
-                footer: [ResultActions(outcome: LinkOutcome(result))],
+                online: online,
+                footer: [
+                  ResultActions(outcome: LinkOutcome(result, online: online)),
+                ],
               ),
       ),
     );
@@ -114,28 +133,36 @@ class LinkResultScreen extends StatelessWidget {
 }
 
 class _Running extends StatelessWidget {
-  const new();
+  const new({required this.stage});
+
+  final AnalysisStage stage;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final online = stage == AnalysisStage.online;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Semantics(
           liveRegion: true,
-          label: l10n.analysisRunning,
+          label: online ? l10n.analysisOnlineRunning : l10n.analysisRunning,
           child: ExcludeSemantics(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
-                Text(l10n.analysisRunning, style: theme.textTheme.titleMedium),
+                Text(
+                  online ? l10n.analysisOnlineRunning : l10n.analysisRunning,
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: 4),
                 Text(
-                  l10n.analysisRunningBody,
+                  online
+                      ? l10n.analysisOnlineRunningBody
+                      : l10n.analysisRunningBody,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: SafeLinkColors.of(context).textSecondary,

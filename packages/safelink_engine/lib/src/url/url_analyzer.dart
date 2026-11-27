@@ -7,6 +7,8 @@ import 'package:safelink_engine/src/common/signal.dart';
 import 'package:safelink_engine/src/common/verdicts.dart';
 import 'package:safelink_engine/src/url/brands.dart';
 import 'package:safelink_engine/src/url/idna.dart';
+import 'package:safelink_engine/src/url/online_evidence.dart';
+import 'package:safelink_engine/src/url/online_rules.dart';
 import 'package:safelink_engine/src/url/parsed_url.dart';
 import 'package:safelink_engine/src/url/psl_data.g.dart';
 import 'package:safelink_engine/src/url/unicode_security.dart';
@@ -91,11 +93,23 @@ final class UrlAnalysisResult extends AnalysisResult {
     this.url,
     this.failure,
     this.technicalDetails,
+    this.registration,
+    this.resolution,
   }) : providerResults = List.unmodifiable(providerResults),
        super(
          contentType: ContentType.url,
-         processing: Processing.localOnly,
-         privacyImpact: PrivacyImpact.stayedOnDevice,
+         processing:
+             providerResults.isEmpty &&
+                 registration == null &&
+                 resolution == null
+             ? Processing.localOnly
+             : Processing.localAndNetwork,
+         privacyImpact:
+             providerResults.isEmpty &&
+                 registration == null &&
+                 resolution == null
+             ? PrivacyImpact.stayedOnDevice
+             : PrivacyImpact.providerContactedWithoutContent,
        ) {
     if ((url == null) == (failure == null)) {
       throw ArgumentError(
@@ -117,8 +131,14 @@ final class UrlAnalysisResult extends AnalysisResult {
   /// Motif du refus, si le texte n'est pas un lien analysable.
   final UrlParseFailure? failure;
 
-  /// Résultats des sources de réputation consultées (aucune au lot B).
+  /// Résultats des sources de réputation consultées en ligne.
   final List<ProviderResult> providerResults;
+
+  /// Date d'enregistrement du domaine, si elle a été consultée.
+  final DomainRegistration? registration;
+
+  /// Existence du nom dans le DNS, si elle a été vérifiée.
+  final DomainResolution? resolution;
 
   /// Détails techniques, si la lecture a réussi.
   final UrlTechnicalDetails? technicalDetails;
@@ -134,16 +154,26 @@ final class UrlAnalysisResult extends AnalysisResult {
 /// - `SUSPICIOUS` : au moins un indice fort, ou au moins deux indices moyens,
 ///   ou une correspondance dans une liste périmée.
 /// - `NO_KNOWN_THREAT` : seulement si une source récente a été consultée
-///   sans correspondance.
+///   sans correspondance, sans aucun indice moyen ou fort, et si rien ne
+///   cache la page réelle ([reassuranceBlockers]).
 /// - `INCONCLUSIVE` : dans tous les autres cas, notamment sans source de
 ///   réputation.
 final class UrlVerdictPolicy {
-  /// Crée une politique. [maxFeedAge] est l'âge maximal d'une liste de
-  /// réputation pour être jugée récente.
+  /// Crée la politique ; [maxFeedAge] est l'âge maximal d'une liste.
   const new({this.maxFeedAge = const Duration(days: 7)});
 
-  /// Âge maximal d'une liste récente.
+  /// Âge maximal d'une liste de réputation pour qu'elle compte.
   final Duration maxFeedAge;
+
+  /// Indices qui empêchent « Aucun danger connu détecté » : la réputation
+  /// du nom ne dit rien de la page réelle (lien raccourci, redirection,
+  /// page publiée sur un service de partage) ou le site n'existe pas.
+  static const Set<String> reassuranceBlockers = {
+    UrlSignalCodes.shortener,
+    UrlSignalCodes.redirectParameter,
+    UrlSignalCodes.userContent,
+    UrlSignalCodes.domainNotFound,
+  };
 
   /// Verdict et confiance pour ces indices et ces résultats de sources.
   (UrlVerdict, Confidence) decide(
@@ -172,14 +202,21 @@ final class UrlVerdictPolicy {
     final freshNoMatch = providerResults.any(
       (r) => r.status == ProviderStatus.noMatch && r.isFreshWithin(maxFeedAge),
     );
-    if (freshNoMatch) return (UrlVerdict.noKnownThreat, Confidence.medium);
+    final reassuring =
+        freshNoMatch &&
+        medium == 0 &&
+        !signals.any((s) => reassuranceBlockers.contains(s.code));
+    if (reassuring) return (UrlVerdict.noKnownThreat, Confidence.medium);
     return (UrlVerdict.inconclusive, Confidence.low);
   }
 }
 
-/// Analyse locale d'un lien : lecture, indices heuristiques, verdict prudent.
+/// Analyse d'un lien : lecture, indices heuristiques, éléments recueillis en
+/// ligne par l'application s'il y en a, verdict prudent.
 ///
-/// N'ouvre jamais le lien et n'effectue aucune entrée-sortie.
+/// N'ouvre jamais le lien et n'effectue aucune entrée-sortie : les
+/// consultations en ligne sont faites par l'application, qui en transmet
+/// les réponses ([OnlineEvidence]).
 final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
   /// Crée un analyseur.
   new({
@@ -190,7 +227,7 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
        rules = rules ?? UrlRules();
 
   /// Version des règles d'analyse des liens.
-  static const rulesVersion = 'url-1.0.0';
+  static const rulesVersion = 'url-1.1.0';
 
   /// Lecteur de liens.
   final UrlParser parser;
@@ -211,7 +248,7 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
 
   @override
   UrlAnalysisResult analyze(String input, AnalysisContext context) =>
-      analyzeWithReputation(input, context, const []);
+      analyzeOnline(input, context, OnlineEvidence.none);
 
   /// Analyse [input] en tenant compte des résultats de sources de
   /// réputation déjà obtenus ([providerResults]).
@@ -219,8 +256,22 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
     String input,
     AnalysisContext context,
     List<ProviderResult> providerResults,
+  ) => analyzeOnline(
+    input,
+    context,
+    OnlineEvidence(reputation: providerResults),
+  );
+
+  /// Analyse [input] avec les éléments recueillis en ligne par
+  /// l'application ([evidence]) : réputation, date d'enregistrement du
+  /// domaine, existence du nom.
+  UrlAnalysisResult analyzeOnline(
+    String input,
+    AnalysisContext context,
+    OnlineEvidence evidence,
   ) {
     final now = context.now();
+    final providerResults = evidence.reputation;
     final parsed = parser.parse(input);
     switch (parsed) {
       case UrlParseFailure():
@@ -241,7 +292,13 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
           providerResults: providerResults,
         );
       case ParsedUrl():
-        final (signals, brandMatches) = rules.evaluate(parsed, now);
+        final (local, brandMatches) = rules.evaluate(parsed, now);
+        final isOfficial = brandMatches.any(
+          (m) => m.kind == BrandMatchKind.official,
+        );
+        final online = OnlineRules(maxFeedAge: policy.maxFeedAge)
+            .evaluate(parsed, evidence, now, isOfficial: isOfficial);
+        final signals = _bySeverity([...online, ...local]);
         final (verdict, confidence) = policy.decide(signals, providerResults);
         return UrlAnalysisResult(
           verdict: verdict,
@@ -254,8 +311,20 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
           rulesVersion: fullRulesVersion,
           providerResults: providerResults,
           technicalDetails: _details(parsed, brandMatches),
+          registration: evidence.registration,
+          resolution: evidence.resolution,
         );
     }
+  }
+
+  /// Tri stable du plus grave au moins grave.
+  static List<RiskSignal> _bySeverity(List<RiskSignal> signals) {
+    final ordered = [for (final (i, signal) in signals.indexed) (i, signal)]
+      ..sort((a, b) {
+        final bySeverity = b.$2.severity.index.compareTo(a.$2.severity.index);
+        return bySeverity != 0 ? bySeverity : a.$1.compareTo(b.$1);
+      });
+    return [for (final (_, signal) in ordered) signal];
   }
 
   UrlTechnicalDetails _details(ParsedUrl url, List<BrandMatch> matches) {
@@ -300,6 +369,15 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
         description:
             'Vérification de réputation non disponible : le lien n’a été '
             'comparé à aucune liste de sites signalés.',
+      )
+    else
+      Limitation(
+        code: 'REPUTATION_DOMAIN_LEVEL',
+        description:
+            'La vérification en ligne porte sur le nom du site, pas sur la '
+            'page : une fausse page publiée sur un site légitime peut passer '
+            'inaperçue, et un site très récent peut ne pas encore être '
+            'signalé.',
       ),
     Limitation(
       code: 'LOCAL_RULES_LIMITS',

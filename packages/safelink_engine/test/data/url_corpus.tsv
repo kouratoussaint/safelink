@@ -218,3 +218,6 @@ INVALID	https://evil.com\uFF0Fpaypal.com/	-	barre pleine chasse
 INVALID	https://pay\u202Epal.com/	-	inversion du sens du texte
 INVALID	<vide>	-	texte vide
 INVALID	<long:2100>	-	plus de 2 048 caractères
+INCONCLUSIVE	https://docs.google.com/forms/d/e/1FAIpQLSexemple/viewform	URL_USER_CONTENT	formulaire publié par un tiers
+INCONCLUSIVE	https://sites.google.com/view/orange-money-promo	URL_USER_CONTENT	page Google Sites (domaine officiel : pas d’indice de marque)
+INCONCLUSIVE	https://www.dropbox.com/s/exemple/facture.pdf	URL_USER_CONTENT	fichier partagé

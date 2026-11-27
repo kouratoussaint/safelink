@@ -21,6 +21,7 @@ dependencies:
   flutter_secure_storage: ^11.2.0
   flutter_svg: ^2.5.1
   go_router: ^18.1.4
+  http2: ^3.2.0
   intl: any
   material_ui: ^1.11.1
   package_info_plus: ^10.2.2

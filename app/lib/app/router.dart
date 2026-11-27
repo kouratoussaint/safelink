@@ -52,12 +52,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                     routes: [
                       GoRoute(
                         path: 'lien',
-                        builder: (context, state) => LinkResultScreen(
-                          result: switch (state.extra) {
-                            final UrlAnalysisResult result => result,
-                            _ => null,
-                          },
-                        ),
+                        builder: (context, state) => switch (state.extra) {
+                          (
+                            final UrlAnalysisResult result,
+                            final OnlineStatus online,
+                          ) =>
+                            LinkResultScreen(result: result, online: online),
+                          final UrlAnalysisResult result => LinkResultScreen(
+                            result: result,
+                          ),
+                          _ => const LinkResultScreen(result: null),
+                        },
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'package:safelink_engine/src/common/provider_result.dart';
 import 'package:safelink_engine/src/common/verdicts.dart';
 import 'package:safelink_engine/src/message/message_analyzer.dart';
 import 'package:safelink_engine/src/message/message_extraction.dart';
+import 'package:safelink_engine/src/url/online_evidence.dart';
 import 'package:safelink_engine/src/url/url_analyzer.dart';
 
 /// Lien d'un message et son analyse.
@@ -96,12 +97,21 @@ final class CombinedAnalyzer {
   /// Nombre maximal de liens analysés.
   final int maxLinks;
 
-  /// Analyse [input] ; [reputation] fournit, pour un lien, les résultats de
-  /// sources de réputation déjà obtenus (aucun au MVP).
+  /// Liens d'un message qui seront analysés (les [maxLinks] premiers).
+  List<ExtractedLink> linksToAnalyze(String input, AnalysisContext context) {
+    final message = messageAnalyzer.analyze(input, context);
+    final extracted = message.extraction?.links ?? const <ExtractedLink>[];
+    return extracted.take(maxLinks).toList();
+  }
+
+  /// Analyse [input]. Pour chaque lien, [online] fournit les éléments
+  /// recueillis en ligne par l'application ; [reputation], plus ancien, ne
+  /// fournit que des résultats de réputation.
   CombinedResult analyze(
     String input,
     AnalysisContext context, {
     List<ProviderResult> Function(ExtractedLink link)? reputation,
+    OnlineEvidence? Function(ExtractedLink link)? online,
   }) {
     final message = messageAnalyzer.analyze(input, context);
     final extracted = message.extraction?.links ?? const <ExtractedLink>[];
@@ -110,10 +120,11 @@ final class CombinedAnalyzer {
       for (final link in analyzed)
         LinkAssessment(
           link,
-          urlAnalyzer.analyzeWithReputation(
+          urlAnalyzer.analyzeOnline(
             link.url,
             context,
-            reputation?.call(link) ?? const [],
+            online?.call(link) ??
+                OnlineEvidence(reputation: reputation?.call(link) ?? const []),
           ),
         ),
     ];

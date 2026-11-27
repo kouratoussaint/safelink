@@ -66,6 +66,11 @@ abstract final class ResultSummary {
     }
     lines
       ..add('')
+      ..add(
+        outcome.online == OnlineStatus.done
+            ? l10n.summaryOnlineDone
+            : l10n.summaryOnlineNotDone,
+      )
       ..add(l10n.summaryFooter);
     return lines.join('\n');
   }

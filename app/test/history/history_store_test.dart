@@ -23,7 +23,7 @@ HistoryEntry entryOf(
 }) {
   final base = HistoryEntry.fromOutcome(
     id ?? newHistoryId(),
-    LocalAnalysisService.analyzeNow(kind, text),
+    DeviceAnalysisService.analyzeNow(kind, text),
   );
   return HistoryEntry(
     id: base.id,

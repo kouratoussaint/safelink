@@ -50,9 +50,7 @@ void main() {
 
   testWidgets('« À propos » affiche version, licence et dépôt', (tester) async {
     await pumpSafeLinkApp(tester);
-    await tapDestination(tester, 'Paramètres');
-    await tester.tap(find.text('À propos de SafeLink'));
-    await tester.pumpAndSettle();
+    await openAbout(tester);
 
     expect(appBarTitle('À propos'), findsOneWidget);
     expect(find.text('0.0.1 (1)'), findsOneWidget);
@@ -88,9 +86,7 @@ void main() {
     );
 
     await pumpSafeLinkApp(tester);
-    await tapDestination(tester, 'Paramètres');
-    await tester.tap(find.text('À propos de SafeLink'));
-    await tester.pumpAndSettle();
+    await openAbout(tester);
     await tester.tap(find.byTooltip('Copier l’adresse du code source'));
     await tester.pumpAndSettle();
 
@@ -100,9 +96,7 @@ void main() {
 
   testWidgets('la page des licences s’ouvre', (tester) async {
     await pumpSafeLinkApp(tester);
-    await tapDestination(tester, 'Paramètres');
-    await tester.tap(find.text('À propos de SafeLink'));
-    await tester.pumpAndSettle();
+    await openAbout(tester);
     await tester.scrollUntilVisible(
       find.text('Licences des composants'),
       100,
