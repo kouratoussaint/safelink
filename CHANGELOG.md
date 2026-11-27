@@ -37,6 +37,13 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   taille de chaque APK indiquée dans les notes de pré-version. Sans la clé,
   la publication continue avec une signature temporaire signalée.
 
+### Ajouté — lot C (analyse locale des messages, en cours)
+
+- Moteur : prétraitement des messages sur l'appareil (texte replié avec
+  positions d'origine, phrases, citations, négations, langue) et extraction
+  des liens (y compris `www.`, domaines nus et formes déguisées `hxxp`,
+  `[.]`), numéros, codes USSD et montants en francs CFA.
+
 ### Ajouté — lot B (analyse locale des liens)
 
 - Moteur : Punycode (RFC 3492) et conversion des noms de domaine

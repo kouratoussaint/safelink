@@ -21,7 +21,8 @@ safelink_engine (packages/safelink_engine/), Dart pur
 
 ## Moteur `safelink_engine`
 
-État : types communs (lot A) et analyse locale complète des liens (lot B).
+État : types communs (lot A), analyse locale complète des liens (lot B) et
+premières briques d'analyse des messages (lot C, en cours).
 
 | Type | Rôle |
 | --- | --- |
@@ -51,6 +52,14 @@ Briques d'analyse des liens (`lib/src/url/`) :
 | `UrlMasking` | Jetons, codes, e-mails, téléphones et mots de passe masqués à l'affichage |
 | `UrlAnalyzer`, `UrlAnalysisResult` | Analyse complète d'un lien : verdict, confiance, indices, limites, gestes recommandés, détails techniques |
 | `UrlParseFailure` | Refus motivé : schéma non web (`mailto:`, `tel:`, `javascript:`…), adresse e-mail, texte qui n'est pas un lien, hôte ou port invalide |
+
+Briques d'analyse des messages (`lib/src/message/`) :
+
+| Type | Rôle |
+| --- | --- |
+| `FoldedText`, `MessageSpan` | Texte replié pour la recherche (minuscules, sans accents, apostrophes et guillemets unifiés, invisibles retirés) ; chaque caractère garde sa position d'origine pour surligner l'extrait exact |
+| `MessagePreprocessor`, `PreparedMessage` | Phrases, propositions, passages cités (guillemets, lignes « > »), négations (« ne… jamais », « aucun ») sans confondre « n'hésitez pas » ou « si vous ne payez pas », évaluation rudimentaire de la langue |
+| `MessageExtractor` | Liens (protocole, `www.`, domaines nus validés par la Public Suffix List, formes déguisées `hxxp`, `[.]`, `(dot)`…), numéros de téléphone, codes USSD (avec repérage des codes de transfert), montants en francs CFA |
 
 Règles de conception :
 
