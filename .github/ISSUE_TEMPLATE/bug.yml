@@ -1,0 +1,33 @@
+name: Anomalie
+description: Un comportement incorrect de l'application.
+labels: [anomalie]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Merci ! Ne collez jamais de message privé, de mot de passe, de code
+        ou de lien contenant un jeton personnel : ces informations seraient
+        publiques.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+      placeholder: "1. Ouvrir… 2. Toucher… 3. Constater…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Résultat attendu et résultat obtenu
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version de SafeLink (Paramètres › À propos)
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Téléphone et version d'Android

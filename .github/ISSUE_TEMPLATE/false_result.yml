@@ -1,0 +1,39 @@
+name: Résultat d'analyse contestable
+description: Un lien ou message mal évalué (fausse alerte ou arnaque non signalée).
+labels: [détection]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        **Protégez votre vie privée et celle des autres.** Remplacez les
+        noms, numéros, montants personnels, codes et jetons par des valeurs
+        fictives. Pour un lien, indiquez seulement le domaine si le reste
+        contient des informations personnelles.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type de problème
+      options:
+        - Fausse alerte (contenu légitime signalé)
+        - Arnaque non signalée
+        - Explication incorrecte ou peu claire
+    validations:
+      required: true
+  - type: textarea
+    id: content
+    attributes:
+      label: Contenu analysé, anonymisé
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Verdict et explications affichés
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version de SafeLink (Paramètres › À propos)
+    validations:
+      required: true

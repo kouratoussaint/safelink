@@ -1,0 +1,28 @@
+name: Proposition
+description: Une idée d'amélioration.
+labels: [proposition]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        SafeLink reste gratuit, sans publicité, sans compte et sans collecte
+        de données. Toute proposition qui modifie le périmètre, les
+        permissions, le coût ou la confidentialité demande une ADR validée
+        avant développement.
+  - type: textarea
+    id: need
+    attributes:
+      label: Besoin
+      description: Quel problème rencontrez-vous ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposition
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Effet sur la confidentialité et les permissions

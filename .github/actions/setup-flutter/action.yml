@@ -1,0 +1,57 @@
+name: Installer Flutter (version épinglée)
+description: >-
+  Installe la version de Flutter inscrite dans .flutter-version, sans action
+  tierce, et vérifie que la révision clonée correspond à celle publiée dans
+  le manifeste officiel des versions stables.
+
+runs:
+  using: composite
+  steps:
+    - name: Lire la version de Flutter
+      shell: bash
+      run: |
+        version="$(tr -d '[:space:]' < .flutter-version)"
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::Version de Flutter invalide dans .flutter-version"
+          exit 1
+        fi
+        echo "FLUTTER_VERSION=$version" >> "$GITHUB_ENV"
+        echo "FLUTTER_ROOT=$HOME/flutter" >> "$GITHUB_ENV"
+
+    - name: Restaurer le cache Flutter et pub
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          ~/flutter
+          ~/.pub-cache
+        key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+    - name: Cloner Flutter et vérifier sa révision
+      shell: bash
+      run: |
+        if [[ ! -x "$FLUTTER_ROOT/bin/flutter" ]]; then
+          git clone --depth 1 --branch "$FLUTTER_VERSION" \
+            https://github.com/flutter/flutter.git "$FLUTTER_ROOT"
+        fi
+        expected="$(curl -fsSL --retry 3 \
+          https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json |
+          jq -r --arg v "$FLUTTER_VERSION" \
+            '.releases[] | select(.version == $v and .channel == "stable") | .hash' |
+          head -n 1)"
+        actual="$(git -C "$FLUTTER_ROOT" rev-parse HEAD)"
+        echo "Révision attendue : $expected"
+        echo "Révision clonée   : $actual"
+        if [[ -z "$expected" || "$expected" != "$actual" ]]; then
+          echo "::error::La révision de Flutter $FLUTTER_VERSION ne correspond pas au manifeste officiel."
+          exit 1
+        fi
+        echo "$FLUTTER_ROOT/bin" >> "$GITHUB_PATH"
+
+    - name: Préparer Flutter
+      shell: bash
+      run: |
+        flutter config --no-analytics --no-cli-animations
+        dart --disable-analytics
+        flutter --version
