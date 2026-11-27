@@ -1,16 +1,14 @@
 {
   "@@locale": "fr",
-
   "appTitle": "SafeLink",
   "tagline": "Vérifiez avant de cliquer.",
   "logoSemanticLabel": "Logo SafeLink : bouclier et maillon de chaîne",
-
   "navHome": "Accueil",
   "navHistory": "Historique",
   "navTips": "Conseils",
   "navSettings": "Paramètres",
   "openSettingsTooltip": "Ouvrir les paramètres",
-
+  "backAgainToExit": "Appuyez de nouveau sur Retour pour quitter SafeLink",
   "homeTitle": "Vérifiez un lien ou un message avant d'agir",
   "homeIntro": "SafeLink examinera, sur votre téléphone, les liens et les messages que vous choisirez de lui soumettre. Il vous dira ce qu'il a vérifié, ce qu'il ne sait pas et les précautions à prendre.",
   "homeDevNoticeTitle": "Version de développement",
@@ -19,11 +17,9 @@
   "homeCommitmentFree": "Gratuit, sans publicité et sans compte.",
   "homeCommitmentLocal": "Analyse sur votre téléphone : vos messages ne sont envoyés à personne.",
   "homeCommitmentHonest": "Jamais de « 100 % sûr » : chaque résultat dira aussi ce qui n'a pas été vérifié.",
-
   "historyTitle": "Historique",
   "historyEmptyTitle": "Aucune vérification enregistrée",
   "historyEmptyBody": "L'historique est désactivé par défaut. Quand l'analyse sera disponible, SafeLink vous demandera si vous souhaitez conserver vos vérifications sur ce téléphone. Vous pourrez les supprimer à tout moment.",
-
   "tipsTitle": "Conseils",
   "tipsIntro": "Quelques réflexes simples pour éviter les arnaques les plus courantes.",
   "tipCodesTitle": "Ne partagez jamais un code reçu par SMS",
@@ -33,7 +29,6 @@
   "tipChannelTitle": "Vérifiez par un canal que vous connaissez déjà",
   "tipChannelBody": "En cas de doute, contactez l'organisme par son application officielle ou par un numéro que vous connaissiez avant de recevoir le message.",
   "tipsMoreSoon": "D'autres fiches arriveront dans une prochaine version : liens raccourcis, QR codes, faux services Mobile Money, que faire après avoir partagé un mot de passe.",
-
   "settingsTitle": "Paramètres",
   "settingsAppearanceSection": "Apparence",
   "settingsThemeLabel": "Thème",
@@ -44,7 +39,6 @@
   "settingsAboutTile": "À propos de SafeLink",
   "settingsAboutSubtitle": "Version, licence et code source",
   "settingsPrivacyNote": "SafeLink ne collecte aucune donnée personnelle et n'affiche aucune publicité.",
-
   "aboutTitle": "À propos",
   "aboutDisclaimer": "SafeLink aide à repérer des indices de fraude. Il ne garantit jamais qu'un lien ou un message est sûr.",
   "aboutVersionLabel": "Version",

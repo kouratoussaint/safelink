@@ -45,6 +45,21 @@ Quatre onglets : Accueil, Historique, Conseils, Paramètres. Pas d'onglet
 « Alertes » (aucune alerte temps réel sans serveur) ni « Profil » (aucun
 compte).
 
+## Bouton Retour
+
+1. Il ferme d'abord l'écran ouvert dans l'onglet courant (par exemple
+   « À propos » revient à « Paramètres »).
+2. À la racine d'un onglet, il revient aux onglets visités précédemment, du
+   plus récent au plus ancien, puis à l'Accueil. Chaque onglet n'apparaît
+   qu'une fois dans cet historique, pour éviter les allers-retours.
+3. Sur l'Accueil, un premier appui affiche « Appuyez de nouveau sur Retour
+   pour quitter SafeLink » ; un second appui dans les 2 secondes ferme
+   l'application. Changer d'onglet entre-temps annule la demande.
+
+Logique : `app/lib/app/tab_history.dart` et `app/lib/app/shell.dart` ;
+tests : `app/test/app/back_navigation_test.dart`, qui simulent le bouton
+Retour exactement comme Android l'envoie à Flutter.
+
 ## Accessibilité
 
 - Zones tactiles d'au moins 48 × 48 dp, libellés pour TalkBack, contraste :
