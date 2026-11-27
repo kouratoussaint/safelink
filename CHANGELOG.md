@@ -30,6 +30,8 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   réputation, charte d'interface.
 - Publication automatique des APK debug en pré-versions GitHub `dev-*`,
   avec liens de téléchargement directs (`dev-apk.yml`).
+- Bouton Retour : retour à l'écran précédent dans l'onglet, puis aux
+  onglets visités jusqu'à l'Accueil ; double appui pour quitter.
 
 ### Modifié
 
