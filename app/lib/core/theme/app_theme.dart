@@ -198,6 +198,14 @@ abstract final class AppTheme {
       listTileTheme: ListTileThemeData(
         iconColor: scheme.onSurfaceVariant,
         minVerticalPadding: 12,
+        titleTextStyle: text.titleSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+          color: scheme.onSurface,
+        ),
+        subtitleTextStyle: text.bodyMedium?.copyWith(
+          color: colors.textSecondary,
+        ),
       ),
       switchTheme: SwitchThemeData(
         trackOutlineColor: WidgetStateProperty.resolveWith(

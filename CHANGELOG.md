@@ -6,6 +6,16 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Refonte « Clarté », étape 3 : paramètres, présentation
+
+- Paramètres en cartes groupées (vérification en ligne, historique,
+  apparence, aide), chaque réglage avec sa pastille ; « À propos » en
+  cartes.
+- Présentation de première ouverture : grande illustration entourée d'un
+  halo, texte centré, points dans une carte, « Écouter » sur chaque étape,
+  points de progression.
+- Textes inutilisés retirés.
+
 ### Modifié — Refonte « Clarté », étape 2 : partage, historique, conseils
 
 - Grands titres pour les onglets Historique, Conseils et Paramètres.
