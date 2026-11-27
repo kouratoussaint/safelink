@@ -32,10 +32,13 @@ abstract interface class JsonTransport {
 /// Réponse HTTP brute.
 final class HttpReply {
   /// Crée une réponse.
-  const new(this.statusCode, this.contentType, this.body);
+  const new(this.statusCode, this.contentType, this.body, {this.location});
 
   /// Code HTTP.
   final int statusCode;
+
+  /// En-tête `Location` d'une redirection, s'il y en a un.
+  final String? location;
 
   /// Type de contenu (`application/json`…), en minuscules.
   final String contentType;
@@ -249,6 +252,7 @@ final class IoHttpTransport implements HttpTransport {
         response.statusCode,
         response.headers.contentType?.mimeType.toLowerCase() ?? '',
         body.toBytes(),
+        location: response.headers.value(HttpHeaders.locationHeader),
       );
     } on SocketException {
       throw const OnlineLookupException('UNREACHABLE');

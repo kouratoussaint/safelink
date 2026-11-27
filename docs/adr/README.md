@@ -17,3 +17,4 @@ charges, §14). Format : contexte, décision, conséquences.
 | [0009](0009-verdict-messages.md) | Verdict des messages et résultat combiné | Accepté |
 | [0010](0010-verification-en-ligne.md) | Vérification en ligne sans clé ni serveur (Quad9, Cloudflare, RDAP) | Accepté |
 | [0011](0011-services-google.md) | Google Safe Browsing et photo des pages (clé d'API) | Accepté |
+| [0012](0012-liens-raccourcis.md) | Vraie destination des liens raccourcis | Accepté |

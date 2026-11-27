@@ -13,6 +13,7 @@ import 'package:safelink/features/onboarding/onboarding_controller.dart';
 import 'package:safelink/features/online/online_checker.dart';
 import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/online/page_preview.dart';
+import 'package:safelink/features/online/short_links.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_online.dart';
@@ -47,6 +48,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
   PagePreviewClient? pagePreviewClient,
   bool expert = true,
   Speaker? speaker,
+  ShortLinkResolver? shortLinks,
   HistoryBackend? historyBackend,
 }) async {
   SharedPreferences.setMockInitialValues({
@@ -79,6 +81,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
           analysisService ??
               DeviceAnalysisService(
                 checker: onlineChecker ?? offlineChecker(),
+                shortLinks: shortLinks,
                 useIsolates: false,
               ),
         ),

@@ -125,6 +125,31 @@ final class VerdictPresentation {
     ),
   };
 
+  /// Présentation d'un lien, aggravée par sa vraie [destination] si le lien
+  /// est raccourci et que la destination est plus grave.
+  factory forLinkWithDestination(
+    UrlAnalysisResult link,
+    UrlAnalysisResult? destination,
+    AppLocalizations l10n,
+  ) {
+    final own = VerdictPresentation.forUrl(link, l10n);
+    if (destination == null || destination.level.rank <= link.level.rank) {
+      return own;
+    }
+    final dest = VerdictPresentation.forUrl(destination, l10n);
+    return VerdictPresentation(
+      label: dest.label,
+      subtitle: dest.subtitle,
+      icon: dest.icon,
+      level: dest.level,
+      simple: switch (dest.level) {
+        RiskLevel.danger => l10n.simpleShortDanger,
+        RiskLevel.attention => l10n.simpleShortAttention,
+        _ => dest.simple,
+      },
+    );
+  }
+
   /// Présentation de la synthèse d'un message et de ses liens.
   factory forCombined(RiskLevel level, AppLocalizations l10n) =>
       VerdictPresentation(

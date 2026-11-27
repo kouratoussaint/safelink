@@ -171,7 +171,7 @@ final class HistoryEntry {
         return HistoryEntry(
           id: id,
           kind: AnalysisKind.link,
-          level: result.level,
+          level: outcome.level,
           verdictCode: result.verdict.code,
           analyzedAt: result.analyzedAt,
           rulesVersion: result.rulesVersion,
@@ -187,7 +187,7 @@ final class HistoryEntry {
         return HistoryEntry(
           id: id,
           kind: AnalysisKind.message,
-          level: result.level,
+          level: outcome.level,
           verdictCode: message.verdict.code,
           analyzedAt: result.analyzedAt,
           rulesVersion: message.rulesVersion,

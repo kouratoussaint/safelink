@@ -35,7 +35,8 @@ final class PagePreviewClient {
   new({
     required this.apiKey,
     this.http = const IoHttpTransport(
-      timeout: Duration(seconds: 70),
+      // Google met jusqu'à une minute pour certaines pages.
+      timeout: Duration(seconds: 120),
       maxBytes: 8 * 1024 * 1024,
     ),
   });

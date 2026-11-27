@@ -53,8 +53,10 @@ void main() {
   ) async {
     await pumpGoogle(tester, finalUrl: 'https://faux-orange.xyz/login');
     await history.analyzeLink(tester, 'https://lefaso.net/sortie');
-    await flow.scrollTo(tester, find.text('faux-orange.xyz'));
-    expect(find.text('Ce lien mène en réalité à :'), findsOneWidget);
+    await flow.scrollTo(tester, find.text('Ce lien mène en réalité à :'));
+    // Barre d'adresse de la photo (la page réellement photographiée) et
+    // destination sous la photo.
+    expect(find.text('faux-orange.xyz'), findsNWidgets(2));
     await tester.tap(flow.button('Vérifier cette destination'));
     await tester.pumpAndSettle();
     expect(find.text('https://faux-orange.xyz/login'), findsOneWidget);

@@ -55,6 +55,7 @@ class AnalysisScreen extends ConsumerWidget {
           AsyncData(:final value) => switch (value) {
             LinkOutcome(:final result) => LinkResultView(
               result: result,
+              destination: value.destinationOf(result),
               online: linkOnlineStatus(result, value.online),
               onRetry: () => ref.invalidate(analysisProvider(request)),
               footer: [
@@ -64,12 +65,14 @@ class AnalysisScreen extends ConsumerWidget {
             ),
             MessageOutcome(:final result) => MessageResultView(
               result: result,
+              destinations: value.destinations,
               online: value.online,
               onOpenLink: (link) => context.push(
                 AppRoutes.linkResult,
                 extra: (
                   link.result,
                   linkOnlineStatus(link.result, value.online),
+                  value.destinationOf(link.result),
                 ),
               ),
               footer: [
@@ -103,10 +106,14 @@ class LinkResultScreen extends StatelessWidget {
   const new({
     required this.result,
     this.online = OnlineStatus.notRequested,
+    this.destination,
     super.key,
   });
 
   final UrlAnalysisResult? result;
+
+  /// Vraie destination analysée, si le lien est raccourci.
+  final UrlAnalysisResult? destination;
 
   /// État de la vérification en ligne de ce lien.
   final OnlineStatus online;
@@ -129,9 +136,19 @@ class LinkResultScreen extends StatelessWidget {
               )
             : LinkResultView(
                 result: result,
+                destination: destination,
                 online: online,
                 footer: [
-                  ResultActions(outcome: LinkOutcome(result, online: online)),
+                  ResultActions(
+                    outcome: LinkOutcome(
+                      result,
+                      online: online,
+                      destinations: {
+                        if (destination != null && result.url != null)
+                          result.url!.href: destination!,
+                      },
+                    ),
+                  ),
                 ],
               ),
       ),
