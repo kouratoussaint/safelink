@@ -111,9 +111,32 @@ mise à jour de `main` ou d'une branche `lot-*`, puis crée la pré-version
 `dev-<7 premiers caractères de la révision>` avec les APK et
 `SHA256SUMS.txt`. Liens directs :
 `https://github.com/kouratoussaint/safelink/releases/download/dev-<révision>/<fichier>.apk`.
-Seules les cinq dernières pré-versions `dev-*` sont conservées. Le workflow
-n'utilise que le jeton éphémère de GitHub Actions, avec le droit d'écriture
-limité à ce job, et ne s'exécute jamais depuis une copie du dépôt.
+Seules les cinq dernières pré-versions `dev-*` sont conservées. Le droit
+d'écriture est limité à ce job, qui ne s'exécute jamais depuis une copie du
+dépôt.
+
+### Signature de développement
+
+Tous les APK de développement sont signés avec la même clé, pour qu'une
+nouvelle version s'installe par-dessus la précédente. Cette clé n'est **pas**
+celle des versions de distribution (lot D).
+
+| Élément | Où |
+| --- | --- |
+| Clé (PKCS12, alias `safelink-dev`, RSA 4096) | Secret GitHub `SAFELINK_DEV_KEYSTORE_BASE64` (fichier encodé en base64) |
+| Mot de passe | Secret GitHub `SAFELINK_DEV_KEYSTORE_PASSWORD` |
+| Empreinte SHA-256 du certificat, publique | `tools/dev-signing-cert.sha256` |
+
+- Gradle lit la clé dans `SAFELINK_DEV_KEYSTORE` et
+  `SAFELINK_DEV_KEYSTORE_PASSWORD` ; sans ces variables (build local, CI des
+  pull requests), il utilise la clé de débogage de la machine.
+- `dev-apk.yml` refuse de publier si les secrets sont absents et vérifie que
+  chaque APK porte l'empreinte de `tools/dev-signing-cert.sha256`.
+- Pour enregistrer les secrets : *Settings › Secrets and variables › Actions ›
+  New repository secret*, une fois pour chacun des deux noms ci-dessus.
+- Changer de clé oblige à désinstaller l'application sur chaque téléphone de
+  test : ne le faire qu'en cas de compromission, et mettre à jour
+  `tools/dev-signing-cert.sha256` dans le même commit.
 
 ## Mettre à jour Flutter
 

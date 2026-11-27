@@ -21,4 +21,5 @@ app/lib/l10n/generated/
 # Secrets de signature : ne jamais les versionner
 *.jks
 *.keystore
+*.p12
 key.properties
