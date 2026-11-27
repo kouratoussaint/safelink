@@ -126,7 +126,12 @@ class HistoryRecorder extends AsyncNotifier<HistoryEntry?> {
   }
 
   Future<HistoryEntry> _save(AnalysisOutcome outcome) async {
-    final entry = HistoryEntry.fromOutcome(_id ??= newHistoryId(), outcome);
+    // Une nouvelle analyse de la même demande (vérification en ligne
+    // activée entre-temps) remplace l'enregistrement, contenu gardé compris.
+    final entry = HistoryEntry.fromOutcome(
+      _id ??= newHistoryId(),
+      outcome,
+    ).withContent(state.value?.content);
     await ref.read(historyProvider.notifier).add(entry);
     return entry;
   }

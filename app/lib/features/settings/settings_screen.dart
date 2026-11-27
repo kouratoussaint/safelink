@@ -6,6 +6,7 @@ import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_dialogs.dart';
+import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 
 /// Paramètres de l'application.
@@ -42,6 +43,17 @@ class SettingsScreen extends ConsumerWidget {
                     RadioListTile<ThemeMode>(value: value, title: Text(label)),
                 ],
               ),
+            ),
+            const Divider(),
+            _SectionHeader(l10n.settingsOnlineSection),
+            SwitchListTile(
+              secondary: const Icon(Icons.travel_explore),
+              title: Text(l10n.settingsOnlineSwitch),
+              subtitle: Text(l10n.settingsOnlineSwitchBody),
+              value: ref.watch(onlineChoiceProvider) == OnlineChoice.enabled,
+              onChanged: (value) => ref
+                  .read(onlineChoiceProvider.notifier)
+                  .select(enabled: value),
             ),
             const Divider(),
             _SectionHeader(l10n.settingsHistorySection),

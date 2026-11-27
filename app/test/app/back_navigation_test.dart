@@ -52,12 +52,6 @@ void main() {
     await pumpSafeLinkApp(tester);
   }
 
-  Future<void> openAbout(WidgetTester tester) async {
-    await tapDestination(tester, 'Paramètres');
-    await tester.tap(find.text('À propos de SafeLink'));
-    await tester.pumpAndSettle();
-  }
-
   testWidgets('Retour ferme d’abord l’écran ouvert dans l’onglet', (
     tester,
   ) async {

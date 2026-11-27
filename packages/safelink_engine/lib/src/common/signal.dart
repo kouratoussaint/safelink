@@ -47,6 +47,9 @@ enum SignalSource {
 
   /// Correspondance avec une source de réputation.
   threatIntel,
+
+  /// Donnée publique consultée en ligne (enregistrement, DNS).
+  onlineLookup,
 }
 
 /// Indice relevé pendant une analyse, avec son explication.

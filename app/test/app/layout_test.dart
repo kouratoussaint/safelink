@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/online/online_controller.dart';
 
 import '../features/analysis_flow_test.dart' as flow;
 import '../features/history_flow_test.dart' as history;
+import '../features/online_flow_test.dart' as online;
 import '../helpers/pump_app.dart';
 import '../history/history_store_test.dart' show entryOf, secretUrl;
 
@@ -44,12 +46,12 @@ Future<void> visitAnalysisScreens(WidgetTester tester) async {
 }
 
 Future<void> visitOnboarding(WidgetTester tester) async {
-  for (var step = 0; step < 2; step++) {
+  for (var step = 0; step < 3; step++) {
     expect(tester.takeException(), isNull, reason: 'étape ${step + 1}');
     await tester.tap(find.text('Suivant'));
     await tester.pumpAndSettle();
   }
-  expect(tester.takeException(), isNull, reason: 'étape 3');
+  expect(tester.takeException(), isNull, reason: 'étape 4');
 }
 
 Future<void> visitHistory(WidgetTester tester) async {
@@ -63,7 +65,34 @@ Future<void> visitHistory(WidgetTester tester) async {
   expect(tester.takeException(), isNull, reason: 'fiche (bas)');
 }
 
+Future<void> visitOnlineResult(WidgetTester tester) async {
+  await history.analyzeLink(tester, 'https://lefaso.net/');
+  expect(tester.takeException(), isNull, reason: 'résultat en ligne');
+  await flow.scrollTo(tester, find.text('Vérifications en ligne'));
+  await flow.scrollTo(tester, find.text('Ce qui a été vérifié'));
+  await flow.scrollTo(tester, find.text('Détails techniques'));
+  expect(tester.takeException(), isNull, reason: 'sections en ligne');
+}
+
 void main() {
+  for (final (size, scale) in [
+    (const Size(320, 640), 2.0),
+    (referenceSize, 1.0),
+  ]) {
+    testWidgets('résultat vérifié en ligne : ${size.width} dp, × $scale', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(
+        tester,
+        size: size,
+        textScale: scale,
+        online: OnlineChoice.enabled,
+        onlineChecker: online.cleanChecker(),
+      );
+      await visitOnlineResult(tester);
+    });
+  }
+
   for (final (size, scale) in [
     (const Size(320, 640), 2.0),
     (referenceSize, 1.0),

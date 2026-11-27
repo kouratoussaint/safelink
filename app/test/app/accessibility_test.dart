@@ -3,9 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/online/online_controller.dart';
 
 import '../features/analysis_flow_test.dart' as flow;
 import '../features/history_flow_test.dart' as history;
+import '../features/online_flow_test.dart' as online;
 import '../helpers/pump_app.dart';
 import '../history/history_store_test.dart' show entryOf, secretUrl;
 
@@ -18,9 +20,7 @@ final screens = <String, Navigate>{
   'Conseils': (tester) => tapDestination(tester, 'Conseils'),
   'Paramètres': (tester) => tapDestination(tester, 'Paramètres'),
   'À propos': (tester) async {
-    await tapDestination(tester, 'Paramètres');
-    await tester.tap(find.text('À propos de SafeLink'));
-    await tester.pumpAndSettle();
+    await openAbout(tester);
   },
   'Résultat d’un lien': (tester) async {
     await flow.enterText(tester, 'xn--pypal-4ve.com');
@@ -76,11 +76,11 @@ void main() {
         onboarded: false,
         preferences: {ThemeModeController.storageKey: theme},
       );
-      for (var step = 0; step < 3; step++) {
+      for (var step = 0; step < 4; step++) {
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
         await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
         await expectLater(tester, meetsGuideline(textContrastGuideline));
-        if (step < 2) {
+        if (step < 3) {
           await tester.tap(find.text('Suivant'));
           await tester.pumpAndSettle();
         }
@@ -134,6 +134,48 @@ void main() {
       );
       await history.analyzeLink(tester, secretUrl);
       await flow.scrollTo(tester, find.text('Garder vos vérifications ?'));
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+  }
+
+  for (final theme in ['light', 'dark']) {
+    testWidgets('Résultat vérifié en ligne ($theme)', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSafeLinkApp(
+        tester,
+        online: OnlineChoice.enabled,
+        onlineChecker: online.cleanChecker(),
+        preferences: {ThemeModeController.storageKey: theme},
+      );
+      await history.analyzeLink(tester, 'https://lefaso.net/');
+      Future<void> check() async {
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+      }
+
+      await check();
+      await flow.scrollTo(tester, find.text('Vérifications en ligne'));
+      await check();
+      await flow.scrollTo(tester, find.text('Ce qui a été vérifié'));
+      await check();
+      handle.dispose();
+    });
+
+    testWidgets('Proposition de vérification en ligne ($theme)', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpSafeLinkApp(
+        tester,
+        online: OnlineChoice.undecided,
+        preferences: {ThemeModeController.storageKey: theme},
+      );
+      await history.analyzeLink(tester, 'https://lefaso.net/');
+      await flow.scrollTo(tester, find.text('Vérifier aussi en ligne ?'));
       await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
       await expectLater(tester, meetsGuideline(textContrastGuideline));

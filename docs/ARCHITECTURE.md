@@ -3,7 +3,8 @@
 SafeLink sépare strictement **la décision** (moteur de détection) de
 **l'affichage** (application Flutter). Le moteur est un package Dart pur, sans
 dépendance à Flutter ni accès réseau ; l'application appelle le moteur,
-affiche ses résultats et gère le stockage local.
+affiche ses résultats, gère le stockage local et, avec l'accord de
+l'utilisateur, consulte en ligne le nom des sites pour le moteur.
 
 ```text
 Entrées (toujours à l'initiative de l'utilisateur)
@@ -80,7 +81,7 @@ Règles de conception :
 | --- | --- |
 | `lib/app/` | Racine, routes (go_router, quatre onglets), barre de navigation |
 | `lib/core/` | Thème et jetons de couleur, réglages persistants, informations de build, licences, widgets communs |
-| `lib/features/` | Un dossier par fonction : `onboarding`, `home`, `analysis` (service et écran d'analyse), `results` (présentation des verdicts), `history`, `tips`, `settings` |
+| `lib/features/` | Un dossier par fonction : `onboarding`, `home`, `analysis` (service et écran d'analyse), `online` (vérification en ligne), `results` (présentation des verdicts), `history`, `tips`, `settings` |
 | `lib/l10n/` | Textes français (ARB) ; code généré non versionné |
 
 - **État et injection** : Riverpod 3, sans génération de code.
@@ -89,8 +90,11 @@ Règles de conception :
   SDK depuis Flutter 3.47 (ADR 0007).
 - **Réglages** : `shared_preferences`, pour les réglages non sensibles
   uniquement (thème, présentation vue, choix pour l'historique).
-- **Analyse** : `LocalAnalysisService` appelle le moteur dans un isolat ;
-  les tests le remplacent par une version synchrone.
+- **Analyse** : `DeviceAnalysisService` appelle le moteur dans un isolat,
+  puis, si l'utilisateur l'a accepté, consulte en ligne le nom des sites
+  (`features/online/` : DNS sur HTTPS, RDAP) et relance l'analyse avec les
+  réponses (ADR 0010). Les tests remplacent le réseau par des réponses
+  simulées.
 - **Historique** : base `sqflite` aux champs sensibles chiffrés en
   AES-256-GCM, clé dans le Keystore ; rien n'est créé avant que
   l'utilisateur l'active (ADR 0006).
@@ -98,7 +102,8 @@ Règles de conception :
 ## Android
 
 - Identifiant : `com.fasosoft.safelink`, minSdk 24, targetSdk 36.
-- Aucune permission au lot A ; la CI vérifie l'APK release.
+- Seule permission : `INTERNET`, pour la vérification en ligne (ADR 0010) ;
+  trafic en clair interdit. La CI vérifie l'APK release.
 - Sauvegardes cloud et transferts d'appareil désactivés
   (`allowBackup=false`, `data_extraction_rules.xml`).
 - Icône adaptative vectorielle avec couche monochrome.

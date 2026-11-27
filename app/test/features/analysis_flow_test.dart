@@ -54,12 +54,16 @@ class ControlledService implements AnalysisService {
   int calls = 0;
 
   @override
-  Future<AnalysisOutcome> analyze(AnalysisRequest request) async {
+  Future<AnalysisOutcome> analyze(
+    AnalysisRequest request, {
+    bool online = false,
+    void Function(AnalysisStage stage)? onStage,
+  }) async {
     calls++;
     final gate = this.gate;
     if (gate != null) await gate.future;
     if (failFirst && calls == 1) throw StateError('échec simulé');
-    return LocalAnalysisService.analyzeNow(request.kind, request.text);
+    return DeviceAnalysisService.analyzeNow(request.kind, request.text);
   }
 }
 
@@ -264,7 +268,7 @@ void main() {
         tester,
         find.textContaining('URL_BRAND_IN_SUBDOMAIN · Indice moyen'),
       );
-      expect(find.textContaining('url-1.0.0'), findsOneWidget);
+      expect(find.textContaining('url-1.1.0'), findsOneWidget);
     });
 
     testWidgets('adresse non analysable : explication, pas de confiance', (
@@ -432,7 +436,7 @@ void main() {
   });
 
   test('le service local analyse hors du fil d’affichage', () async {
-    const service = LocalAnalysisService();
+    final service = DeviceAnalysisService();
     final outcome = await service.analyze(
       AnalysisRequest(AnalysisKind.message, scamMessage),
     );

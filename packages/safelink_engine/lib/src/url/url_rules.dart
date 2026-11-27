@@ -94,6 +94,18 @@ abstract final class UrlSignalCodes {
   /// Site hébergé sur une plateforme ouverte à tous.
   static const sharedHosting = 'URL_SHARED_HOSTING';
 
+  /// Page publiée par un tiers sur un service de partage connu.
+  static const userContent = 'URL_USER_CONTENT';
+
+  /// Site signalé par une source de réputation consultée en ligne.
+  static const reported = 'URL_REPORTED';
+
+  /// Domaine enregistré très récemment (données d'enregistrement).
+  static const domainNew = 'URL_DOMAIN_NEW';
+
+  /// Nom de site inexistant dans le DNS.
+  static const domainNotFound = 'URL_DOMAIN_NOT_FOUND';
+
   /// Tous les codes, dans l'ordre de `docs/URL_RULES.md`.
   static const List<String> all = [
     credentialsDeceptive, brandLookalike, brandTypo, brandDomainInSubdomain,
@@ -102,8 +114,12 @@ abstract final class UrlSignalCodes {
     invisibleCharacters, redirectParameter, apkDownload, brandOtherSuffix,
     unusualHostCharacters, shortener, unusualPort, manySubdomains,
     unlistedSuffix, singleLabelHost, unusualSlashes, internationalized,
-    sharedHosting, unencrypted,
+    sharedHosting, unencrypted, userContent, reported, domainNew,
+    domainNotFound,
   ];
+
+  /// Codes produits par les consultations en ligne.
+  static const List<String> online = [reported, domainNew, domainNotFound];
 }
 
 /// Règles heuristiques locales appliquées à un lien décomposé.
@@ -128,6 +144,19 @@ final class UrlRules {
     'bit.do', 'bit.ly', 'buff.ly', 'cutt.ly', 'goo.gl', 'is.gd', 'lnkd.in', //
     'ow.ly', 'rb.gy', 'rebrand.ly', 's.id', 'shorturl.at', 't.co', 't.ly',
     'tiny.cc', 'tinyurl.com', 'v.gd',
+  };
+
+  /// Services de partage où n'importe qui publie une page ou un fichier
+  /// sous le nom du service : la réputation du nom ne dit rien de la page.
+  static const userContentHosts = {
+    'docs.google.com', 'drive.google.com', 'sites.google.com', //
+    'forms.gle', 'storage.googleapis.com', 'firebasestorage.googleapis.com',
+    'forms.office.com', 'onedrive.live.com', '1drv.ms', 'dropbox.com',
+    'www.dropbox.com', 'dl.dropboxusercontent.com', 'wetransfer.com',
+    'we.tl', 'mega.nz', 'www.mediafire.com', 'mediafire.com', 'ipfs.io',
+    'dweb.link', 'linktr.ee', 'telegra.ph', 'notion.site', 'www.notion.so',
+    'notion.so', 'canva.site', 'www.canva.com', 'jotform.com',
+    'form.jotform.com', 'typeform.com', 'airtable.com',
   };
 
   /// Mots d'appât fréquents dans les noms de sites frauduleux, en français
@@ -506,6 +535,17 @@ final class UrlRules {
 
   void _structure(ParsedUrl url, _Add add) {
     final registrable = url.registrableDomain;
+    if (userContentHosts.contains(url.host)) {
+      add(
+        UrlSignalCodes.userContent,
+        Severity.info,
+        Confidence.high,
+        'Le lien mène à ${url.host}, un service où chacun peut publier une '
+        'page ou un fichier : le service est connu, mais la page peut être '
+        'une imitation.',
+        evidence: url.host,
+      );
+    }
     if (registrable != null && shorteners.contains(registrable)) {
       add(
         UrlSignalCodes.shortener,

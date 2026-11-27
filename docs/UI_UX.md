@@ -83,6 +83,24 @@ Retour exactement comme Android l'envoie à Flutter.
   le texte du message ni les extraits ; les liens y sont masqués.
 - Textes : apostrophe typographique (’) et espaces avant « : ; ? ! ».
 
+## Vérification en ligne
+
+- Choix à la dernière étape de la présentation (« Activer la vérification
+  en ligne » ou « Rester hors ligne »), proposé sous un résultat tant qu'il
+  n'est pas fait (« Vérifier aussi en ligne ? »), modifiable dans les
+  paramètres. L'activer depuis un résultat relance l'analyse affichée.
+- Pendant la consultation : « Vérification en ligne… » et « Seul le nom du
+  site est envoyé, de façon chiffrée. »
+- Section « Vérifications en ligne » : Quad9 et Cloudflare (« Non
+  signalé », « Signalé comme malveillant », « Pas de réponse »), date de
+  création du domaine avec son âge, existence du nom, et le nom
+  effectivement envoyé.
+- Sans réponse : « Aucun service n'a répondu : vérifiez votre connexion »
+  et « Réessayer » ; le résultat local reste affiché.
+- Section « Ce qui a été vérifié » : chaque contrôle avec son issue (coche
+  verte ou indice), pour qu'un résultat sans alerte montre ce qui a été
+  examiné.
+
 ## Historique
 
 - Désactivé tant que l'utilisateur n'a pas choisi. Le choix est proposé

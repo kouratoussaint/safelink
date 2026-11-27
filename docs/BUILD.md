@@ -74,8 +74,14 @@ flutter build apk --release
 ../tools/check_apk_permissions.sh build/app/outputs/flutter-apk/app-release.apk
 ```
 
-Le script échoue si l'APK déclare une permission non listée. Au lot A, la
-liste autorisée est vide. Les builds release des lots A à C sont signés avec
+Le script échoue si l'APK déclare une permission non listée. La CI
+autorise seulement `android.permission.INTERNET` (vérification en ligne,
+ADR 0010) :
+
+```bash
+../tools/check_apk_permissions.sh build/app/outputs/flutter-apk/app-release.apk android.permission.INTERNET
+```
+ Les builds release des lots A à C sont signés avec
 la clé de débogage : ils ne servent qu'à ce contrôle et ne doivent jamais
 être distribués.
 
@@ -135,7 +141,7 @@ manifeste officiel des versions stables. Toutes les actions GitHub sont
 
 `dev-apk.yml` compile les APK optimisés (`--release`, arm64-v8a et
 armeabi-v7a) à chaque mise à jour de `main` ou d'une branche `lot-*`,
-vérifie leur signature, leurs permissions (aucune) et leur alignement 16 Ko,
+vérifie leur signature, leurs permissions (Internet seulement) et leur alignement 16 Ko,
 puis crée la pré-version
 `dev-<7 premiers caractères de la révision>` avec les APK et
 `SHA256SUMS.txt`. Liens directs :

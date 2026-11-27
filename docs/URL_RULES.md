@@ -1,7 +1,11 @@
 # Règles d'analyse des liens
 
-Version des règles : `url-1.0.0` (moteur `safelink_engine`). Tout se passe
-sur l'appareil : SafeLink n'ouvre jamais le lien et n'envoie rien.
+Version des règles : `url-1.1.0` (moteur `safelink_engine`). SafeLink
+n'ouvre jamais le lien. Les règles locales s'appliquent sur l'appareil ; si
+l'utilisateur a activé la vérification en ligne, l'application consulte en
+plus des sources publiques avec le seul nom du site (voir
+[ADR 0010](adr/0010-verification-en-ligne.md)) et en transmet les réponses
+au moteur, qui ne fait lui-même aucune requête.
 
 ## Étapes
 
@@ -13,7 +17,8 @@ sur l'appareil : SafeLink n'ouvre jamais le lien et n'envoie rien.
 2. **Normalisation** : minuscules, NFKC, Punycode, IPv4 ramenées à
    `a.b.c.d`, domaine enregistrable selon la Public Suffix List complète
    (sections ICANN et privée). Chaque transformation est montrée.
-3. **Indices** (`UrlRules`), décrits ci-dessous.
+3. **Indices** locaux (`UrlRules`) et, si des éléments ont été recueillis
+   en ligne, indices en ligne (`OnlineRules`), décrits ci-dessous.
 4. **Verdict** (`UrlVerdictPolicy`).
 
 ## Indices
@@ -48,6 +53,18 @@ sur l'appareil : SafeLink n'ouvre jamais le lien et n'envoie rien.
 | `URL_INTERNATIONALIZED` | information | Nom international : sa forme technique `xn--…` est montrée |
 | `URL_SHARED_HOSTING` | information | Site sur une plateforme où chacun peut créer une page (`blogspot.com`, `web.app`…) |
 | `URL_UNENCRYPTED` | information | Connexion `http` non chiffrée |
+| `URL_USER_CONTENT` | information | Page ou fichier publié par un tiers sur un service de partage connu (`docs.google.com`, `sites.google.com`, `dropbox.com`, `wetransfer.com`…) : la réputation du service ne dit rien de la page |
+
+### Indices en ligne
+
+Produits seulement à partir des réponses des consultations en ligne,
+transmises par l'application (`OnlineEvidence`).
+
+| Code | Gravité | Ce qui est repéré |
+| --- | --- | --- |
+| `URL_REPORTED` | forte | Une source de réputation récente (moins de 7 jours) signale le site |
+| `URL_DOMAIN_NEW` | forte, moyenne ou faible | Domaine enregistré il y a moins de 7 jours (forte), de 30 jours (moyenne) ou de 90 jours (faible), d'après les données d'enregistrement (RDAP). Jamais pour un domaine officiel de marque |
+| `URL_DOMAIN_NOT_FOUND` | faible | Le nom n'existe pas (ou plus) dans le DNS : la page ne peut pas s'ouvrir ; fréquent pour une arnaque déjà fermée |
 
 Les marques de référence et leurs domaines officiels sourcés sont décrits
 dans [DATA_SOURCES.md](DATA_SOURCES.md). Un domaine officiel ne produit
@@ -59,16 +76,17 @@ aucun indice favorable : il n'est jamais déclaré sûr.
 | --- | --- |
 | `KNOWN_THREAT` | Une source de réputation dont la liste a moins de 7 jours signale le lien. **Aucune règle locale ne peut produire ce verdict.** |
 | `SUSPICIOUS` | Au moins un indice fort, ou au moins deux indices moyens, ou une correspondance dans une liste périmée |
-| `NO_KNOWN_THREAT` | Une source dont la liste a moins de 7 jours a été consultée sans correspondance, et aucune condition de `SUSPICIOUS` |
-| `INCONCLUSIVE` | Tous les autres cas, en particulier sans source de réputation (situation du MVP) |
+| `NO_KNOWN_THREAT` | Une source récente a été consultée sans correspondance, aucun indice moyen ou fort, et aucun indice qui cache la page réelle (`URL_SHORTENER`, `URL_REDIRECT_PARAMETER`, `URL_USER_CONTENT`) ni `URL_DOMAIN_NOT_FOUND` |
+| `INCONCLUSIVE` | Tous les autres cas, en particulier sans vérification en ligne |
 | `INVALID` | Texte vide, trop long, schéma non web, adresse e-mail, texte ordinaire, hôte ou port invalide |
 
 Les indices faibles et informatifs n'entrent pas dans le décompte : ils
 s'affichent pour expliquer, sans alourdir le verdict.
 
-Chaque résultat porte au moins une limite : la page n'a pas été ouverte,
-la réputation n'a pas été vérifiée (tant qu'aucune source n'est intégrée),
-et les règles locales ne repèrent que des procédés courants.
+Chaque résultat porte au moins une limite : la page n'a pas été ouverte ;
+la réputation n'a pas été vérifiée (hors ligne) ou ne porte que sur le nom
+du site (en ligne) ; les règles locales ne repèrent que des procédés
+courants.
 
 ## Affichage et confidentialité
 
@@ -88,7 +106,8 @@ décimales, identifiants, encodage, schémas interdits, plus de 2 048
 caractères). La CI exige que chaque lien obtienne son verdict attendu,
 qu'aucun lien prudent ne soit déclaré suspect, qu'aucune entrée aléatoire ne
 provoque d'erreur, que l'analyse reste sous 20 ms par lien en moyenne et que
-le moteur n'importe aucune bibliothèque d'entrée-sortie.
+le moteur n'importe aucune bibliothèque d'entrée-sortie. Les indices en
+ligne sont testés à part, avec des réponses simulées.
 
 Limites connues : des domaines techniques des marques
 (`googleusercontent.com`, `amazonaws.com`, `login.microsoftonline.com`…)

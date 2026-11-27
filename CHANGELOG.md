@@ -6,6 +6,30 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — vérification en ligne (ADR 0010)
+
+- Vérification en ligne du nom des sites, avec l'accord de l'utilisateur
+  (dernière étape de la présentation, proposition sous un résultat,
+  interrupteur dans les paramètres) : Quad9 et Cloudflare (listes de
+  domaines malveillants, par DNS sur HTTPS en HTTP/2), existence du nom,
+  date de création du domaine auprès du registre (RDAP, table d'amorçage
+  de l'IANA embarquée). Seul le nom du site est envoyé ; jamais le lien
+  complet ni le texte d'un message ; aucune clé, aucun serveur du projet.
+- Moteur `url-1.1.0` : `OnlineEvidence`, indices `URL_REPORTED`,
+  `URL_DOMAIN_NEW` (moins de 7, 30 ou 90 jours), `URL_DOMAIN_NOT_FOUND`,
+  `URL_USER_CONTENT` (page publiée sur un service de partage) ;
+  « Aucun danger connu détecté » seulement sans indice moyen ni page
+  cachée ; limite « la vérification porte sur le nom du site ».
+- Résultats : sections « Vérifications en ligne » et « Ce qui a été
+  vérifié » (liens et messages), étape « Vérification en ligne… », état
+  « Aucun service n'a répondu » avec « Réessayer ».
+- Android : permission `INTERNET` (seule permission), trafic en clair
+  interdit ; la CI n'autorise que celle-ci.
+- Tests : messages DNS (dont une vraie réponse de blocage de Quad9),
+  consultations simulées (blocage, nom inexistant, registre, panne, délai),
+  analyse en vrais isolats, parcours, consentement, accessibilité et mise
+  en page des nouvelles sections.
+
 ### Ajouté — lot D2 (historique chiffré)
 
 - Historique facultatif, désactivé tant que l'utilisateur n'a pas choisi :

@@ -1,6 +1,9 @@
 # 0005 — Sources de réputation sous condition d'accord écrit
 
-- Statut : proposé
+- Statut : remplacée en partie par [0010](0010-verification-en-ligne.md)
+  (27/11/2026) : le MVP vérifie en ligne le nom des sites auprès de Quad9
+  et Cloudflare, sans liste téléchargée. Les conditions ci-dessous restent
+  valables pour toute liste téléchargeable (PhishTank…).
 
 ## Contexte
 

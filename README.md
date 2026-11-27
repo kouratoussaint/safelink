@@ -19,12 +19,13 @@ a vérifié, ce qu'elle ne sait pas et les précautions à prendre.
 Marché initial : Burkina Faso, puis Afrique francophone.
 
 > [!IMPORTANT]
-> **État du projet : en développement (lot C terminé).** Le moteur analyse
-> hors ligne les liens ([règles](docs/URL_RULES.md)) et les messages
-> ([règles](docs/MESSAGE_RULES.md)) ; les écrans d'analyse arrivent au lot
-> D. Aucune version n'est publiée pour le grand public ; la première
-> pré-version installable est prévue à la fin du lot D. Aucune vérification
-> n'est simulée.
+> **État du projet : en développement (lot D en cours).** L'application
+> analyse les liens ([règles](docs/URL_RULES.md)) et les messages
+> ([règles](docs/MESSAGE_RULES.md)) sur le téléphone et, si vous
+> l'acceptez, vérifie en ligne le nom des sites
+> ([ADR 0010](docs/adr/0010-verification-en-ligne.md)). Aucune version
+> n'est publiée pour le grand public ; la première pré-version est prévue à
+> la fin du lot D. Aucune vérification n'est simulée.
 
 ## Ce que fait SafeLink, et ce qu'il ne fait pas
 
@@ -33,7 +34,7 @@ Marché initial : Burkina Faso, puis Afrique francophone.
 | Analyser un lien collé, saisi, partagé ou lu dans un QR code | Ouvrir automatiquement un lien analysé, même pour le tester |
 | Analyser le texte d'un message que vous lui transmettez | Lire vos SMS, notifications, e-mails ou conversations |
 | Expliquer chaque indice relevé et les limites de l'analyse | Affirmer qu'un lien est « 100 % sûr » ou qu'un message est authentique |
-| Fonctionner hors connexion pour l'analyse locale | Envoyer vos messages à un serveur ou à une IA distante |
+| Fonctionner hors connexion pour l'analyse locale, et vérifier en ligne le seul nom des sites si vous l'acceptez | Envoyer vos messages ou vos liens complets à un serveur ou à une IA distante |
 | Conserver un historique local facultatif, supprimable | Afficher de la publicité ou vendre des données |
 
 Les images, vidéos et documents seront étudiés dans des versions ultérieures.
@@ -95,11 +96,13 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) et
 
 ## Confidentialité
 
-SafeLink ne demande aucune permission Android à ce stade. La caméra ne sera
-demandée qu'au moment de scanner un QR code. L'accès à Internet ne sera
-ajouté que si une source de réputation est autorisée, et l'envoi de données
-à un tiers ne se fera jamais sans votre accord explicite. Les sauvegardes
-cloud de l'application sont désactivées.
+La seule permission Android est l'accès à Internet, utilisé uniquement par
+la vérification en ligne, que vous activez ou non : le nom du site
+(`exemple.com`) est envoyé, en HTTPS, à Quad9 et Cloudflare et au registre
+du domaine ; jamais le lien complet ni le texte d'un message. La caméra ne
+sera demandée qu'au moment de scanner un QR code. Pas de compte, pas de
+publicité, pas de mesure d'audience. Les sauvegardes cloud de
+l'application sont désactivées et l'historique, facultatif, est chiffré.
 
 ## Contribuer
 

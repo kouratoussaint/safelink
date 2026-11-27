@@ -52,13 +52,13 @@
   "onboardingLimitsTitle": "Ce que SafeLink ne peut pas promettre",
   "onboardingLimitsBody": "SafeLink repère des indices, il ne lit pas les intentions.",
   "onboardingLimitsPoint1": "Un résultat sans signalement n’est pas une preuve de fiabilité : une arnaque nouvelle peut passer inaperçue.",
-  "onboardingLimitsPoint2": "Dans cette version, aucune liste de sites signalés n’est consultée : l’analyse est entièrement locale.",
+  "onboardingLimitsPoint2": "Sans vérification en ligne, l’analyse se fait uniquement sur votre téléphone et ne peut pas savoir si un site est déjà signalé.",
   "onboardingLimitsPoint3": "SafeLink n’ouvre jamais les liens qu’il analyse.",
   "onboardingPrivacyTitle": "Vos données restent sur votre téléphone",
-  "onboardingPrivacyBody": "Pas de compte, pas de publicité, aucun envoi.",
+  "onboardingPrivacyBody": "Pas de compte, pas de publicité. Rien n’est envoyé sans votre accord.",
   "onboardingPrivacyPoint1": "SafeLink ne lit jamais vos SMS ni vos conversations : vous choisissez ce que vous lui confiez.",
   "onboardingPrivacyPoint2": "Le presse-papiers n’est lu que lorsque vous appuyez sur « Coller ».",
-  "onboardingPrivacyPoint3": "Aucun lien ni message n’est transmis à qui que ce soit.",
+  "onboardingPrivacyPoint3": "Le texte d’un message n’est jamais transmis à qui que ce soit.",
   "onboardingNext": "Suivant",
   "onboardingStart": "Commencer",
   "onboardingStep": "Étape {current} sur {total}",
@@ -92,13 +92,13 @@
     }
   },
   "homeClipboardEmpty": "Le presse-papiers ne contient pas de texte.",
-  "homeLocalNote": "L’analyse se fait sur votre téléphone. Rien n’est envoyé.",
+  "homeLocalNote": "L’analyse se fait sur votre téléphone. Le texte d’un message n’est jamais envoyé.",
   "homeHistoryShortcut": "Voir l’historique",
   "homeComingSoonTitle": "Bientôt",
   "homeComingSoon": "Scanner un QR code et partager un texte vers SafeLink arrivent dans une prochaine version.",
   "analysisTitle": "Analyse",
   "analysisRunning": "Analyse en cours…",
-  "analysisRunningBody": "Sur votre téléphone, sans connexion.",
+  "analysisRunningBody": "Sur votre téléphone.",
   "analysisErrorTitle": "L’analyse n’a pas abouti",
   "analysisErrorBody": "Une erreur inattendue s’est produite. SafeLink préfère n’afficher aucun résultat plutôt qu’un résultat faux.",
   "analysisRetry": "Réessayer",
@@ -278,7 +278,7 @@
   "historyInvalidLink": "Adresse non analysable",
   "historyUnreadable": "Vérification illisible",
   "historyUnreadableBody": "Le détail de cette vérification ne peut plus être déchiffré, par exemple après une restauration du téléphone. Vous pouvez la supprimer.",
-  "historyFooter": "{count, plural, =1{1 vérification, chiffrée sur ce téléphone. Rien n’est envoyé.} other{{count} vérifications, chiffrées sur ce téléphone. Rien n’est envoyé.}}",
+  "historyFooter": "{count, plural, =1{1 vérification, chiffrée sur ce téléphone, jamais envoyée.} other{{count} vérifications, chiffrées sur ce téléphone, jamais envoyées.}}",
   "@historyFooter": {
     "placeholders": {
       "count": {
@@ -360,5 +360,138 @@
       }
     }
   },
-  "historyEntryInfo": "Détails enregistrés"
+  "historyEntryInfo": "Détails enregistrés",
+  "onboardingOnlineTitle": "Vérifier aussi en ligne ?",
+  "onboardingOnlineBody": "Pour savoir si un site est déjà signalé et depuis quand il existe, SafeLink peut interroger des services de sécurité gratuits.",
+  "onboardingOnlinePoint1": "Seul le nom du site est envoyé (par exemple « exemple.com »), de façon chiffrée : jamais le lien complet ni le texte d’un message.",
+  "onboardingOnlinePoint2": "Destinataires : Quad9 et Cloudflare (listes de sites malveillants) et le registre du domaine (date de création).",
+  "onboardingOnlinePoint3": "Vous pouvez changer d’avis à tout moment dans les paramètres.",
+  "onboardingOnlineEnable": "Activer la vérification en ligne",
+  "onboardingOnlineDecline": "Rester hors ligne",
+  "analysisOnlineRunning": "Vérification en ligne…",
+  "analysisOnlineRunningBody": "Seul le nom du site est envoyé, de façon chiffrée.",
+  "onlineOfferTitle": "Vérifier aussi en ligne ?",
+  "onlineOfferBody": "SafeLink peut demander à Quad9 et Cloudflare si ce site est déjà signalé, et au registre depuis quand il existe. Seul le nom du site est envoyé, jamais le lien complet ni le texte d’un message.",
+  "onlineEnable": "Vérifier en ligne",
+  "onlineDecline": "Non merci",
+  "onlineSectionTitle": "Vérifications en ligne",
+  "onlineDisabled": "Vérification en ligne désactivée : le site n’a été comparé à aucune liste de sites malveillants.",
+  "onlineDisabledAction": "Activer",
+  "onlineNotApplicable": "Rien à vérifier en ligne pour cette adresse (adresse IP ou nom sans extension connue).",
+  "onlineUnreachable": "Aucun service n’a répondu : vérifiez votre connexion.",
+  "onlineRetry": "Réessayer",
+  "onlineNotReported": "Non signalé",
+  "onlineReported": "Signalé comme malveillant",
+  "onlineNoAnswer": "Pas de réponse",
+  "onlineSourceQuad9": "Quad9",
+  "onlineSourceCloudflare": "Cloudflare",
+  "onlineDomainCreated": "Création du domaine",
+  "onlineDomainCreatedOn": "{date} ({age})",
+  "@onlineDomainCreatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineDomainUnknown": "Inconnue (pas de réponse du registre)",
+  "onlineDomainNotRegistered": "Domaine inconnu du registre",
+  "onlineSiteExists": "Existence du site",
+  "onlineSiteFound": "Le nom existe",
+  "onlineSiteNotFound": "Ce nom n’existe pas (ou plus)",
+  "onlineSiteUnknown": "Non vérifiée",
+  "onlineSentNote": "Seul le nom « {host} » a été envoyé, de façon chiffrée.",
+  "@onlineSentNote": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineMessageDone": "Liens vérifiés en ligne : ouvrez un lien pour voir le détail.",
+  "onlineMessageDisabled": "Liens non vérifiés en ligne (vérification désactivée).",
+  "onlineMessageUnreachable": "Liens non vérifiés en ligne : aucun service n’a répondu.",
+  "ageToday": "aujourd’hui",
+  "ageYesterday": "hier",
+  "ageDays": "il y a {count} jours",
+  "@ageDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ageMonths": "{count, plural, =1{il y a 1 mois} other{il y a {count} mois}}",
+  "@ageMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ageYears": "{count, plural, =1{il y a 1 an} other{il y a {count} ans}}",
+  "@ageYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checklistTitle": "Ce qui a été vérifié",
+  "checkAddressOk": "Adresse lisible : pas d’identifiant trompeur, d’adresse IP ni de caractère caché",
+  "checkAddressIssue": "Adresse trompeuse ou inhabituelle",
+  "checkBrandsOk": "Aucune imitation des {count} marques de référence",
+  "@checkBrandsOk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkBrandsIssue": "Nom de marque utilisé ou imité",
+  "checkCharactersOk": "Aucun caractère qui imite l’alphabet latin",
+  "checkCharactersIssue": "Caractères étrangers ou trompeurs dans le nom",
+  "checkBaitOk": "Pas de mots d’appât dans le nom (bonus, gratuit, vérification…)",
+  "checkBaitIssue": "Mots d’appât dans le nom",
+  "checkDestinationOk": "Destination visible : ni lien raccourci, ni redirection, ni page publiée sur un service de partage",
+  "checkDestinationIssue": "Destination réelle cachée ou page publiée par un tiers",
+  "checkDownloadOk": "Pas de téléchargement d’application (.apk)",
+  "checkDownloadIssue": "Téléchargement d’application hors Play Store",
+  "checkEncryptionOk": "Connexion chiffrée (https)",
+  "checkEncryptionIssue": "Connexion non chiffrée (http)",
+  "checkReputationOk": "Absent des listes de sites malveillants consultées",
+  "checkReputationIssue": "Signalé par une liste de sites malveillants",
+  "checkAgeOk": "Domaine qui n’est pas récent",
+  "checkAgeIssue": "Domaine créé récemment",
+  "checkExistsOk": "Le site existe",
+  "checkExistsIssue": "Le site n’existe pas (ou plus)",
+  "checkCredentialsOk": "Pas de demande de code, de PIN ou de mot de passe",
+  "checkCredentialsIssue": "Demande de code, de PIN ou de mot de passe",
+  "checkPaymentOk": "Pas de demande de paiement ou de frais",
+  "checkPaymentIssue": "Demande de paiement ou de frais",
+  "checkPrizeOk": "Pas de gain ou de cadeau inattendu",
+  "checkPrizeIssue": "Gain, cadeau ou sélection inattendus",
+  "checkThreatOk": "Pas de menace de blocage de compte",
+  "checkThreatIssue": "Menace de blocage de compte",
+  "checkImpersonationOk": "Aucun organisme ou agent cité",
+  "checkImpersonationIssue": "Organisme, marque ou agent cité",
+  "checkOffChannelOk": "Pas d’invitation à quitter les canaux officiels",
+  "checkOffChannelIssue": "Invitation à appeler ou écrire ailleurs",
+  "checkUrgencyOk": "Pas de pression ni d’urgence",
+  "checkUrgencyIssue": "Pression ou urgence",
+  "checkDeceptiveLinkOk": "Pas de lien trompeur ou déguisé",
+  "checkDeceptiveLinkIssue": "Lien trompeur ou déguisé",
+  "checkMistakenTransferOk": "Pas de transfert « par erreur » à rendre",
+  "checkMistakenTransferIssue": "Transfert « par erreur » à rendre",
+  "checkUssdOk": "Pas de code USSD de transfert à composer",
+  "checkUssdIssue": "Code USSD de transfert à composer",
+  "settingsOnlineSection": "Vérification en ligne",
+  "settingsOnlineSwitch": "Vérifier les liens en ligne",
+  "settingsOnlineSwitchBody": "Envoie seulement le nom du site à Quad9 et Cloudflare, et au registre du domaine. Jamais le lien complet ni le texte d’un message.",
+  "summaryOnlineDone": "Vérification en ligne : Quad9, Cloudflare et registre du domaine.",
+  "summaryOnlineNotDone": "Vérification en ligne : non faite.",
+  "techSourceOnline": "Règles locales sur ce téléphone, et vérification en ligne du nom du site (Quad9, Cloudflare, registre du domaine)"
 }
