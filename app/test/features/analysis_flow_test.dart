@@ -147,6 +147,10 @@ Future<void> scrollTo(WidgetTester tester, Finder finder) async {
   );
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
+  // Les blocs qui entrent à l'écran glissent un instant (Appear) : la
+  // position mesurée pendant ce glissement est corrigée une fois arrêtés.
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -222,11 +226,8 @@ void main() {
 
     testWidgets('annonce honnêtement les fonctions à venir', (tester) async {
       await pumpSafeLinkApp(tester);
-      await scrollTo(tester, find.textContaining('QR code'));
-      expect(
-        find.textContaining('arrive dans une prochaine version'),
-        findsOneWidget,
-      );
+      await scrollTo(tester, find.text('Scanner un QR code'));
+      expect(find.text('Bientôt dans SafeLink'), findsOneWidget);
     });
   });
 

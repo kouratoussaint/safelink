@@ -41,7 +41,9 @@ void main() {
       await pumpSimple(tester);
       await history.analyzeLink(tester, lookalike);
       expect(find.text('Attention !'), findsOneWidget);
-      expect(find.text('Lien suspect'), findsOneWidget);
+      // Mode simple : le libellé technique n'est pas affiché (TalkBack le
+      // lit avec le mot d'alerte).
+      expect(find.text('Lien suspect'), findsNothing);
       expect(
         find.text('Ce lien ressemble à un piège. Ne l’ouvrez pas.'),
         findsOneWidget,
@@ -198,7 +200,10 @@ void main() {
         'ici : https://lefaso.net/compte',
       );
       expect(find.text('Danger !'), findsOneWidget);
-      expect(find.textContaining('Synthèse'), findsOneWidget);
+      expect(
+        find.text('Ce message ou son lien est dangereux. Ne répondez pas.'),
+        findsOneWidget,
+      );
       await flow.scrollTo(tester, find.text('Aperçu de la page'));
       expect(
         find.bySemanticsLabel('Photo de la page, prise par Google'),
@@ -208,13 +213,9 @@ void main() {
   });
 
   group('accueil', () {
-    testWidgets('grandes vignettes Lien / Message, choix annoncé', (
-      tester,
-    ) async {
+    testWidgets('choix Lien / Message, annoncé', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpSimple(tester);
-      expect(find.text('Une adresse internet'), findsOneWidget);
-      expect(find.text('Un SMS, un message WhatsApp'), findsOneWidget);
       expect(
         tester.getSemantics(find.text('Lien')),
         isSemantics(isSelected: true, isButton: true),

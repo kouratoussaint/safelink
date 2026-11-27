@@ -239,15 +239,15 @@ class _Step extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final success = SafeLinkColors.of(context).success;
+    final colors = SafeLinkColors.of(context);
+    final success = colors.success;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: done ? success : theme.colorScheme.outlineVariant,
-        ),
+        color: done ? colors.successSoft : theme.colorScheme.surface,
+        boxShadow: done ? const [] : colors.cardShadow,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

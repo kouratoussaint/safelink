@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/tab_history.dart';
+import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 
 /// Structure commune aux quatre onglets, avec la barre de navigation.
@@ -143,7 +144,14 @@ class _AppShellState extends State<AppShell> {
             context,
             _labels(l10n),
           ),
-          child: _buildNavigationBar(l10n),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: SafeLinkColors.of(context).divider),
+              ),
+            ),
+            child: _buildNavigationBar(l10n),
+          ),
         ),
       ),
     );
@@ -164,7 +172,7 @@ class _AppShellState extends State<AppShell> {
       destinations: [
         NavigationDestination(
           icon: const Icon(Icons.home_outlined),
-          selectedIcon: const Icon(Icons.home),
+          selectedIcon: const Icon(Icons.home_rounded),
           label: l10n.navHome,
         ),
         NavigationDestination(

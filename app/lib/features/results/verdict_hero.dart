@@ -7,13 +7,15 @@ import 'package:safelink/core/speech/speaker.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/results/listen_button.dart';
 import 'package:safelink/features/results/pictograms.dart';
+import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
-/// Verdict en grand : jauge animée du vert au rouge, pictogramme, mot
-/// d'alerte, phrase simple et bouton « Écouter ». Le téléphone vibre en
-/// cas de danger.
+/// Verdict en grand, sur une carte teintée de la couleur du niveau :
+/// pictogramme entouré d'un halo, mot d'alerte, phrase simple, barre de
+/// niveau en quatre couleurs et bouton « Écouter ». Le téléphone vibre en
+/// cas de danger ou d'alerte.
 class VerdictHero extends StatefulWidget {
   const new({
     required this.presentation,
@@ -34,8 +36,8 @@ class VerdictHero extends StatefulWidget {
   /// Mode expert : phrase précise au lieu de la phrase simple.
   final bool expert;
 
-  /// Position de chaque niveau sur la jauge, de gauche (vert) à droite
-  /// (rouge) ; `null` : pas d'aiguille.
+  /// Case allumée de la barre de niveau, du vert (0) au rouge (3) ;
+  /// `null` : aucune.
   static int? gaugeIndex(RiskLevel level) => switch (level) {
     RiskLevel.nothingObvious => 0,
     RiskLevel.uncertain => 1,
@@ -53,7 +55,7 @@ class _VerdictHeroState extends State<VerdictHero>
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: Duration(
-      milliseconds: widget.presentation.level == RiskLevel.danger ? 1600 : 1100,
+      milliseconds: widget.presentation.level == RiskLevel.danger ? 1500 : 1100,
     ),
   );
 
@@ -101,35 +103,24 @@ class _VerdictHeroState extends State<VerdictHero>
     final confidence = widget.confidence == null
         ? null
         : VerdictPresentation.confidenceLabel(l10n, widget.confidence!);
+    final index = VerdictHero.gaugeIndex(p.level);
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color, width: 2),
+        color: VerdictPresentation.softColorOf(context, p.level),
+        borderRadius: BorderRadius.circular(28),
       ),
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
       child: Column(
         children: [
-          Semantics(
-            label: l10n.gaugeSemantics(
-              VerdictPresentation.levelLabel(l10n, p.level),
-            ),
-            image: true,
-            child: _Gauge(
+          ExcludeSemantics(
+            child: _HaloBadge(
               animation: _controller,
               level: p.level,
               color: color,
               icon: p.icon,
-              colors: [
-                colors.success,
-                colors.info,
-                colors.warning,
-                colors.danger,
-              ],
-              track: colors.textSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Semantics(
             container: true,
             header: true,
@@ -150,24 +141,30 @@ class _VerdictHeroState extends State<VerdictHero>
                     child: Text(
                       word,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineLarge?.copyWith(
                         color: color,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    p.label,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium,
-                  ),
+                  if (widget.expert) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      p.label,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ],
                   if (sentence.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Text(
                       sentence,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyLarge,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                      ),
                     ),
                   ],
                   if (widget.expert && confidence != null) ...[
@@ -184,98 +181,110 @@ class _VerdictHeroState extends State<VerdictHero>
               ),
             ),
           ),
+          if (index != null) ...[
+            const SizedBox(height: 14),
+            Semantics(
+              label: l10n.gaugeSemantics(
+                VerdictPresentation.levelLabel(l10n, p.level),
+              ),
+              image: true,
+              child: _LevelBar(
+                animation: _controller,
+                active: index,
+                colors: [
+                  colors.success,
+                  colors.info,
+                  colors.warning,
+                  colors.danger,
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
-          ListenButton(text: widget.speech),
+          ListenButton(
+            text: widget.speech,
+            background: theme.colorScheme.surface,
+            foreground: color,
+          ),
         ],
       ),
     );
   }
 }
 
-/// Jauge en demi-cercle et pictogramme du verdict.
-class _Gauge extends StatelessWidget {
+/// Pictogramme du verdict dans un disque plein, entouré de deux halos qui
+/// s'ouvrent ; il tremble un instant en cas de danger.
+class _HaloBadge extends StatelessWidget {
   const new({
     required this.animation,
     required this.level,
     required this.color,
     required this.icon,
-    required this.colors,
-    required this.track,
   });
 
   final Animation<double> animation;
   final RiskLevel level;
   final Color color;
   final IconData icon;
-  final List<Color> colors;
-  final Color track;
 
-  static const width = 220.0;
-  static const height = 132.0;
-  static const badge = 68.0;
+  static const size = 132.0;
 
   @override
   Widget build(BuildContext context) {
-    final needle = CurvedAnimation(
-      parent: animation,
-      curve: const Interval(0, 0.7, curve: Curves.elasticOut),
-    );
     final pop = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.2, 0.75, curve: Curves.elasticOut),
+      curve: const Interval(0, 0.55, curve: Curves.elasticOut),
+    );
+    final halo = CurvedAnimation(
+      parent: animation,
+      curve: const Interval(0.15, 0.85, curve: Curves.easeOutCubic),
     );
     final shake = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.7, 1),
+      curve: const Interval(0.6, 1),
     );
-    final index = VerdictHero.gaugeIndex(level);
-    final onColor =
-        ThemeData.estimateBrightnessForColor(color) == Brightness.dark
-        ? Colors.white
-        : Colors.black;
-    return SizedBox(
-      width: width,
-      height: height,
+    final onColor = PictoBadge.onColor(color);
+    return SizedBox.square(
+      dimension: size,
       child: AnimatedBuilder(
         animation: animation,
         builder: (context, _) {
           final dx = level == RiskLevel.danger
-              ? math.sin(shake.value * math.pi * 8) * 6 * (1 - shake.value)
+              ? math.sin(shake.value * math.pi * 8) * 5 * (1 - shake.value)
               : 0.0;
+          Widget ring(double diameter, double alpha) => Container(
+            width: diameter * (0.7 + 0.3 * halo.value),
+            height: diameter * (0.7 + 0.3 * halo.value),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: alpha * halo.value),
+            ),
+          );
           return Stack(
-            clipBehavior: Clip.none,
+            alignment: Alignment.center,
             children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _GaugePainter(
-                    colors: colors,
-                    track: track,
-                    active: index,
-                    needle: needle.value,
-                    needleColor: color,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: (width - badge) / 2 + dx,
-                top: height - badge,
+              ring(size, 0.08),
+              ring(100, 0.14),
+              Transform.translate(
+                offset: Offset(dx, 0),
                 child: Transform.scale(
-                  scale: pop.value.clamp(0, 1.4),
+                  scale: pop.value.clamp(0, 1.2),
                   child: Container(
-                    width: badge,
-                    height: badge,
+                    width: 72,
+                    height: 72,
                     decoration: BoxDecoration(
-                      color: color,
                       shape: BoxShape.circle,
+                      color: color,
                       boxShadow: [
                         BoxShadow(
                           color: color.withValues(alpha: 0.35),
-                          blurRadius: 16,
-                          spreadRadius: 2,
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
-                    child: Icon(icon, size: 40, color: onColor),
+                    alignment: Alignment.center,
+                    child: Icon(icon, color: onColor, size: 38),
                   ),
                 ),
               ),
@@ -287,68 +296,55 @@ class _Gauge extends StatelessWidget {
   }
 }
 
-class _GaugePainter extends CustomPainter {
-  new({
-    required this.colors,
-    required this.track,
+/// Barre de niveau : quatre cases du vert au rouge, celle du verdict en
+/// couleur pleine, les autres pâlies.
+class _LevelBar extends StatelessWidget {
+  const new({
+    required this.animation,
     required this.active,
-    required this.needle,
-    required this.needleColor,
+    required this.colors,
   });
 
+  final Animation<double> animation;
+  final int active;
   final List<Color> colors;
-  final Color track;
-  final int? active;
-  final double needle;
-  final Color needleColor;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height - _Gauge.badge / 2);
-    final radius = size.width / 2 - 14;
-    final rect = Rect.fromCircle(center: center, radius: radius);
-    const sweep = math.pi / 4;
-    const gap = 0.06;
-    for (var i = 0; i < colors.length; i++) {
-      final on = i == active;
-      final paint = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round
-        ..strokeWidth = on ? 20 : 13
-        ..color = active == null
-            ? track.withValues(alpha: 0.3)
-            : on
-            ? colors[i]
-            : colors[i].withValues(alpha: 0.28);
-      canvas.drawArc(
-        rect,
-        math.pi + i * sweep + gap / 2,
-        sweep - gap,
-        false,
-        paint,
-      );
-    }
-    if (active == null) return;
-    final target = (active! + 0.5) * sweep;
-    final angle = (math.pi + target * needle).clamp(math.pi, 2 * math.pi);
-    final tip =
-        center + Offset(math.cos(angle), math.sin(angle)) * (radius - 4);
-    canvas.drawLine(
-      center,
-      tip,
-      Paint()
-        ..color = needleColor
-        ..strokeWidth = 5
-        ..strokeCap = StrokeCap.round,
+  Widget build(BuildContext context) {
+    final fill = CurvedAnimation(
+      parent: animation,
+      curve: const Interval(0.35, 0.9, curve: Curves.easeOutCubic),
+    );
+    return SizedBox(
+      width: 220,
+      height: 8,
+      child: AnimatedBuilder(
+        animation: fill,
+        builder: (context, _) => Row(
+          children: [
+            for (final (i, color) in colors.indexed) ...[
+              if (i > 0) const SizedBox(width: 6),
+              Expanded(
+                child: Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: i == active
+                        ? Color.lerp(
+                            color.withValues(alpha: 0.25),
+                            color,
+                            fill.value,
+                          )
+                        : color.withValues(alpha: 0.25),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
-
-  @override
-  bool shouldRepaint(_GaugePainter old) =>
-      old.needle != needle ||
-      old.active != active ||
-      old.needleColor != needleColor ||
-      old.track != track;
 }
 
 /// Texte lu par « Écouter » : mot d'alerte, phrase simple, indices et

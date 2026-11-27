@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/motion/appear.dart';
+import 'package:safelink/core/theme/app_theme.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/core/widgets/brand.dart';
-import 'package:safelink/core/widgets/info_card.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
@@ -106,153 +108,223 @@ class _HomeScreenState extends State<HomeScreen> {
     final colors = SafeLinkColors.of(context);
     final isLink = _kind == AnalysisKind.link;
     final preview = _schemePreview();
+    final field = TextField(
+      key: ValueKey(_kind),
+      controller: _controller,
+      focusNode: _focus,
+      keyboardType: isLink ? TextInputType.url : TextInputType.multiline,
+      textInputAction: isLink ? TextInputAction.go : TextInputAction.newline,
+      autocorrect: !isLink,
+      enableSuggestions: !isLink,
+      minLines: isLink ? 1 : 4,
+      maxLines: isLink ? 4 : 10,
+      onSubmitted: isLink ? (_) => _analyze() : null,
+      decoration: InputDecoration(
+        labelText: isLink
+            ? l10n.homeLinkFieldLabel
+            : l10n.homeMessageFieldLabel,
+        hintText: isLink ? l10n.homeLinkFieldHint : l10n.homeMessageFieldHint,
+        alignLabelWithHint: !isLink,
+        suffixIcon: _controller.text.isEmpty
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.close_rounded),
+                tooltip: l10n.homeClear,
+                onPressed: _controller.clear,
+              ),
+      ),
+    );
+    final paste = FilledButton.tonalIcon(
+      style: FilledButton.styleFrom(minimumSize: const Size(0, 56)),
+      icon: const Icon(Icons.content_paste_rounded, size: 20),
+      label: Text(l10n.homePaste),
+      onPressed: _paste,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const SafeLinkWordmark(),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            tooltip: l10n.homeHelpTooltip,
-            onPressed: () => context.go(AppRoutes.help),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: l10n.openSettingsTooltip,
-            onPressed: () => context.go(AppRoutes.settings),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton.filledTonal(
+              style: IconButton.styleFrom(
+                backgroundColor: theme.colorScheme.surface,
+                foregroundColor: theme.colorScheme.onSurface,
+              ),
+              icon: const Icon(Icons.help_outline_rounded),
+              tooltip: l10n.homeHelpTooltip,
+              onPressed: () => context.go(AppRoutes.help),
+            ),
           ),
         ],
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
           children: [
-            _HomeHero(tagline: l10n.tagline, title: l10n.homeTitle),
-            const SizedBox(height: 20),
-            Text(l10n.homeModeLabel, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            _ModeTiles(
-              selected: _kind,
-              onSelected: (kind) => setState(() => _kind = kind),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              key: ValueKey(_kind),
-              controller: _controller,
-              focusNode: _focus,
-              keyboardType: isLink
-                  ? TextInputType.url
-                  : TextInputType.multiline,
-              textInputAction: isLink
-                  ? TextInputAction.go
-                  : TextInputAction.newline,
-              autocorrect: !isLink,
-              enableSuggestions: !isLink,
-              minLines: isLink ? 1 : 5,
-              maxLines: isLink ? 4 : 12,
-              onSubmitted: isLink ? (_) => _analyze() : null,
-              decoration: InputDecoration(
-                labelText: isLink
-                    ? l10n.homeLinkFieldLabel
-                    : l10n.homeMessageFieldLabel,
-                hintText: isLink
-                    ? l10n.homeLinkFieldHint
-                    : l10n.homeMessageFieldHint,
-                alignLabelWithHint: !isLink,
-                border: const OutlineInputBorder(),
-                suffixIcon: _controller.text.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear),
-                        tooltip: l10n.homeClear,
-                        onPressed: _controller.clear,
+            Appear(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      l10n.tagline,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontSize: 28,
+                        letterSpacing: -0.4,
                       ),
-              ),
-            ),
-            if (preview != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                l10n.homeSchemePreview(preview),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            FilledButton.tonalIcon(
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(56),
-              ),
-              icon: const Icon(Icons.content_paste_rounded),
-              label: Text(l10n.homePaste),
-              onPressed: _paste,
-            ),
-            const SizedBox(height: 12),
-            AnimatedScale(
-              scale: _canAnalyze ? 1 : 0.97,
-              duration: const Duration(milliseconds: 200),
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(60),
-                  textStyle: theme.textTheme.titleMedium,
-                ),
-                icon: const Icon(Icons.shield_outlined, size: 28),
-                label: Text(
-                  isLink ? l10n.homeAnalyzeLink : l10n.homeAnalyzeMessage,
-                ),
-                onPressed: _canAnalyze ? _analyze : null,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.phone_android_outlined,
-                    size: 20,
-                    color: colors.textSecondary,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.homeLocalNote,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.homeSubtitle,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       color: colors.textSecondary,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                ],
               ),
-              icon: const Icon(Icons.science_outlined),
-              label: Text(l10n.homeExamples),
-              onPressed: () => context.go(AppRoutes.examples),
+            ),
+            const SizedBox(height: 20),
+            Appear(
+              index: 1,
+              child: _ModeSwitch(
+                selected: _kind,
+                onSelected: (kind) => setState(() => _kind = kind),
+              ),
             ),
             const SizedBox(height: 16),
-            InfoCard(
-              icon: Icons.share_rounded,
-              title: l10n.homeShareTipTitle,
-              body: l10n.homeShareTip,
+            Appear(
+              index: 2,
+              child: SoftCard(
+                radius: 24,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final scale = MediaQuery.textScalerOf(context).scale(1);
+                        if (!isLink || constraints.maxWidth < 300 * scale) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              field,
+                              const SizedBox(height: 10),
+                              paste,
+                            ],
+                          );
+                        }
+                        return IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(child: field),
+                              const SizedBox(width: 10),
+                              paste,
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    if (preview != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.homeSchemePreview(preview),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    AnimatedScale(
+                      scale: _canAnalyze ? 1 : 0.98,
+                      duration: const Duration(milliseconds: 200),
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(56),
+                          textStyle: theme.textTheme.titleMedium?.copyWith(
+                            fontFamily: AppTheme.headingFont,
+                            fontSize: 17,
+                          ),
+                        ),
+                        icon: const Icon(Icons.verified_user_outlined),
+                        label: Text(
+                          isLink
+                              ? l10n.homeAnalyzeLink
+                              : l10n.homeAnalyzeMessage,
+                        ),
+                        onPressed: _canAnalyze ? _analyze : null,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Icon(
+                            Icons.phone_android_outlined,
+                            size: 18,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.homeLocalNote,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colors.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 8),
-            InfoCard(
-              icon: Icons.qr_code_scanner,
-              title: l10n.homeComingSoonTitle,
-              body: l10n.homeComingSoon,
-              accent: colors.info,
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                icon: const Icon(Icons.history),
-                label: Text(l10n.homeHistoryShortcut),
-                onPressed: () => context.go(AppRoutes.history),
+            const SizedBox(height: 24),
+            Appear(
+              index: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  GroupLabel(l10n.homeQuickTitle),
+                  GroupedCard(
+                    children: [
+                      CardRow(
+                        leading: PictoBadge(
+                          icon: Icons.share_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 40,
+                        ),
+                        title: l10n.homeShareRowTitle,
+                        subtitle: l10n.homeShareRowSubtitle,
+                        onTap: () => context.go(AppRoutes.help),
+                      ),
+                      CardRow(
+                        leading: PictoBadge(
+                          icon: Icons.science_outlined,
+                          color: colors.info,
+                          size: 40,
+                        ),
+                        title: l10n.homeExamples,
+                        subtitle: l10n.homeExamplesSubtitle,
+                        onTap: () => context.go(AppRoutes.examples),
+                      ),
+                      CardRow(
+                        leading: PictoBadge(
+                          icon: Icons.qr_code_scanner_rounded,
+                          color: colors.textSecondary,
+                          size: 40,
+                        ),
+                        title: l10n.homeQrTitle,
+                        subtitle: l10n.homeComingSoon,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
@@ -262,111 +334,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// En-tête animé : le bouclier SafeLink apparaît en rebondissant, entouré
-/// d'une onde.
-class _HomeHero extends StatefulWidget {
-  const new({required this.tagline, required this.title});
-
-  final String tagline;
-  final String title;
-
-  @override
-  State<_HomeHero> createState() => _HomeHeroState();
-}
-
-class _HomeHeroState extends State<_HomeHero>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1400),
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_controller.isAnimating || _controller.isCompleted) return;
-    if (reduceMotion(context)) {
-      _controller.value = 1;
-    } else {
-      _controller.forward().ignore();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
-    final pop = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0, 0.6, curve: Curves.elasticOut),
-    );
-    final wave = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.3, 1, curve: Curves.easeOut),
-    );
-    return Row(
-      children: [
-        ExcludeSemantics(
-          child: SizedBox.square(
-            dimension: 84,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) => Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 60 + 24 * wave.value,
-                    height: 60 + 24 * wave.value,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: primary.withValues(alpha: 0.18 * (1 - wave.value)),
-                    ),
-                  ),
-                  Transform.scale(
-                    scale: pop.value.clamp(0, 1.3),
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.colorScheme.primaryContainer,
-                      ),
-                      alignment: Alignment.center,
-                      child: const SafeLinkMark(size: 40),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.tagline,
-                style: theme.textTheme.titleMedium?.copyWith(color: primary),
-              ),
-              const SizedBox(height: 4),
-              Text(widget.title, style: theme.textTheme.titleLarge),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Deux grandes vignettes pour choisir : un lien ou un message.
-class _ModeTiles extends StatelessWidget {
+/// Choix « Lien » ou « Message » : deux segments sur une piste grise, le
+/// segment choisi en blanc, légèrement surélevé.
+class _ModeSwitch extends StatelessWidget {
   const new({required this.selected, required this.onSelected});
 
   final AnalysisKind selected;
@@ -375,60 +345,52 @@ class _ModeTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final tiles = [
-      _ModeTile(
-        icon: Icons.link_rounded,
-        label: l10n.homeModeLink,
-        hint: l10n.homeModeLinkHint,
-        selected: selected == AnalysisKind.link,
-        onTap: () => onSelected(AnalysisKind.link),
+    final colors = SafeLinkColors.of(context);
+    return Semantics(
+      label: l10n.homeModeLabel,
+      container: true,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            for (final (kind, icon, label) in [
+              (AnalysisKind.link, Icons.link_rounded, l10n.homeModeLink),
+              (AnalysisKind.message, Icons.sms_outlined, l10n.homeModeMessage),
+            ])
+              Expanded(
+                child: _Segment(
+                  icon: icon,
+                  label: label,
+                  selected: selected == kind,
+                  onTap: () => onSelected(kind),
+                  shadow: colors.cardShadow,
+                ),
+              ),
+          ],
+        ),
       ),
-      _ModeTile(
-        icon: Icons.sms_outlined,
-        label: l10n.homeModeMessage,
-        hint: l10n.homeModeMessageHint,
-        selected: selected == AnalysisKind.message,
-        onTap: () => onSelected(AnalysisKind.message),
-      ),
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final scale = MediaQuery.textScalerOf(context).scale(1);
-        if (constraints.maxWidth < 300 * scale) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [tiles[0], const SizedBox(height: 8), tiles[1]],
-          );
-        }
-        return IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(child: tiles[0]),
-              const SizedBox(width: 12),
-              Expanded(child: tiles[1]),
-            ],
-          ),
-        );
-      },
     );
   }
 }
 
-class _ModeTile extends StatelessWidget {
+class _Segment extends StatelessWidget {
   const new({
     required this.icon,
     required this.label,
-    required this.hint,
     required this.selected,
     required this.onTap,
+    required this.shadow,
   });
 
   final IconData icon;
   final String label;
-  final String hint;
   final bool selected;
   final VoidCallback onTap;
+  final List<BoxShadow> shadow;
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +399,6 @@ class _ModeTile extends StatelessWidget {
     final duration = reduceMotion(context)
         ? Duration.zero
         : const Duration(milliseconds: 220);
-    final foreground = selected ? scheme.onPrimaryContainer : scheme.onSurface;
     return Semantics(
       button: true,
       selected: selected,
@@ -445,52 +406,44 @@ class _ModeTile extends StatelessWidget {
       child: AnimatedContainer(
         duration: duration,
         curve: Curves.easeOutCubic,
+        constraints: const BoxConstraints(minHeight: 48),
         decoration: BoxDecoration(
-          color: selected ? scheme.primaryContainer : scheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? scheme.primary : scheme.outlineVariant,
-            width: selected ? 2.5 : 1,
-          ),
+          color: selected ? scheme.surface : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: selected ? shadow : const [],
         ),
         child: Material(
           type: MaterialType.transparency,
           child: InkWell(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
             onTap: onTap,
             child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ExcludeSemantics(
-                    child: AnimatedScale(
-                      scale: selected ? 1.12 : 1,
-                      duration: duration,
-                      curve: Curves.easeOutBack,
-                      child: Icon(
-                        icon,
-                        size: 40,
+                    child: Icon(
+                      icon,
+                      size: 20,
+                      color: selected
+                          ? scheme.primary
+                          : SafeLinkColors.of(context).textSecondary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontSize: 16,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                         color: selected
-                            ? scheme.onPrimaryContainer
-                            : scheme.primary,
+                            ? scheme.onSurface
+                            : SafeLinkColors.of(context).textSecondary,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    hint,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: foreground,
                     ),
                   ),
                 ],

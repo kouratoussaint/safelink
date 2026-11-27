@@ -41,11 +41,11 @@ void main() {
     expect(find.text('Vérifiez avant de cliquer.'), findsOneWidget);
   });
 
-  testWidgets('le raccourci de l’accueil ouvre les paramètres', (tester) async {
+  testWidgets('le bouton « ? » de l’accueil ouvre l’aide', (tester) async {
     await pumpSafeLinkApp(tester);
-    await tester.tap(find.byTooltip('Ouvrir les paramètres'));
+    await tester.tap(find.byTooltip('Aide'));
     await tester.pumpAndSettle();
-    expect(appBarTitle('Paramètres'), findsOneWidget);
+    expect(appBarTitle('Aide'), findsOneWidget);
   });
 
   testWidgets('l’accueil propose l’analyse d’un lien ou d’un message', (

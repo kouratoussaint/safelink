@@ -27,6 +27,33 @@ Règles :
 - Toute nouvelle couleur passe par `AppTheme` ou `SafeLinkColors` et par le
   test de contraste.
 
+## Style « Clarté » (refonte, choisi le 27/11/2026)
+
+Piste A des maquettes (canevas « SafeLink — Refonte de l'interface ») :
+clair, aéré, épuré.
+
+- **Fond et cartes** : fond de page `#F5F7FA` (`SafeLinkColors.canvas`),
+  cartes blanches sans contour, ombre très douce (`SoftCard`), coins de 20
+  à 28 dp ; en sombre, fond `#06182A` et cartes `#0D2640` sans ombre.
+- **Un seul bouton principal par écran**, turquoise foncé `#00796B`, 56 dp
+  de haut ; boutons secondaires en teinte menthe ; contours `#D5DDE5`.
+- **Pastilles** : pictogramme sur un carré aux coins arrondis, teinté de
+  sa couleur (`PictoBadge`) ; rondes et pleines pour les gestes.
+- **Verdict** : carte teintée de la couleur du niveau (fonds `…Soft`),
+  pictogramme dans un disque plein entouré de deux halos qui s'ouvrent,
+  mot d'alerte en Poppins 32, phrase simple, barre de niveau en quatre
+  cases (vert, bleu, orange, rouge), « Écouter » en pastille blanche. Le
+  libellé technique (« Lien suspect ») n'apparaît qu'en mode expert ;
+  TalkBack le lit toujours.
+- **Adresse** : « Le vrai site » et le domaine enregistré en grand, puis
+  le lien complet avec ce domaine surligné.
+- **« Pourquoi ? »** en grille de deux vignettes (une seule colonne si le
+  texte est grossi) ; **« Que faire ? »** en lignes d'une même carte.
+- **Accueil** : titre, phrase d'accroche, choix Lien / Message en segments,
+  carte de saisie (champ, « Coller », « Analyser »), puis « Plus rapide » :
+  partager, exemples, QR code (bientôt).
+- Barre de navigation blanche, filet en haut, onglet actif en turquoise.
+
 ## Typographie
 
 Poppins (titres, 600–700) et Inter (texte, 400–600), embarquées sous SIL

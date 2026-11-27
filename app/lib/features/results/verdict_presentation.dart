@@ -203,6 +203,18 @@ final class VerdictPresentation {
     };
   }
 
+  /// Fond teinté du niveau [level] (carte du verdict, pastilles).
+  static Color softColorOf(BuildContext context, RiskLevel level) {
+    final colors = SafeLinkColors.of(context);
+    return switch (level) {
+      RiskLevel.danger => colors.dangerSoft,
+      RiskLevel.attention => colors.warningSoft,
+      RiskLevel.uncertain => colors.infoSoft,
+      RiskLevel.nothingObvious => colors.successSoft,
+      RiskLevel.notAnalyzable => colors.neutralSoft,
+    };
+  }
+
   /// Icône du niveau [level].
   static IconData iconOf(RiskLevel level) => switch (level) {
     RiskLevel.danger => Icons.gpp_bad_outlined,

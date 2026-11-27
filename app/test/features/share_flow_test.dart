@@ -305,14 +305,13 @@ void main() {
     tester,
   ) async {
     await pumpSafeLinkApp(tester);
-    await flow.scrollTo(tester, find.text('Plus rapide : partager'));
-    expect(find.textContaining('« Vérifier avec SafeLink »'), findsOneWidget);
-    expect(find.textContaining('partager un texte'), findsNothing);
+    await flow.scrollTo(tester, find.text('Partager vers SafeLink'));
+    expect(find.text('Depuis WhatsApp ou vos SMS'), findsOneWidget);
 
-    ProviderScope.containerOf(tester.element(find.byType(MaterialApp)))
-        .read(routerProvider)
-        .go(AppRoutes.help);
+    // La ligne ouvre l'aide, qui montre comment partager.
+    await tester.tap(find.text('Partager vers SafeLink'));
     await tester.pumpAndSettle();
+    expect(appBarTitle('Aide'), findsOneWidget);
     await flow.scrollTo(tester, find.text('Plus rapide : partager'));
     expect(
       find.text('Appuyez longtemps sur le message ou le lien reçu'),

@@ -81,13 +81,13 @@ void main() {
     expect(exits, isEmpty);
   });
 
-  testWidgets('le raccourci Paramètres de l’Accueil est mémorisé', (
+  testWidgets('l’aide ouverte depuis l’Accueil revient à l’Accueil', (
     tester,
   ) async {
     await pump(tester);
-    await tester.tap(find.byTooltip('Ouvrir les paramètres'));
+    await tester.tap(find.byTooltip('Aide'));
     await tester.pumpAndSettle();
-    expect(currentTitle(tester), 'Paramètres');
+    expect(currentTitle(tester), 'Aide');
 
     await pressBack(tester);
     expect(find.text('Vérifiez avant de cliquer.'), findsOneWidget);

@@ -158,7 +158,7 @@ void main() {
         historyBackend: backend,
       );
       await flow.scrollTo(tester, find.text('Essayer avec un exemple'));
-      await tester.tap(flow.button('Essayer avec un exemple'));
+      await tester.tap(find.text('Essayer avec un exemple'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Exemples inventés'), findsOneWidget);
       await flow.scrollTo(
@@ -183,7 +183,10 @@ void main() {
       await tester.tap(find.text('Lien vers un faux site'));
       await tester.pumpAndSettle();
       expect(find.text('Attention !'), findsOneWidget);
-      expect(find.text('Lien suspect'), findsOneWidget);
+      expect(
+        find.text('Ce lien ressemble à un piège. Ne l’ouvrez pas.'),
+        findsOneWidget,
+      );
     });
   });
 

@@ -10,10 +10,16 @@ import 'package:safelink/l10n/generated/app_localizations.dart';
 /// Bouton « Écouter » : lit [text] à voix haute avec la voix du téléphone.
 /// Un second appui arrête la lecture.
 class ListenButton extends ConsumerStatefulWidget {
-  const new({required this.text, super.key});
+  const new({required this.text, this.background, this.foreground, super.key});
 
   /// Texte lu, en phrases courtes.
   final String text;
+
+  /// Fond du bouton ; à défaut, la teinte secondaire du thème.
+  final Color? background;
+
+  /// Couleur du texte et du pictogramme.
+  final Color? foreground;
 
   @override
   ConsumerState<ListenButton> createState() => _ListenButtonState();
@@ -57,8 +63,12 @@ class _ListenButtonState extends ConsumerState<ListenButton> {
     final l10n = AppLocalizations.of(context);
     return FilledButton.tonalIcon(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(160, 52),
+        minimumSize: const Size(150, 48),
         shape: const StadiumBorder(),
+        backgroundColor: widget.background,
+        foregroundColor: widget.foreground,
+        textStyle: Theme.of(context).textTheme.titleSmall
+            ?.copyWith(fontWeight: FontWeight.w600),
       ),
       onPressed: _toggle,
       icon: AnimatedSwitcher(
