@@ -139,11 +139,15 @@ final class UrlRules {
 
   final UrlParser _parser;
 
-  /// Raccourcisseurs de liens courants : ils cachent la destination réelle.
+  /// Raccourcisseurs de liens courants, y compris les liens d'application
+  /// qui envoient chaque téléphone vers une destination différente
+  /// (`onelink.to`, `onelink.me`, `app.link`) : ils cachent la destination
+  /// réelle.
   static const shorteners = {
-    'bit.do', 'bit.ly', 'buff.ly', 'cutt.ly', 'goo.gl', 'is.gd', 'lnkd.in', //
-    'ow.ly', 'rb.gy', 'rebrand.ly', 's.id', 'shorturl.at', 't.co', 't.ly',
-    'tiny.cc', 'tinyurl.com', 'v.gd',
+    'app.link', 'bit.do', 'bit.ly', 'buff.ly', 'cutt.ly', 'goo.gl', 'is.gd', //
+    'lnkd.in', 'onelink.me', 'onelink.to', 'ow.ly', 'rb.gy', 'rebrand.ly',
+    's.id', 'shorturl.at', 't.co', 't.ly', 'tiny.cc', 'tinyurl.com', 'urlz.fr',
+    'v.gd',
   };
 
   /// Services de partage où n'importe qui publie une page ou un fichier

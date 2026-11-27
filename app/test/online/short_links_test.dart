@@ -91,4 +91,68 @@ void main() {
     await resolver.resolve(parse('https://bit.ly/abc'));
     expect(hosts(resolver), hasLength(1));
   });
+
+  group('liens d’application', () {
+    test('onelink.to → Play Store : page web du Play Store', () async {
+      final resolver = fakeShortLinks({
+        'https://onelink.to/nn64xw':
+            'market://details?id=com.orange.myorange.ocm',
+      });
+      final destination = await resolver.resolve(
+        parse('https://onelink.to/nn64xw'),
+      );
+      expect(
+        destination?.href,
+        'https://play.google.com/store/apps/details?id=com.orange.myorange.ocm',
+      );
+      // Demandé comme un téléphone Android, pour avoir sa destination.
+      final (_, headers) = (resolver.http as FakeHttpTransport).requests.single;
+      expect(headers['User-Agent'], contains('Android'));
+      expect(headers['User-Agent'], contains('Mobile'));
+    });
+
+    test('intent Android : page de secours, sinon Play Store', () {
+      expect(
+        ShortLinkResolver.appStoreWebPage(
+          'intent://ouvrir#Intent;scheme=app;package=com.exemple.app;'
+          'S.browser_fallback_url=https%3A%2F%2Fpiege.xyz%2Fapp;end',
+        ),
+        'https://piege.xyz/app',
+      );
+      expect(
+        ShortLinkResolver.appStoreWebPage(
+          'intent://ouvrir#Intent;scheme=app;package=com.exemple.app;end',
+        ),
+        'https://play.google.com/store/apps/details?id=com.exemple.app',
+      );
+      expect(
+        ShortLinkResolver.appStoreWebPage(
+          'intent://x#Intent;S.browser_fallback_url=%zz;end',
+        ),
+        isNull,
+      );
+    });
+
+    test('App Store et adresses web', () {
+      expect(
+        ShortLinkResolver.appStoreWebPage(
+          'itms-apps://itunes.apple.com/app/id123456',
+        ),
+        'https://apps.apple.com/app/id123456',
+      );
+      expect(ShortLinkResolver.appStoreWebPage('https://exemple.com/'), isNull);
+      expect(ShortLinkResolver.appStoreWebPage('market://details'), isNull);
+    });
+
+    test('onelink.me et *.app.link sont des liens à dérouler', () {
+      expect(
+        ShortLinkResolver.isShortener(parse('https://onelink.me/abc')),
+        isTrue,
+      );
+      expect(
+        ShortLinkResolver.isShortener(parse('https://monapp.app.link/x')),
+        isTrue,
+      );
+    });
+  });
 }

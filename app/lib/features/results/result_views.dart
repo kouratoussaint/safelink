@@ -116,9 +116,10 @@ class LinkResultView extends ConsumerWidget {
         ),
       if (shortened && (destination != null || looked))
         DestinationCard(destination: destination),
-      if (PagePreviewCard.applies(result, ref))
+      if (PagePreviewCard.applies(result, ref, target: destination?.url))
         PagePreviewCard(
           result: result,
+          target: destination?.url,
           level: presentation.level,
           showRedirect: destination == null,
         ),
@@ -352,9 +353,15 @@ class MessageResultView extends ConsumerWidget {
             ),
         ],
       ),
-      if (firstLink != null && PagePreviewCard.applies(firstLink.result, ref))
+      if (firstLink != null &&
+          PagePreviewCard.applies(
+            firstLink.result,
+            ref,
+            target: destinations[firstLink.result.url?.href]?.url,
+          ))
         PagePreviewCard(
           result: firstLink.result,
+          target: destinations[firstLink.result.url?.href]?.url,
           level: VerdictPresentation.forLinkWithDestination(
             firstLink.result,
             destinations[firstLink.result.url?.href],

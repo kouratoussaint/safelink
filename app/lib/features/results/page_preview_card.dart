@@ -31,12 +31,20 @@ final pagePreviewProvider = FutureProvider.autoDispose
 class PagePreviewCard extends ConsumerStatefulWidget {
   const new({
     required this.result,
+    this.target,
     this.level,
     this.showRedirect = true,
     super.key,
   });
 
   final UrlAnalysisResult result;
+
+  /// Page à photographier si ce n'est pas le lien lui-même : la vraie
+  /// destination d'un lien raccourci, quand elle est connue. Google
+  /// photographie alors directement la page où le lien mène, même si le
+  /// lien passe par une adresse qu'un navigateur ne sait pas afficher
+  /// (ouverture du Play Store, par exemple).
+  final ParsedUrl? target;
 
   /// Niveau affiché (celui de la destination d'un lien raccourci s'il est
   /// plus grave) ; par défaut, celui de [result].
@@ -47,8 +55,12 @@ class PagePreviewCard extends ConsumerStatefulWidget {
   final bool showRedirect;
 
   /// Vrai si un aperçu peut être pris pour [result] dans ces conditions.
-  static bool applies(UrlAnalysisResult result, WidgetRef ref) {
-    final url = result.url;
+  static bool applies(
+    UrlAnalysisResult result,
+    WidgetRef ref, {
+    ParsedUrl? target,
+  }) {
+    final url = target ?? result.url;
     return url != null &&
         url.hostType == UrlHostType.domain &&
         ref.watch(googleEnabledProvider) &&
@@ -64,11 +76,11 @@ class _PagePreviewCardState extends ConsumerState<PagePreviewCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (!PagePreviewCard.applies(widget.result, ref)) {
+    if (!PagePreviewCard.applies(widget.result, ref, target: widget.target)) {
       return const SizedBox.shrink();
     }
     final l10n = AppLocalizations.of(context);
-    final url = widget.result.url!;
+    final url = widget.target ?? widget.result.url!;
     final sensitive = UrlMasking.maskedCount(url) > 0;
     final Widget body;
     if (sensitive && !_confirmed) {

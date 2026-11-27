@@ -85,6 +85,8 @@ INCONCLUSIVE	https://bit.ly/3xYzAbC	URL_SHORTENER,quiet	raccourcisseur
 INCONCLUSIVE	https://tinyurl.com/promo2026	URL_SHORTENER,quiet	raccourcisseur
 INCONCLUSIVE	https://t.co/AbCdEf	URL_SHORTENER,quiet	raccourcisseur
 INCONCLUSIVE	https://cutt.ly/abc	URL_SHORTENER,quiet	raccourcisseur
+INCONCLUSIVE	https://onelink.to/nn64xw	URL_SHORTENER,quiet	lien d'application
+INCONCLUSIVE	https://monapp.app.link/promo	URL_SHORTENER,quiet	lien d'application
 INCONCLUSIVE	https://example.com:8443/	URL_UNUSUAL_PORT,quiet	port inhabituel
 INCONCLUSIVE	https://a.b.c.d.example.com/	URL_MANY_SUBDOMAINS,quiet	sous-domaines nombreux
 INCONCLUSIVE	https://site.inexistant/	URL_UNLISTED_SUFFIX,quiet	extension inconnue

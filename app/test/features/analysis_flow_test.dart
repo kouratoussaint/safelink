@@ -275,7 +275,7 @@ void main() {
         tester,
         find.textContaining('URL_BRAND_IN_SUBDOMAIN · Indice moyen'),
       );
-      expect(find.textContaining('url-1.1.0'), findsOneWidget);
+      expect(find.textContaining('url-1.2.0'), findsOneWidget);
     });
 
     testWidgets('adresse non analysable : explication, pas de confiance', (

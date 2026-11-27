@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/online/online_checker.dart';
 import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
+import '../helpers/fake_google.dart';
 import '../helpers/fake_online.dart';
 import '../helpers/fake_short_links.dart';
 import '../helpers/pump_app.dart';
@@ -144,4 +146,42 @@ void main() {
       handle.dispose();
     });
   }
+
+  testWidgets('lien d’application : photo de la page du Play Store', (
+    tester,
+  ) async {
+    const play =
+        'https://play.google.com/store/apps/details?id=com.orange.myorange.ocm';
+    final preview = fakePreview();
+    await pumpSafeLinkApp(
+      tester,
+      expert: false,
+      online: OnlineChoice.enabled,
+      googleKey: 'test-key',
+      onlineChecker: OnlineChecker(
+        dns: FakeDohTransport(),
+        json: FakeJsonTransport(),
+        safeBrowsing: fakeSafeBrowsing(),
+      ),
+      pagePreviewClient: preview,
+      shortLinks: fakeShortLinks({
+        'https://onelink.to/nn64xw':
+            'market://details?id=com.orange.myorange.ocm',
+      }),
+    );
+    await history.analyzeLink(tester, 'https://onelink.to/nn64xw');
+    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
+    expect(
+      find.bySemanticsLabel('Vraie destination : google.com'),
+      findsOneWidget,
+    );
+    await flow.scrollTo(tester, find.text('Aperçu de la page'));
+    expect(
+      find.bySemanticsLabel('Photo de la page, prise par Google'),
+      findsOneWidget,
+    );
+    // Google photographie la page du Play Store, pas le lien qui l'ouvre.
+    final (uri, _) = (preview.http as FakeHttpTransport).requests.single;
+    expect(uri.queryParameters['url'], play);
+  });
 }
