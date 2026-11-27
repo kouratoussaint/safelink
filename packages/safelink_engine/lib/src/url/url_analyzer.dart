@@ -227,7 +227,7 @@ final class UrlAnalyzer implements ContentAnalyzer<String, UrlAnalysisResult> {
        rules = rules ?? UrlRules();
 
   /// Version des règles d'analyse des liens.
-  static const rulesVersion = 'url-1.1.0';
+  static const rulesVersion = 'url-1.2.0';
 
   /// Lecteur de liens.
   final UrlParser parser;

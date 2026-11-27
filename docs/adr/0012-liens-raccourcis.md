@@ -34,6 +34,26 @@ ressemble la page, ni où mène le lien.
   `wa.me` et `t.me`).
 - Textes d'accord mis à jour : un lien raccourci est envoyé à son service.
 
+### Liens d'application (complément du 27/11/2026)
+
+Signalé par le porteur : pas d'aperçu pour `https://onelink.to/nn64xw`.
+Ces services (`onelink.to`, `onelink.me`, `app.link`) envoient chaque
+appareil ailleurs : un téléphone Android reçoit
+`market://details?id=com.orange.myorange.ocm` (ouverture du Play Store),
+un ordinateur une autre application. Le navigateur de Google, qui imite un
+téléphone Android, ne peut rien afficher (`NO_FCP`).
+
+- Ces services rejoignent la liste des raccourcisseurs (règles
+  `url-1.2.0`).
+- La destination est demandée en se présentant comme le navigateur d'un
+  téléphone Android, pour obtenir celle qu'aurait l'utilisateur.
+- Une adresse qui ouvre une application est traduite en page web :
+  `market://` et `intent://` → page du Play Store (ou page de secours
+  d'un `intent://`), `itms-apps://` → page de l'App Store.
+- Quand la destination est connue, Google photographie directement cette
+  page. Vérifié en réel : `onelink.to/nn64xw` → page Play Store
+  « Orange Max it », photo reçue (22 Ko).
+
 ## Conséquences
 
 - Le raccourcisseur reçoit le lien raccourci et l'adresse IP du

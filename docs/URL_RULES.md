@@ -1,6 +1,6 @@
 # Règles d'analyse des liens
 
-Version des règles : `url-1.1.0` (moteur `safelink_engine`). SafeLink
+Version des règles : `url-1.2.0` (moteur `safelink_engine`). SafeLink
 n'ouvre jamais le lien. Les règles locales s'appliquent sur l'appareil ; si
 l'utilisateur a activé la vérification en ligne, l'application consulte en
 plus des sources publiques avec le seul nom du site (voir
@@ -44,7 +44,7 @@ au moteur, qui ne fait lui-même aucune requête.
 | `URL_APK_DOWNLOAD` | moyenne | Lien vers un fichier `.apk`, `.apks` ou `.xapk` (application installée hors Play Store) |
 | `URL_BRAND_OTHER_SUFFIX` | faible | Nom d'une marque avec une extension absente de ses domaines sourcés (`paypal.bf`, ou une filiale légitime d'un autre pays) |
 | `URL_UNUSUAL_HOST_CHARACTERS` | faible | Caractères pleine chasse ou séparateurs Unicode dans le nom |
-| `URL_SHORTENER` | faible | Raccourcisseur connu (`bit.ly`, `tinyurl.com`…) : la destination est cachée |
+| `URL_SHORTENER` | faible | Raccourcisseur connu (`bit.ly`, `tinyurl.com`…) ou lien d'application (`onelink.to`, `onelink.me`, `app.link`) : la destination est cachée |
 | `URL_UNUSUAL_PORT` | faible | Port explicite autre que celui du protocole |
 | `URL_MANY_SUBDOMAINS` | faible | Quatre sous-domaines ou plus |
 | `URL_UNLISTED_SUFFIX` | faible | Extension absente de la Public Suffix List |

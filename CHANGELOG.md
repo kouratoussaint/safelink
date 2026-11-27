@@ -6,6 +6,16 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Liens d'application (onelink.to…)
+
+- `onelink.to`, `onelink.me`, `app.link` et `urlz.fr` traités comme des
+  raccourcisseurs (règles `url-1.2.0`).
+- Destination demandée comme le ferait un téléphone Android ; une
+  ouverture du Play Store (`market://`, `intent://`) ou de l'App Store
+  devient la page web correspondante.
+- La photo est prise directement sur la destination quand elle est
+  connue : aperçu de la page Play Store au lieu d'une page vide.
+
 ### Ajouté — Vraie destination des liens raccourcis (ADR 0012)
 
 - Pour bit.ly, tinyurl.com et les autres raccourcisseurs connus, la vraie
