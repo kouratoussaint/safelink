@@ -6,6 +6,22 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Google Safe Browsing et photo des pages (ADR 0011)
+
+- Google Safe Browsing v5 : canonicalisation et expressions selon les
+  règles de Google, seuls des préfixes de 4 octets envoyés, comparaison des
+  empreintes sur le téléphone, réponses JSON ou protobuf, attribution
+  affichée.
+- Photo automatique de la page par les serveurs de Google (PageSpeed
+  Insights) : le téléphone ne contacte jamais le site ; capture dans un
+  cadre de téléphone avec le vrai domaine en barre d'adresse et un bandeau
+  « Faux site probable » si le lien est suspect ; agrandissement ; vraie
+  destination après redirection, à vérifier d'un appui. Pas de photo
+  automatique pour un lien portant un code personnel.
+- Clé injectée à la compilation depuis le secret
+  `SAFELINK_GOOGLE_API_KEY` ; sans clé, ces services sont absents.
+  L'accord de vérification en ligne nomme Google et est redemandé.
+
 ### Ajouté — vérification en ligne (ADR 0010)
 
 - Vérification en ligne du nom des sites, avec l'accord de l'utilisateur

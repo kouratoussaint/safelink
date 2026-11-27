@@ -49,7 +49,11 @@ class SettingsScreen extends ConsumerWidget {
             SwitchListTile(
               secondary: const Icon(Icons.travel_explore),
               title: Text(l10n.settingsOnlineSwitch),
-              subtitle: Text(l10n.settingsOnlineSwitchBody),
+              subtitle: Text(
+                ref.watch(googleEnabledProvider)
+                    ? l10n.settingsOnlineGoogleSwitchBody
+                    : l10n.settingsOnlineSwitchBody,
+              ),
               value: ref.watch(onlineChoiceProvider) == OnlineChoice.enabled,
               onChanged: (value) => ref
                   .read(onlineChoiceProvider.notifier)

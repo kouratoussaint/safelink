@@ -29,6 +29,27 @@ abstract interface class JsonTransport {
   Future<Map<String, Object?>?> get(Uri uri);
 }
 
+/// Réponse HTTP brute.
+final class HttpReply {
+  /// Crée une réponse.
+  const new(this.statusCode, this.contentType, this.body);
+
+  /// Code HTTP.
+  final int statusCode;
+
+  /// Type de contenu (`application/json`…), en minuscules.
+  final String contentType;
+
+  /// Corps de la réponse.
+  final Uint8List body;
+}
+
+/// Requête HTTP GET générique sur HTTPS.
+abstract interface class HttpTransport {
+  /// Envoie un GET à [uri] avec [headers].
+  Future<HttpReply> get(Uri uri, {Map<String, String> headers = const {}});
+}
+
 /// Taille maximale acceptée pour une réponse.
 const int _maxResponseBytes = 256 * 1024;
 
@@ -177,6 +198,64 @@ final class IoJsonTransport implements JsonTransport {
       throw const OnlineLookupException('UNREACHABLE');
     } on FormatException {
       throw const OnlineLookupException('BAD_RESPONSE');
+    } finally {
+      client.close(force: true);
+    }
+  }
+}
+
+/// GET sur HTTPS avec `dart:io`, réponse bornée en taille et en temps.
+final class IoHttpTransport implements HttpTransport {
+  /// Crée le transport.
+  const new({
+    this.timeout = const Duration(seconds: 8),
+    this.maxBytes = _maxResponseBytes,
+  });
+
+  /// Délai maximal d'une requête.
+  final Duration timeout;
+
+  /// Taille maximale de la réponse.
+  final int maxBytes;
+
+  @override
+  Future<HttpReply> get(Uri uri, {Map<String, String> headers = const {}}) =>
+      _get(uri, headers).timeout(
+        timeout,
+        onTimeout: () => throw const OnlineLookupException('TIMEOUT'),
+      );
+
+  Future<HttpReply> _get(Uri uri, Map<String, String> headers) async {
+    if (uri.scheme != 'https') {
+      throw const OnlineLookupException('INSECURE');
+    }
+    final client = HttpClient()
+      ..connectionTimeout = timeout
+      ..userAgent = 'SafeLink'
+      ..autoUncompress = true;
+    try {
+      final request = await client.getUrl(uri);
+      request.followRedirects = false;
+      headers.forEach(request.headers.set);
+      final response = await request.close();
+      final body = BytesBuilder(copy: false);
+      await for (final chunk in response) {
+        body.add(chunk);
+        if (body.length > maxBytes) {
+          throw const OnlineLookupException('TOO_LARGE');
+        }
+      }
+      return HttpReply(
+        response.statusCode,
+        response.headers.contentType?.mimeType.toLowerCase() ?? '',
+        body.toBytes(),
+      );
+    } on SocketException {
+      throw const OnlineLookupException('UNREACHABLE');
+    } on HandshakeException {
+      throw const OnlineLookupException('TLS');
+    } on HttpException {
+      throw const OnlineLookupException('UNREACHABLE');
     } finally {
       client.close(force: true);
     }

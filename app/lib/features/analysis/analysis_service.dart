@@ -168,15 +168,20 @@ final class DeviceAnalysisService implements AnalysisService {
     // que ce code s'exécute pendant la construction du fournisseur.
     final local = await _run(() => analyzeNow(kind, text));
     if (!online) return local;
-    final targets = onlineTargets(local);
-    if (targets.isEmpty) return local.withOnline(OnlineStatus.notApplicable);
+    final urls = onlineUrls(local);
+    final checkable = checker.safeBrowsing != null
+        ? urls
+        : [
+            for (final url in urls)
+              if (OnlineLookupTarget.of(url) != null) url,
+          ];
+    if (checkable.isEmpty) {
+      return local.withOnline(OnlineStatus.notApplicable);
+    }
 
     onStage?.call(AnalysisStage.online);
-    final answers = await Future.wait(targets.map(checker.check));
-    final evidence = {
-      for (final (i, target) in targets.indexed) target: answers[i],
-    };
-    final answered = answers.any(
+    final evidence = await checker.checkAll(checkable);
+    final answered = evidence.values.any(
       (e) =>
           e.reputation.any((r) => r.status != ProviderStatus.unavailable) ||
           e.resolution?.status != LookupStatus.unavailable ||
@@ -194,17 +199,14 @@ final class DeviceAnalysisService implements AnalysisService {
   static AnalysisOutcome analyzeNow(
     AnalysisKind kind,
     String text, {
-    Map<OnlineLookupTarget, OnlineEvidence> evidence = const {},
+    Map<String, OnlineEvidence> evidence = const {},
   }) {
     const context = AnalysisContext();
     final parser = UrlParser();
     OnlineEvidence evidenceFor(String url) {
       final parsed = parser.parse(url);
       if (parsed is! ParsedUrl) return OnlineEvidence.none;
-      final target = OnlineLookupTarget.of(parsed);
-      return target == null
-          ? OnlineEvidence.none
-          : evidence[target] ?? OnlineEvidence.none;
+      return evidence[parsed.href] ?? OnlineEvidence.none;
     }
 
     return switch (kind) {
@@ -221,16 +223,15 @@ final class DeviceAnalysisService implements AnalysisService {
     };
   }
 
-  /// Noms de sites à vérifier en ligne pour un résultat local, sans
-  /// doublon.
-  static List<OnlineLookupTarget> onlineTargets(AnalysisOutcome outcome) {
+  /// Liens à vérifier en ligne pour un résultat local, sans doublon.
+  static List<ParsedUrl> onlineUrls(AnalysisOutcome outcome) {
     final urls = switch (outcome) {
       LinkOutcome(:final result) => [?result.url],
       MessageOutcome(:final result) => [
         for (final link in result.links) ?link.result.url,
       ],
     };
-    return {for (final url in urls) ?OnlineLookupTarget.of(url)}.toList();
+    return {for (final url in urls) url.href: url}.values.toList();
   }
 }
 

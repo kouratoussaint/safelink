@@ -9,8 +9,10 @@ disponible » et l'analyse repose sur les règles locales.
 ## Services consultés en ligne
 
 Seul le nom du site (`www.exemple.com`) est envoyé aux résolveurs, et seul
-le domaine enregistré (`exemple.com`) au registre ; jamais le lien complet
-ni le texte d'un message. Toutes les requêtes partent du téléphone, en
+le domaine enregistré (`exemple.com`) au registre. Si la clé Google est
+configurée, Safe Browsing ne reçoit que des préfixes d'empreintes, et
+PageSpeed Insights reçoit le lien complet pour photographier la page. Le
+texte d'un message n'est jamais envoyé. Toutes les requêtes partent du téléphone, en
 HTTPS, sans serveur intermédiaire du projet.
 
 | Service | Ce qui est demandé | Réponse utilisée | Conditions |
@@ -19,6 +21,8 @@ HTTPS, sans serveur intermédiaire du projet.
 | [Cloudflare 1.1.1.1 for Families](https://developers.cloudflare.com/1.1.1.1/setup/) `security.cloudflare-dns.com` | Adresse du nom | Blocage : réponse `0.0.0.0` | Service gratuit ouvert à tous |
 | Cloudflare 1.1.1.1 `cloudflare-dns.com` | Adresse du nom | Le nom existe ou non (NXDOMAIN) | Idem |
 | Serveur RDAP du registre (Verisign pour `.com`, CentralNic pour `.xyz`…) | Données publiques du domaine | Date de l'évènement « registration » | Protocole public RFC 9083 ; aucune clé |
+| [Google Safe Browsing v5](https://developers.google.com/safe-browsing) `hashes:search` (si clé configurée, [ADR 0011](adr/0011-services-google.md)) | Préfixes de 4 octets des empreintes SHA-256 de l'adresse | Empreintes complètes des menaces, comparées sur le téléphone | Usage non commercial gratuit ; attribution « Avertissement fourni par Google » |
+| [PageSpeed Insights](https://developers.google.com/speed/docs/insights/v5/get-started) (si clé configurée) | **Lien complet** (sauf code personnel, sur demande) | Capture d'écran mobile et adresse finale | Gratuit, 25 000 requêtes par jour et par projet |
 
 La table des serveurs RDAP vient du [registre d'amorçage de
 l'IANA](https://data.iana.org/rdap/dns.json) (RFC 9224), embarqué dans
@@ -40,7 +44,7 @@ solide.
 | Source | Accès constaté | Conditions publiées | Décision |
 | --- | --- | --- | --- |
 | [PhishTank](https://phishtank.org/faq.php) | Base téléchargeable sans clé (≈ 1,5 Mo en CSV gzip). Quota mesuré : 75 téléchargements par tranche de 3 jours et par adresse IP. Nouvelles inscriptions « temporairement désactivées ». | Conditions actuelles : renvoi au contrat de licence Cisco, non consultable. Version archivée : données utilisables gratuitement, y compris commercialement ; FAQ : usage commercial et non commercial admis. Redistribution non traitée. | Candidat n° 1, en téléchargement direct par l'appareil, **seulement après confirmation écrite** de Cisco Talos |
-| [Google Safe Browsing v5](https://developers.google.com/safe-browsing/terms) | Clé API dans toutes les requêtes documentées | Usage non commercial gratuit ; avertissements et attribution obligatoires | En attente : exige une clé d'API intégrée à l'APK (décision du porteur) |
+| [Google Safe Browsing v5](https://developers.google.com/safe-browsing/terms) | Clé API dans toutes les requêtes documentées | Usage non commercial gratuit ; avertissements et attribution obligatoires | Intégré (ADR 0011) : clé du porteur, injectée à la compilation |
 | [OpenPhish Community](https://openphish.com/terms.html) | Fichier public, mis à jour toutes les 12 h | Usage personnel uniquement ; détection et développement de produit interdits sans accord écrit ; redistribution interdite | Exclu |
 | [URLhaus](https://abuse.ch/terms-of-use/) | Clé d'authentification obligatoire ; ancien export anonyme : « 410 Gone » | Gratuit en usage équitable non lucratif ; pas de licence de données affichée ; œuvres dérivées interdites sans accord | Exclu du MVP ; vise les malwares, pas le phishing |
 | Listes agrégées (Phishing Army, Phishing.Database…) | Publiques | Héritent des restrictions de leurs sources | Exclues |

@@ -76,11 +76,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         icon: Icons.travel_explore,
         title: l10n.onboardingOnlineTitle,
         body: l10n.onboardingOnlineBody,
-        points: [
-          l10n.onboardingOnlinePoint1,
-          l10n.onboardingOnlinePoint2,
-          l10n.onboardingOnlinePoint3,
-        ],
+        points: ref.watch(googleEnabledProvider)
+            ? [
+                l10n.onboardingOnlineGooglePoint1,
+                l10n.onboardingOnlineGooglePoint2,
+                l10n.onboardingOnlinePoint3,
+              ]
+            : [
+                l10n.onboardingOnlinePoint1,
+                l10n.onboardingOnlinePoint2,
+                l10n.onboardingOnlinePoint3,
+              ],
       ),
     ];
     final last = _page == _pageCount - 1;
