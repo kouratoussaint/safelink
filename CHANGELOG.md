@@ -37,6 +37,14 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   taille de chaque APK indiquée dans les notes de pré-version. Sans la clé,
   la publication continue avec une signature temporaire signalée.
 
+### Ajouté — lot B (analyse des liens, en cours)
+
+- Moteur : Punycode (RFC 3492) et conversion des noms de domaine
+  internationaux, sans dépendance réseau.
+- Moteur : Public Suffix List embarquée (sections ICANN et privée), mise à
+  jour par `tools/update_psl.py`, validée par les tests officiels ; licence
+  MPL-2.0 affichée dans l'application.
+
 ### Modifié
 
 - Identifiant Android : `com.fasosoft.safelink`, avant toute publication.

@@ -89,6 +89,20 @@ Les textes sont dans `app/lib/l10n/app_fr.arb`. Le code Dart correspondant
 (`app/lib/l10n/generated/`) est généré par `flutter pub get` ou
 `flutter gen-l10n` et n'est pas versionné.
 
+### Public Suffix List
+
+Le moteur embarque la [Public Suffix List](https://publicsuffix.org/list/)
+(MPL-2.0) sous forme de code Dart généré. Pour la mettre à jour :
+
+```bash
+python3 tools/update_psl.py   # télécharge depuis publicsuffix.org
+cd packages/safelink_engine && dart test test/url
+```
+
+Le script régénère `lib/src/url/psl_data.g.dart` (date et empreinte SHA-256
+de la liste) et les tests officiels `test/data/psl_tests.txt`. La mise à
+jour fait l'objet d'une pull request ordinaire, relue comme du code.
+
 ### Logo et icônes
 
 Toutes les ressources graphiques sont générées depuis une seule géométrie :

@@ -21,7 +21,8 @@ safelink_engine (packages/safelink_engine/), Dart pur
 
 ## Moteur `safelink_engine`
 
-État au lot A : **types communs uniquement**, complets et testés.
+État : types communs (lot A) et premières briques d'analyse des liens
+(lot B, en cours).
 
 | Type | Rôle |
 | --- | --- |
@@ -34,6 +35,14 @@ safelink_engine (packages/safelink_engine/), Dart pur
 | `AnalysisResult` | Base commune ; exige au moins une limite par résultat |
 | `ContentAnalyzer<I, R>` | Contrat d'un analyseur : pur, déterministe, sans entrée-sortie |
 | `AnalysisContext` | Horloge injectable (toujours UTC) et langue |
+
+Briques d'analyse des liens (`lib/src/url/`) :
+
+| Type | Rôle |
+| --- | --- |
+| `Punycode` | Encodage et décodage RFC 3492, testés sur les vecteurs de la RFC ; entrée invalide refusée, jamais corrigée |
+| `Idna` | Nom de domaine Unicode ↔ ASCII : séparateurs Unicode, NFKC, minuscules, limites de 63 et 253 caractères |
+| `PublicSuffixList` | Domaine réellement enregistré (`example.co.uk`, `arnaque.blogspot.com`) ; liste embarquée, sections ICANN et privée, tests officiels |
 
 Règles de conception :
 
