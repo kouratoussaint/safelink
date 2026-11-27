@@ -22,7 +22,7 @@ safelink_engine (packages/safelink_engine/), Dart pur
 ## Moteur `safelink_engine`
 
 État : types communs (lot A), analyse locale complète des liens (lot B) et
-premières briques d'analyse des messages (lot C, en cours).
+des messages (lot C).
 
 | Type | Rôle |
 | --- | --- |
@@ -61,6 +61,8 @@ Briques d'analyse des messages (`lib/src/message/`) :
 | `MessagePreprocessor`, `PreparedMessage` | Phrases, propositions, passages cités (guillemets, lignes « > »), négations (« ne… jamais », « aucun ») sans confondre « n'hésitez pas » ou « si vous ne payez pas », évaluation rudimentaire de la langue |
 | `MessageDictionary` | Dictionnaire français versionné (`fr-1.0.0`), injectable : verbes de transmission, secrets, paiements, gains, menaces, organismes, messageries, urgence, variantes locales |
 | `MessageRules`, `MessageFinding` | Indices des huit catégories du cahier des charges et des variantes locales, avec passages à surligner et extraits expurgés ; liste dans [MESSAGE_RULES.md](MESSAGE_RULES.md) |
+| `MessageAnalyzer`, `MessageVerdictPolicy` | Verdict du texte (cinq verdicts), confiance, limites, gestes adaptés aux indices ; règles dans [MESSAGE_RULES.md](MESSAGE_RULES.md) et ADR 0009 |
+| `CombinedAnalyzer`, `CombinedResult` (`lib/src/combined/`) | Texte et liens analysés séparément, niveau de synthèse le plus sévère, limites et gestes fusionnés |
 | `MessageExtractor` | Liens (protocole, `www.`, domaines nus validés par la Public Suffix List, formes déguisées `hxxp`, `[.]`, `(dot)`…), numéros de téléphone, codes USSD (avec repérage des codes de transfert), montants en francs CFA |
 
 Règles de conception :

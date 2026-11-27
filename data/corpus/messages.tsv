@@ -1,0 +1,189 @@
+# Corpus synthétique de messages pour SafeLink — dédié au domaine public (CC0 1.0).
+# Tous les messages sont inventés : aucun message réel, aucun numéro attribué connu.
+# Colonnes séparées par une tabulation : verdict attendu, nature (arnaque, legitime,
+# piege = légitime qui ressemble à une arnaque, autre), catégorie, texte, note.
+# Dans le texte : \n = retour à la ligne ; <vide> = texte vide ; <long:N> = N caractères.
+HIGH_RISK_MESSAGE	arnaque	code	Bonjour, je suis agent Orange Money. Envoyez-moi le code que vous venez de recevoir pour valider votre bonus.	
+HIGH_RISK_MESSAGE	arnaque	code	Service client Moov Money : suite à une mise à jour, communiquez-nous votre code secret pour sécuriser votre compte.	
+HIGH_RISK_MESSAGE	arnaque	code	Bjr c'est l'agent de Wave, tu vas recevoir un code par SMS, donne-le moi vite pour activer ton cadeau.	
+HIGH_RISK_MESSAGE	arnaque	code	Votre compte Coris Money présente une anomalie. Merci de transmettre le code de validation reçu par SMS à notre conseiller.	
+HIGH_RISK_MESSAGE	arnaque	code	Le code que tu as reçu tout à l’heure, envoie-le moi stp, je me suis trompé de numéro.	
+HIGH_RISK_MESSAGE	arnaque	code	Allô, c'est le service technique Orange. Pour finaliser la réparation de votre ligne, dites-nous le code à 6 chiffres reçu.	
+HIGH_RISK_MESSAGE	arnaque	code	Nous vous demandons votre code PIN pour la mise à jour de votre portefeuille mobile.	
+HIGH_RISK_MESSAGE	arnaque	code	N'oubliez pas d'envoyer votre code OTP à notre agent avant 18 h pour recevoir votre remboursement.	
+HIGH_RISK_MESSAGE	arnaque	code	Ecobank : pour débloquer votre carte, indiquez votre numéro de carte et le code CVV en réponse à ce message.	
+HIGH_RISK_MESSAGE	arnaque	code	Saisissez votre code PIN sur ce lien pour confirmer votre identité : https://coris-securite-client.top	
+HIGH_RISK_MESSAGE	arnaque	code	Votre mot de passe a expiré. Entrez votre mot de passe actuel ici : http://ubagroup-login.example/maj	
+HIGH_RISK_MESSAGE	arnaque	code	Votre WhatsApp sera supprimé. Envoyez-nous le code à 6 chiffres que vous allez recevoir pour le garder.	
+HIGH_RISK_MESSAGE	arnaque	code	Facebook : votre compte a été signalé. Donnez le code de confirmation reçu pour éviter la fermeture.	
+HIGH_RISK_MESSAGE	arnaque	code	Félicitations, vous êtes éligible à un crédit. Transmettez votre identifiant et votre mot de passe pour l'étude du dossier.	
+HIGH_RISK_MESSAGE	arnaque	code	Ton ami t’a envoyé 50 000 F mais le transfert est bloqué. Renvoie le code reçu au 70 11 22 33 pour le libérer.	
+HIGH_RISK_MESSAGE	arnaque	loterie	Félicitations ! Vous avez gagné 500 000 FCFA au tirage au sort MTN. Pour recevoir votre gain, payez les frais de dossier de 5 000 F au 70 12 34 56 avant ce soir.	
+HIGH_RISK_MESSAGE	arnaque	loterie	ORANGE PROMO : votre numéro a été tiré au sort. Vous avez gagné un smartphone Samsung. Frais de livraison 3 500 F à envoyer au 76 54 32 10.	
+HIGH_RISK_MESSAGE	arnaque	loterie	Vous êtes l’heureux gagnant de la tombola Moov Africa ! Faites un dépôt de 2 500 F pour activer votre lot.	
+HIGH_RISK_MESSAGE	arnaque	loterie	Bonne nouvelle, vous avez remporté 1 000 000 F. Envoyez 10 000 F de frais de transfert pour recevoir la somme.	
+HIGH_RISK_MESSAGE	arnaque	loterie	Gagnant de la loterie nationale : pour toucher votre prix de 2 millions, réglez les frais d’enregistrement de 15 000 F.	
+HIGH_RISK_MESSAGE	arnaque	loterie	Votre numéro est le grand gagnant du jackpot Wave. Envoyez 5 000 F au +226 65 43 21 09 pour débloquer votre gain.	
+SUSPICIOUS_MESSAGE	arnaque	loterie	Félicitations ! Vous avez gagné un iPhone 15. Cliquez ici pour réclamer votre cadeau : www.cadeau-iphone-gratuit.top	
+SUSPICIOUS_MESSAGE	arnaque	loterie	Bravo, vous êtes l’heureux gagnant du tirage au sort de fin d’année. Contactez-nous sur WhatsApp au 70 00 11 22.	
+HIGH_RISK_MESSAGE	arnaque	loterie	LONAB : vous avez gagné 750 000 F. Composez *144*2*1*70223344*5000# pour recevoir votre gain.	
+HIGH_RISK_MESSAGE	arnaque	recrutement	Recrutement urgent : poste à pourvoir chez Coris Bank. Frais d’inscription 10 000 F à envoyer par Orange Money. Contactez-nous sur WhatsApp.	
+HIGH_RISK_MESSAGE	arnaque	recrutement	Vous avez été retenu pour un emploi au port d’Abidjan. Payez les frais de dossier de 25 000 F pour recevoir votre contrat.	
+HIGH_RISK_MESSAGE	arnaque	recrutement	Offre d’emploi ONG internationale, salaire 450 000 F. Pour valider votre candidature, faites un dépôt de 7 500 F au 76 00 00 01.	
+HIGH_RISK_MESSAGE	arnaque	recrutement	Bourse d’études au Canada : vous avez été sélectionné. Frais de traitement 50 000 F à verser avant vendredi.	
+SUSPICIOUS_MESSAGE	arnaque	recrutement	Recrutement de 200 agents commerciaux, sans diplôme, 300 000 F par mois. Écrivez-nous sur Telegram pour postuler.	
+HIGH_RISK_MESSAGE	arnaque	transfert_erreur	Bonsoir, je vous ai envoyé 25 000 F par erreur sur votre numéro, svp renvoyez-les moi, c’est urgent.	
+HIGH_RISK_MESSAGE	arnaque	transfert_erreur	Mon frère j’ai fait un transfert de 15 000 F par erreur sur ton Orange Money. Renvoie-moi ça au 70 98 76 54 stp.	
+HIGH_RISK_MESSAGE	arnaque	transfert_erreur	Excusez-moi, je me suis trompé de numéro en faisant un dépôt de 10 000 F. Remboursez-moi s’il vous plaît, Dieu vous bénisse.	
+HIGH_RISK_MESSAGE	arnaque	transfert_erreur	Bonjour madame, erreur de transfert : 30 000 F envoyés sur votre compte Moov Money. Merci de les retourner au même numéro.	
+SUSPICIOUS_MESSAGE	arnaque	transfert_erreur	Désolé, transfert par erreur sur votre numéro. Rappelez-moi vite au 75 11 22 33.	
+HIGH_RISK_MESSAGE	arnaque	ussd	Composez *144*2*1*70123456*25000# pour activer votre bonus de bienvenue.	
+HIGH_RISK_MESSAGE	arnaque	ussd	Pour annuler la transaction frauduleuse, tapez *555*1*76543210*50000# immédiatement.	
+HIGH_RISK_MESSAGE	arnaque	ussd	Moov Money : pour recevoir votre remboursement, faites *155*1*1*65123456*10000# puis validez avec votre code.	
+SUSPICIOUS_MESSAGE	arnaque	ussd	Code de réactivation : *144*4*70112233*2000#	
+SUSPICIOUS_MESSAGE	arnaque	blocage	Votre compte Orange Money sera suspendu dans 24h. Cliquez sur hxxp://orange-verif[.]top pour le réactiver.	
+HIGH_RISK_MESSAGE	arnaque	blocage	Si vous ne payez pas 2 000 F aujourd’hui, votre ligne sera coupée. Envoyez au 70 45 67 89.	
+SUSPICIOUS_MESSAGE	arnaque	blocage	Dernier avertissement : votre carte SIM sera désactivée ce soir. Appelez immédiatement le 64 00 11 22.	
+HIGH_RISK_MESSAGE	arnaque	blocage	Ecobank : votre compte a été bloqué. Pour le débloquer, envoyez votre code secret et votre numéro de carte.	
+SUSPICIOUS_MESSAGE	arnaque	blocage	Votre compte Facebook sera supprimé définitivement. Vérifiez votre identité sur faceb00k-verify.com	
+SUSPICIOUS_MESSAGE	arnaque	blocage	WhatsApp : votre compte va être suspendu pour non-respect des conditions. Confirmez sur whatsap-support.net	
+HIGH_RISK_MESSAGE	arnaque	colis	DHL : votre colis est bloqué à la douane. Payez les frais de dédouanement de 12 000 F pour recevoir votre colis.	
+SUSPICIOUS_MESSAGE	arnaque	colis	Votre colis est en attente de livraison. Confirmez votre adresse sur dhl-livraison-colis.com sous 48 h.	
+HIGH_RISK_MESSAGE	arnaque	colis	La Poste : un colis vous attend. Réglez 1 500 F de frais de livraison au 66 77 88 99 pour la remise, sinon il sera retourné.	
+SUSPICIOUS_MESSAGE	arnaque	colis	FedEx : livraison échouée. Reprogrammez sur https://fedex-tracking-parcel.com avant ce soir.	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Orange : réactivez votre compte sur orange-verif.top pour continuer à utiliser vos services.	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Coris Bank vous informe : mise à jour obligatoire de vos coordonnées sur http://coris-bank-update.net	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Netflix : votre paiement a échoué. Mettez à jour vos informations : netflix-account-update.com	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	PayPal : activité inhabituelle détectée, connectez-vous sur paypa1-login.com pour sécuriser votre compte.	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Votre colis Jumia est prêt. Suivez-le ici : bit.ly/jumia-colis-bf (Jumia)	
+SUSPICIOUS_MESSAGE	arnaque	faux_proche	Maman, c’est moi, j’ai changé de numéro. Écris-moi sur WhatsApp à ce nouveau numéro, c’est urgent.	
+HIGH_RISK_MESSAGE	arnaque	faux_proche	Papa, mon téléphone est gâté. Envoie-moi 20 000 F par Orange Money au 70 33 44 55 pour réparer, c’est urgent.	
+SUSPICIOUS_MESSAGE	arnaque	faux_proche	Salut, c’est ton cousin. Je suis bloqué à la frontière, appelle-moi vite au 77 66 55 44, c’est urgent.	
+HIGH_RISK_MESSAGE	arnaque	faux_proche	Tonton, je suis à l’hôpital, envoie 50 000 F au 65 99 88 77 pour les frais de dossier, c’est urgent.	
+HIGH_RISK_MESSAGE	arnaque	pret	Prêt rapide sans garantie de 1 000 000 F. Frais de dossier : 20 000 F à payer par Moov Money pour débloquer votre prêt.	
+HIGH_RISK_MESSAGE	arnaque	investissement	Investissez 50 000 F aujourd’hui et gagnez 500 000 F dans 7 jours ! Envoyez le dépôt au 70 10 20 30, offre valable aujourd’hui seulement.	
+SUSPICIOUS_MESSAGE	arnaque	investissement	Doublez votre argent en 48 heures avec notre plateforme crypto. Rejoignez notre groupe Telegram.	
+HIGH_RISK_MESSAGE	arnaque	investissement	Binance : vous avez gagné 0,5 BTC. Pour retirer, payez les frais de validation de 30 000 F.	
+HIGH_RISK_MESSAGE	arnaque	administration	Direction générale des impôts : vous devez payer une amende de 25 000 F sous 24h pour éviter des poursuites. Envoyez au 70 44 55 66.	
+HIGH_RISK_MESSAGE	arnaque	administration	Police nationale : votre numéro est impliqué dans une fraude. Payez 50 000 F de caution immédiatement pour éviter l’arrestation, au 66 12 34 56.	
+SUSPICIOUS_MESSAGE	arnaque	administration	Douanes : un colis à votre nom contient des marchandises interdites. Appelez le 75 12 12 12 sous 2 heures.	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Votre compte Moov est suspendu. Réactivez-le sur hxxps://moov-africa-bf[.]top/login	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Wave : vous avez reçu 25 000 F en attente. Validez sur wave-recu(.)xyz	
+HIGH_RISK_MESSAGE	arnaque	code	slt c l agent orange tu vas recevoir 1 code envoie le moi stp c pour ton bonus	
+SUSPICIOUS_MESSAGE	arnaque	loterie	Bravo vs avez gagné 1 moto tecno contactez nous sur whatsapp vite	
+HIGH_RISK_MESSAGE	arnaque	transfert_erreur	dsl jai envoyé 5000 f par erreur sur ton num stp renvoie moi ca	
+SUSPICIOUS_MESSAGE	arnaque	blocage	URGENT votre compte sera bloqué ce soir appelez le 70 00 99 88	
+HIGH_RISK_MESSAGE	arnaque	code	Bonjour, ici votre conseiller Ecobank. Pour annuler l’opération suspecte, communiquez-moi le code reçu par SMS.	
+HIGH_RISK_MESSAGE	arnaque	code	Wave : un remboursement de 12 000 F vous est destiné. Donnez le code de confirmation à l’agent qui vous appelle.	
+HIGH_RISK_MESSAGE	arnaque	loterie	Félicitations, vous avez gagné une carte cadeau de 100 000 F. Payez 2 000 F de frais d’activation pour l’utiliser.	
+HIGH_RISK_MESSAGE	arnaque	recrutement	Vous avez été sélectionné pour un stage rémunéré. Envoyez 5 000 F de frais de dossier au 76 76 76 76.	
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Orange Money : votre bonus de 10 000 F expire aujourd’hui. Récupérez-le sur orangemoney-bonus.top	
+HIGH_RISK_MESSAGE	arnaque	pret	Crédit sans intérêt de 500 000 F accordé. Versez la caution de 10 000 F pour recevoir les fonds.	
+SUSPICIOUS_MESSAGE	arnaque	colis	Votre colis n’a pas pu être livré. Payez la taxe sur https://laposte-bf.colis-suivi.top	
+HIGH_RISK_MESSAGE	arnaque	administration	Ministère de la Santé : subvention de 100 000 F accordée. Faites un dépôt de 3 000 F pour l’enregistrement de votre dossier.	
+SUSPICIOUS_MESSAGE	arnaque	blocage	Votre abonnement Canal+ sera résilié demain. Payez en ligne sur canalplus-reabonnement.top	
+HIGH_RISK_MESSAGE	arnaque	code	Telegram : connexion depuis un nouvel appareil. Si ce n’est pas vous, envoyez-nous le code reçu pour bloquer l’accès.	
+NO_OBVIOUS_SIGNALS	legitime	otp	Votre code de confirmation est 482913. Ne le communiquez à personne. Orange ne vous demandera jamais ce code.	
+NO_OBVIOUS_SIGNALS	legitime	otp	Coris Money : votre code de validation est 715 204. Il expire dans 5 minutes. Ne le partagez avec personne.	
+NO_OBVIOUS_SIGNALS	legitime	otp	WhatsApp : votre code est 391-552. Ne partagez pas ce code avec d’autres personnes.	
+NO_OBVIOUS_SIGNALS	legitime	otp	Google : G-582913 est votre code de validation.	
+NO_OBVIOUS_SIGNALS	legitime	otp	Saisissez le code 482913 sur le site pour finaliser votre paiement. Ne le communiquez jamais.	
+NO_OBVIOUS_SIGNALS	legitime	alerte_banque	Ecobank : votre compte a été crédité de 150 000 FCFA le 27/11. Solde disponible : 320 000 FCFA.	
+NO_OBVIOUS_SIGNALS	legitime	alerte_banque	UBA : retrait de 50 000 F effectué au guichet de Ouaga 2000 le 26/11 à 14h05. Solde : 120 000 F.	
+NO_OBVIOUS_SIGNALS	legitime	alerte_banque	Coris Bank : un virement de 75 000 F a été effectué vers le compte de M. Sawadogo.	
+NO_OBVIOUS_SIGNALS	legitime	recu	Vous avez reçu 25 000 F de 70 12 34 56. Nouveau solde : 40 000 F. Réf : CI231127.1234.	
+NO_OBVIOUS_SIGNALS	legitime	recu	Transfert de 10 000 F vers 76 54 32 10 réussi. Frais : 100 F. Solde : 5 400 F.	
+NO_OBVIOUS_SIGNALS	legitime	recu	Retrait de 20 000 F effectué chez l’agent Kaboré. Frais : 200 F. Merci d’utiliser Moov Money.	
+NO_OBVIOUS_SIGNALS	legitime	recu	Paiement de 12 500 F à SONABEL effectué. Merci.	
+NO_OBVIOUS_SIGNALS	legitime	conseil	Ne communiquez jamais votre code secret, même à un agent. Orange ne vous le demandera jamais.	
+NO_OBVIOUS_SIGNALS	legitime	conseil	Attention aux arnaques : si quelqu’un vous demande votre code secret, raccrochez.	
+NO_OBVIOUS_SIGNALS	legitime	conseil	Moov Money vous rappelle : aucun agent ne vous demandera votre code PIN. Méfiez-vous des faux appels.	
+NO_OBVIOUS_SIGNALS	legitime	conseil	N’envoyez jamais d’argent pour recevoir un gain : un vrai gain ne demande pas de frais.	
+NO_OBVIOUS_SIGNALS	legitime	conseil	Ecobank : nous ne vous demanderons jamais votre mot de passe par SMS ou par téléphone.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	Salut, on se retrouve à 18 h devant le maquis ? Appelle-moi si tu es en retard.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	Maman, je suis bien arrivé à Bobo. Je t’appelle ce soir.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	Bonne fête de Tabaski à toute la famille ! Que Dieu nous garde.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	Tu as gagné le match hier ? Raconte-moi tout ce soir.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	Le transfert est bien arrivé, merci beaucoup tonton.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	J’ai reçu ton message, je te réponds demain matin.	
+NO_OBVIOUS_SIGNALS	legitime	personnel	On a réunion demain à 9 h au bureau, n’oublie pas les documents.	
+NO_OBVIOUS_SIGNALS	legitime	facture	Votre facture SONABEL de 12 500 F est disponible. Date limite de paiement : 30/11.	
+NO_OBVIOUS_SIGNALS	legitime	facture	ONEA : votre facture d’eau du mois de novembre s’élève à 8 300 F. Payez dans une agence ou par Orange Money.	
+NO_OBVIOUS_SIGNALS	legitime	livraison	Jumia : votre commande sera livrée demain entre 9 h et 12 h. Préparez 15 000 F pour le paiement à la livraison.	
+NO_OBVIOUS_SIGNALS	legitime	livraison	Votre colis est arrivé à l’agence de Ouagadougou. Présentez une pièce d’identité pour le retrait.	
+NO_OBVIOUS_SIGNALS	legitime	rdv	Rappel : votre rendez-vous au CHU Yalgado est fixé au lundi 2 décembre à 8 h.	
+NO_OBVIOUS_SIGNALS	legitime	rdv	Votre véhicule est prêt au garage. Vous pouvez passer le récupérer à partir de 15 h.	
+NO_OBVIOUS_SIGNALS	legitime	administration	Le recensement aura lieu du 1er au 15 décembre. Merci de réserver un bon accueil aux agents recenseurs.	
+NO_OBVIOUS_SIGNALS	legitime	ecole	Réunion des parents d’élèves le samedi 30 novembre à 9 h dans la cour de l’école.	
+NO_OBVIOUS_SIGNALS	legitime	ecole	Les résultats du BEPC sont disponibles sur le site officiel du ministère de l’Éducation.	
+NO_OBVIOUS_SIGNALS	legitime	info	La coupure d’électricité prévue demain dans le secteur 15 est reportée. SONABEL s’excuse de la gêne.	
+NO_OBVIOUS_SIGNALS	legitime	info	Météo : fortes pluies attendues ce soir sur Ouagadougou. Soyez prudents sur la route.	
+NO_OBVIOUS_SIGNALS	legitime	info	Le marché de Rood Woko sera fermé dimanche pour nettoyage.	
+NO_OBVIOUS_SIGNALS	legitime	eglise	Messe d’action de grâce dimanche à 7 h à la cathédrale. Venez nombreux.	
+NO_OBVIOUS_SIGNALS	legitime	commerce	Boutique Kanazoé : nouvel arrivage de pagnes, venez découvrir nos modèles à partir de lundi.	
+NO_OBVIOUS_SIGNALS	legitime	travail	Bonjour, le rapport est en pièce jointe. Merci de le relire avant la réunion de jeudi.	
+NO_OBVIOUS_SIGNALS	legitime	travail	La formation est déplacée à mercredi 10 h, salle B. Merci de confirmer votre présence.	
+NO_OBVIOUS_SIGNALS	legitime	promo	Orange : profitez de 100 % de bonus sur vos recharges, offre valable aujourd’hui seulement ! Tapez *123#.	urgence seule ; citer l’opérateur ne compte pas
+NO_OBVIOUS_SIGNALS	legitime	promo	Moov Africa : nouveau forfait internet 5 Go à 2 000 F. Composez *555# pour souscrire.	
+NO_OBVIOUS_SIGNALS	legitime	promo	Telecel : bénéficiez de 50 % de bonus sur vos appels ce week-end. Composez *160#.	
+NO_OBVIOUS_SIGNALS	legitime	banque	Votre carte bancaire arrive à expiration le mois prochain. Passez la retirer dans votre agence.	
+SUSPICIOUS_MESSAGE	legitime	banque	Votre carte a été bloquée suite à 3 codes erronés. Rendez-vous dans votre agence avec une pièce d’identité.	vrai message de banque, mais la menace de blocage reste un indice
+NO_OBVIOUS_SIGNALS	legitime	recrutement_legit	Vous avez été retenu pour un entretien le 5 décembre à 10 h au siège. Merci de vous munir de votre CV.	
+NO_OBVIOUS_SIGNALS	legitime	operateur	Orange : votre forfait internet arrive à expiration. Composez *144# pour consulter votre solde.	
+NO_OBVIOUS_SIGNALS	legitime	operateur	Moov Africa : votre crédit est presque épuisé. Rechargez au plus près de chez vous.	
+SUSPICIOUS_MESSAGE	legitime	operateur	Orange : votre numéro sera désactivé faute d’identification. Présentez-vous en agence avec votre CNIB avant le 31/12.	vraie campagne d’identification, menace de désactivation
+NO_OBVIOUS_SIGNALS	legitime	otp	Votre code Facebook est 552 019. Ne le partagez pas.	
+NO_OBVIOUS_SIGNALS	legitime	info	Pour toute information, appelez notre service client au 1414 (appel gratuit).	
+NO_OBVIOUS_SIGNALS	piege	mise_en_garde	Ils écrivent « Envoyez votre code PIN pour débloquer votre compte ». C’est une arnaque, ne répondez pas.	
+NO_OBVIOUS_SIGNALS	piege	mise_en_garde	ARNAQUE en cours : des escrocs prétendent que vous avez reçu un transfert par erreur. Ne renvoyez jamais rien, vérifiez votre solde.	
+NO_OBVIOUS_SIGNALS	piege	mise_en_garde	Attention au lien hxxp://orange-bonus[.]top qui circule : ce n’est pas un site d’Orange.	
+NO_OBVIOUS_SIGNALS	piege	mise_en_garde	Ne cliquez sur aucun lien vous promettant un gain. Orange ne demande jamais de frais pour un tirage au sort.	
+NO_OBVIOUS_SIGNALS	piege	mise_en_garde	Méfiez-vous des messages qui vous demandent de composer un code : aucun opérateur ne le fait.	
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	Envoie-moi le code du wifi stp, je n’arrive pas à me connecter.	code du wifi entre proches ?
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	Je t’ai envoyé l’argent pour le loyer, confirme-moi quand tu l’as reçu.	
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	Félicitations pour ton diplôme ! On fête ça samedi.	
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	C’est urgent : rappelle maman dès que tu peux.	
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	Le code de la porte a changé : c’est 4589. Ne le donne à personne.	
+NO_OBVIOUS_SIGNALS	piege	piege_commerce	Promo de fin d’année : -20 % sur toute la boutique jusqu’à samedi.	
+NO_OBVIOUS_SIGNALS	piege	piege_commerce	Votre commande est prête. Le paiement se fera à la livraison.	
+NO_OBVIOUS_SIGNALS	piege	piege_banque	Votre banque vous informe que les agences seront fermées le 11 décembre, jour férié.	
+NO_OBVIOUS_SIGNALS	piege	piege_otp	Votre mot de passe a été modifié. Si ce n’est pas vous, contactez votre agence.	
+INCONCLUSIVE_MESSAGE	autre	court	Ok merci	
+INCONCLUSIVE_MESSAGE	autre	court	😀👍	
+INCONCLUSIVE_MESSAGE	autre	langue	Your parcel is waiting for delivery, please check the tracking page tomorrow.	
+INCONCLUSIVE_MESSAGE	autre	langue	Ne y wiibo, yaa sõma. Wẽnd na kõ-d laafi.	
+INCONCLUSIVE_MESSAGE	autre	lien_seul	https://bit.ly/3xYzAbC	
+INVALID_MESSAGE	autre	vide	<vide>	
+INVALID_MESSAGE	autre	trop_long	<long:10001>	
+HIGH_RISK_MESSAGE	arnaque	code	Cher client, votre compte mobile money a été piraté. Un agent va vous appeler : donnez-lui le code reçu pour annuler l’opération.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	code	Bonjour, je suis du service après-vente Moov. Merci de me dicter le code à 4 chiffres que vous allez recevoir.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	loterie	MTN BONUS : vous êtes le gagnant de notre jeu concours. Envoyez 3 000 F de frais d’activation au 74 12 12 12 pour recevoir 300 000 F.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	transfert_erreur	Salam, j’ai fait un dépôt de 20 000 par erreur chez toi. Stp retourne-moi ça au plus vite, c’est l’argent de l’école.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	recrutement	Félicitations, vous avez été retenu comme chauffeur au Canada. Les frais de visa de 75 000 F sont à payer avant lundi.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	ussd	Pour recevoir ton remboursement, compose *144*1*1*76998877*15000# et entre ton code secret.	lot de validation
+SUSPICIOUS_MESSAGE	arnaque	blocage	Votre ligne Telecel sera bloquée dans 48 heures pour défaut d’identification. Mettez à jour vos informations sur telecel-identification.top	lot de validation
+HIGH_RISK_MESSAGE	arnaque	faux_proche	Allô tata, c’est Ali. J’ai eu un accident à moto, envoie-moi 30 000 F vite au 65 43 21 00 pour les soins.	lot de validation
+SUSPICIOUS_MESSAGE	arnaque	colis	Un colis à votre nom est retenu à l’aéroport. Contactez notre agent sur WhatsApp pour le dédouanement.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	pret	Prêt express de 300 000 F accordé sans garantie ! Payez 6 000 F de frais de dossier pour recevoir l’argent aujourd’hui.	lot de validation
+SUSPICIOUS_MESSAGE	arnaque	faux_lien	Ecobank : connexion inhabituelle à votre compte. Confirmez votre identité ici : ecobank-verification.com	lot de validation
+HIGH_RISK_MESSAGE	arnaque	administration	Gendarmerie : une plainte a été déposée contre vous. Payez 40 000 F d’amende au 70 88 77 66 pour classer l’affaire.	lot de validation
+SUSPICIOUS_MESSAGE	arnaque	investissement	Gagnez 25 000 F par jour depuis chez vous ! Inscrivez-vous vite sur Telegram : places limitées.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	code	Votre carte Visa est bloquée. Répondez à ce message avec votre numéro de carte et votre code secret pour la débloquer.	lot de validation
+SUSPICIOUS_MESSAGE	arnaque	loterie	Vous avez gagné un sac de riz et 50 000 F lors de la tombola de la Tabaski ! Appelez le 76 11 22 33 pour le retrait.	lot de validation
+HIGH_RISK_MESSAGE	arnaque	code	Facebook Security : votre page sera supprimée. Envoyez votre mot de passe à notre équipe de sécurité pour la vérification.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	otp	Votre code de vérification Telegram est 58213. Ne le donnez à personne, même à un employé de Telegram.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	alerte_banque	Coris Bank : dépôt de 200 000 F sur votre compte le 27/11/2026. Merci de votre confiance.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	recu	Orange Money : vous avez envoyé 5 000 F à AWA KABORE. Frais 50 F. Nouveau solde 12 300 F.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	personnel	Bonjour tonton, on arrive samedi pour le baptême. Il faut qu’on apporte quelque chose ?	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	personnel	Je suis devant la pharmacie, tu peux venir me chercher ?	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	travail	Le paiement des salaires de novembre sera effectué le 30. Merci de vérifier vos coordonnées bancaires auprès de la comptabilité.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	ecole	Les inscriptions pour la rentrée sont ouvertes jusqu’au 15 décembre au secrétariat de l’école.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	facture	SONABEL : votre consommation du mois est de 9 450 F. Paiement possible par Orange Money ou Moov Money.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	conseil	Wave vous rappelle : ne partagez jamais votre code secret. Nos agents ne vous le demanderont jamais.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	livraison	Votre commande Jumia n° 3829 a été expédiée. Livraison prévue jeudi.	lot de validation
+NO_OBVIOUS_SIGNALS	legitime	rdv	Votre rendez-vous à la mairie pour l’état civil est confirmé pour mardi 10 h.	lot de validation
+NO_OBVIOUS_SIGNALS	piege	mise_en_garde	Méfiez-vous : des faux agents vous appellent pour vous demander le code reçu par SMS. Ne le donnez jamais.	lot de validation
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	Félicitations pour ta promotion au travail, tu l’as bien méritée !	lot de validation
+NO_OBVIOUS_SIGNALS	piege	piege_personnel	Tu peux me renvoyer la photo du reçu ? Je l’ai effacée par erreur.	lot de validation
+NO_OBVIOUS_SIGNALS	piege	piege_commerce	Grande tombola de la paroisse dimanche après la messe : les tickets sont à 500 F.	lot de validation
+NO_OBVIOUS_SIGNALS	piege	piege_banque	Votre nouvelle carte bancaire est disponible. Le code secret vous sera remis en agence, en main propre.	lot de validation

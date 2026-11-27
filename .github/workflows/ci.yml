@@ -50,6 +50,9 @@ jobs:
       - name: Couverture minimale de 90 %
         run: python3 ../../tools/check_coverage.py coverage/lcov.info 90
 
+      - name: Évaluation du corpus de messages (seuils bloquants)
+        run: dart run tool/evaluate_messages.dart --report "$GITHUB_STEP_SUMMARY"
+
   app:
     name: Application (tests et APK)
     runs-on: ubuntu-24.04
