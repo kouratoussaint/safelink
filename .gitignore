@@ -5,6 +5,10 @@
 .vscode/*
 !.vscode/extensions.json
 
+# Python (scripts de tools/)
+__pycache__/
+*.pyc
+
 # Dart / Flutter
 .dart_tool/
 build/

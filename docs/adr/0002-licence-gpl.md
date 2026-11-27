@@ -12,7 +12,10 @@ publicitaire.
 
 Code sous GNU GPL v3.0 ou ultérieure. Dépendances admises : MIT, BSD,
 Apache-2.0, ISC, Zlib, MPL-2.0 (Public Suffix List), OFL-1.1 (polices),
-Unicode. Contrôle automatique dans `dependency-review.yml`.
+Unicode. Contrôle automatique à chaque pull request par
+`tools/check_licenses.py`, qui interroge pub.dev pour chaque paquet
+verrouillé (la revue de GitHub ne sait pas valider les licences Dart et ne
+contrôle que les vulnérabilités).
 
 ## Conséquences
 
