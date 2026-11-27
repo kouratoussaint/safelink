@@ -31,6 +31,25 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // Signature de développement stable : les APK debug publiés par
+        // dev-apk.yml sont tous signés avec la même clé, pour qu'une mise à
+        // jour s'installe par-dessus la précédente. La clé vient des secrets
+        // GitHub, via ces variables d'environnement ; sans elles (build
+        // local, CI des pull requests), Android utilise la clé de débogage
+        // de la machine. Ce n'est pas la clé de distribution (lot D).
+        getByName("debug") {
+            val devKeystore = System.getenv("SAFELINK_DEV_KEYSTORE")
+            if (!devKeystore.isNullOrEmpty()) {
+                storeFile = file(devKeystore)
+                storeType = "PKCS12"
+                storePassword = System.getenv("SAFELINK_DEV_KEYSTORE_PASSWORD")
+                keyAlias = "safelink-dev"
+                keyPassword = System.getenv("SAFELINK_DEV_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             // Lots A à C : les builds release ne servent qu'aux contrôles

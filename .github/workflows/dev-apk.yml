@@ -2,9 +2,12 @@ name: APK de développement
 
 # À chaque mise à jour de main ou d'une branche de lot, publie les APK debug
 # dans une pré-version GitHub « dev-<révision> », téléchargeable sans compte.
-# Ces versions servent aux essais du mainteneur : signées avec une clé de
-# débogage propre à chaque build, elles ne doivent pas être diffusées au
-# public. Les versions de distribution signées arrivent au lot D.
+#
+# Tous ces APK sont signés avec la même clé de développement (secrets
+# SAFELINK_DEV_KEYSTORE_BASE64 et SAFELINK_DEV_KEYSTORE_PASSWORD), pour
+# qu'une nouvelle version s'installe par-dessus la précédente. Sans ces
+# secrets, rien n'est publié : la signature ne doit jamais changer en
+# silence. Cette clé n'est pas celle des versions de distribution (lot D).
 on:
   push:
     branches:
@@ -22,18 +25,30 @@ concurrency:
 jobs:
   publish:
     name: Publier les APK debug
-    # Jamais depuis une copie (fork) du dépôt.
+    # Jamais depuis une copie (fork) du dépôt : les secrets n'y sont pas.
     if: github.repository == 'kouratoussaint/safelink'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
-      # Nécessaire pour créer la pré-version et son tag ; aucun autre secret
-      # que le jeton éphémère du workflow n'est utilisé.
+      # Nécessaire pour créer la pré-version et son tag.
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Clé de signature de développement
+        env:
+          KEYSTORE_BASE64: ${{ secrets.SAFELINK_DEV_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.SAFELINK_DEV_KEYSTORE_PASSWORD }}
+        run: |
+          if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" ]]; then
+            echo "::error::Secrets SAFELINK_DEV_KEYSTORE_BASE64 et SAFELINK_DEV_KEYSTORE_PASSWORD absents : aucun APK n'est publié, pour ne pas changer de signature (voir docs/BUILD.md)."
+            exit 1
+          fi
+          keystore="$RUNNER_TEMP/safelink-dev.p12"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          echo "SAFELINK_DEV_KEYSTORE=$keystore" >> "$GITHUB_ENV"
 
       - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
@@ -54,11 +69,32 @@ jobs:
 
       - name: APK debug par architecture (téléphones ARM 64 et 32 bits)
         working-directory: app
+        env:
+          SAFELINK_DEV_KEYSTORE_PASSWORD: ${{ secrets.SAFELINK_DEV_KEYSTORE_PASSWORD }}
         run: |
           flutter pub get --enforce-lockfile
           flutter build apk --debug --split-per-abi \
             --target-platform android-arm,android-arm64 \
             --dart-define=SAFELINK_GIT_SHA="${GITHUB_SHA::7}"
+
+      - name: Effacer la clé du runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/safelink-dev.p12"
+
+      - name: Vérifier la signature de chaque APK
+        run: |
+          expected="$(tr -d '[:space:]' < tools/dev-signing-cert.sha256)"
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)"
+          for apk in app/build/app/outputs/flutter-apk/app-*-debug.apk; do
+            actual="$("$apksigner" verify --print-certs "$apk" |
+              sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+            echo "$(basename "$apk") : $actual"
+            if [[ "$actual" != "$expected" ]]; then
+              echo "::error::$(basename "$apk") n'est pas signé avec la clé de développement attendue."
+              exit 1
+            fi
+          done
+          echo "CERT_SHA256=$expected" >> "$GITHUB_ENV"
 
       - name: Préparer les fichiers à publier
         run: |
@@ -79,17 +115,31 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           tag="dev-$SHORT_SHA"
-          cat > notes.md <<EOF
-          **Version de développement — pour essai uniquement, ne pas diffuser.**
-
-          - Branche : \`$BRANCH\`, révision \`$GITHUB_SHA\`.
-          - Choisir **arm64-v8a** pour la plupart des téléphones ; **armeabi-v7a** si l'installation échoue (téléphones 32 bits, souvent Android Go).
-          - Chaque build est signé avec une clé de débogage différente : désinstaller la version précédente avant d'installer celle-ci.
-          - Un build debug contient la permission INTERNET, ajoutée par Flutter pour ses outils de développement ; l'application ne fait aucun appel réseau.
-          - Empreintes SHA-256 : fichier \`SHA256SUMS.txt\`.
-          EOF
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/$tag"
+          size() { awk -v b="$(stat -c%s "$1")" 'BEGIN { printf "%.1f Mo", b / 1000000 }' | tr . ,; }
+          {
+            echo "**Version de développement — pour essai uniquement, ne pas diffuser.**"
+            echo
+            echo "Branche \`$BRANCH\`, révision \`$GITHUB_SHA\`."
+            echo
+            echo "| Fichier | Taille | Pour qui |"
+            echo "| --- | --- | --- |"
+            for f in dist/*.apk; do
+              name="$(basename "$f")"
+              case "$name" in
+                *arm64-v8a*) who="La plupart des téléphones" ;;
+                *) who="Téléphones 32 bits (souvent Android Go)" ;;
+              esac
+              echo "| [$name]($base/$name) | $(size "$f") | $who |"
+            done
+            echo
+            echo "- Signé avec la clé de développement SafeLink (certificat SHA-256 \`$CERT_SHA256\`) : s'installe par-dessus toute version de développement précédente signée avec cette clé."
+            echo "- Un build debug contient la permission INTERNET, ajoutée par Flutter pour ses outils de développement ; l'application ne fait aucun appel réseau."
+            echo "- Empreintes des fichiers : \`SHA256SUMS.txt\`."
+          } > notes.md
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$tag" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes-file notes.md
           else
             gh release create "$tag" dist/* \
               --repo "$GITHUB_REPOSITORY" \
@@ -98,6 +148,7 @@ jobs:
               --title "Développement $SHORT_SHA ($BRANCH)" \
               --notes-file notes.md
           fi
+          cat notes.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Ne garder que les 5 dernières versions de développement
         env:
@@ -111,14 +162,3 @@ jobs:
             echo "Suppression de $old"
             gh release delete "$old" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
           done
-
-      - name: Liens directs
-        run: |
-          base="https://github.com/$GITHUB_REPOSITORY/releases/download/dev-$SHORT_SHA"
-          {
-            echo "### APK de développement"
-            for f in dist/*.apk; do
-              name="$(basename "$f")"
-              echo "- [$name]($base/$name)"
-            done
-          } >> "$GITHUB_STEP_SUMMARY"

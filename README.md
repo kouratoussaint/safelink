@@ -73,9 +73,9 @@ flutter build apk --debug
 [`dev-apk.yml`](.github/workflows/dev-apk.yml) publie les APK debug dans une
 [pré-version GitHub](https://github.com/kouratoussaint/safelink/releases)
 nommée `dev-<révision>`, téléchargeable sans compte. Ces versions servent aux
-essais : chacune est signée avec une clé de débogage différente (désinstaller
-la précédente avant d'installer la nouvelle) et ne doit pas être diffusée au
-public. Les cinq dernières sont conservées.
+essais et ne doivent pas être diffusées au public. Elles sont toutes signées
+avec la même clé de développement : chaque nouvelle version s'installe
+par-dessus la précédente. Les cinq dernières sont conservées.
 
 ## Organisation du dépôt
 

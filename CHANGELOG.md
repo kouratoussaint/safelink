@@ -32,6 +32,9 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   avec liens de téléchargement directs (`dev-apk.yml`).
 - Bouton Retour : retour à l'écran précédent dans l'onglet, puis aux
   onglets visités jusqu'à l'Accueil ; double appui pour quitter.
+- Signature de développement stable : tous les APK de développement sont
+  signés avec la même clé et s'installent par-dessus la version précédente ;
+  taille de chaque APK indiquée dans les notes de pré-version.
 
 ### Modifié
 
