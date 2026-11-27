@@ -67,6 +67,7 @@ class AnalysisScreen extends ConsumerWidget {
               result: result,
               destinations: value.destinations,
               online: value.online,
+              onRetry: () => ref.invalidate(analysisProvider(request)),
               onOpenLink: (link) => context.push(
                 AppRoutes.linkResult,
                 extra: (

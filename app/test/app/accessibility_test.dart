@@ -176,17 +176,16 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('Proposition de vérification en ligne ($theme)', (
-      tester,
-    ) async {
+    testWidgets('Bandeau « Pas de connexion » ($theme)', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpSafeLinkApp(
         tester,
-        online: OnlineChoice.undecided,
+        expert: false,
+        online: OnlineChoice.enabled,
         preferences: {ThemeModeController.storageKey: theme},
       );
       await history.analyzeLink(tester, 'https://lefaso.net/');
-      await flow.scrollTo(tester, find.text('Vérifier aussi en ligne ?'));
+      await flow.scrollTo(tester, find.text('Pas de connexion'));
       await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
       await expectLater(tester, meetsGuideline(textContrastGuideline));

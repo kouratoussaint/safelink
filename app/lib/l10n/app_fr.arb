@@ -55,7 +55,7 @@
   "onboardingLimitsPoint2": "Sans vérification en ligne, l’analyse se fait uniquement sur votre téléphone et ne peut pas savoir si un site est déjà signalé.",
   "onboardingLimitsPoint3": "SafeLink n’ouvre jamais les liens qu’il analyse.",
   "onboardingPrivacyTitle": "Vos données restent sur votre téléphone",
-  "onboardingPrivacyBody": "Pas de compte, pas de publicité. Rien n’est envoyé sans votre accord.",
+  "onboardingPrivacyBody": "Pas de compte, pas de publicité. Pour vérifier un lien, seul ce qui est utile est envoyé à des services de sécurité (page suivante).",
   "onboardingPrivacyPoint1": "SafeLink ne lit jamais vos SMS ni vos conversations : vous choisissez ce que vous lui confiez.",
   "onboardingPrivacyPoint2": "Le presse-papiers n’est lu que lorsque vous appuyez sur « Coller ».",
   "onboardingPrivacyPoint3": "Le texte d’un message n’est jamais transmis à qui que ce soit.",
@@ -361,19 +361,15 @@
     }
   },
   "historyEntryInfo": "Détails enregistrés",
-  "onboardingOnlineTitle": "Vérifier aussi en ligne ?",
-  "onboardingOnlineBody": "Pour savoir si un site est déjà signalé et depuis quand il existe, SafeLink peut interroger des services de sécurité gratuits.",
+  "onboardingOnlineTitle": "Vérification en ligne activée",
+  "onboardingOnlineBody": "Pour savoir si un site est déjà signalé, depuis quand il existe et à quoi ressemble la page, SafeLink interroge des services de sécurité gratuits. Sans connexion, l’analyse se fait sur le téléphone.",
   "onboardingOnlinePoint1": "Seul le nom du site est envoyé (par exemple « exemple.com »), de façon chiffrée, jamais le texte d’un message. Un lien raccourci (bit.ly…) est envoyé à son service, pour connaître sa vraie destination sans l’ouvrir.",
   "onboardingOnlinePoint2": "Destinataires : Quad9 et Cloudflare (listes de sites malveillants), le registre du domaine (date de création) et, pour un lien raccourci, son service.",
-  "onboardingOnlinePoint3": "Vous pouvez changer d’avis à tout moment dans les paramètres.",
-  "onboardingOnlineEnable": "Activer la vérification en ligne",
+  "onboardingOnlinePoint3": "Vous pouvez la désactiver à tout moment dans les paramètres.",
+  "onboardingOnlineEnable": "Continuer",
   "onboardingOnlineDecline": "Rester hors ligne",
   "analysisOnlineRunning": "Vérification en ligne…",
   "analysisOnlineRunningBody": "Seul le nom du site est envoyé, de façon chiffrée.",
-  "onlineOfferTitle": "Vérifier aussi en ligne ?",
-  "onlineOfferBody": "SafeLink peut demander à Quad9 et Cloudflare si ce site est déjà signalé, et au registre depuis quand il existe. Seul le nom du site est envoyé ; un lien raccourci est envoyé à son service pour connaître sa vraie destination. Jamais le texte d’un message.",
-  "onlineEnable": "Vérifier en ligne",
-  "onlineDecline": "Non merci",
   "onlineSectionTitle": "Vérifications en ligne",
   "onlineDisabled": "Vérification en ligne désactivée : le site n’a été comparé à aucune liste de sites malveillants.",
   "onlineDisabledAction": "Activer",
@@ -496,7 +492,6 @@
   "techSourceOnline": "Règles locales sur ce téléphone, et vérification en ligne du nom du site (Quad9, Cloudflare, registre du domaine)",
   "onboardingOnlineGooglePoint1": "Google reçoit le lien pour prendre une photo de la page et dire s’il est signalé : vous voyez la page sans l’ouvrir. Le texte d’un message n’est jamais envoyé.",
   "onboardingOnlineGooglePoint2": "Destinataires : Google (photo et liste de sites dangereux), Quad9 et Cloudflare (listes de sites malveillants), le registre du domaine (date de création) et, pour un lien raccourci, son service (bit.ly…).",
-  "onlineOfferGoogleBody": "SafeLink peut demander à Google, Quad9 et Cloudflare si ce site est déjà signalé, au registre depuis quand il existe, et à Google une photo de la page. Un lien raccourci est envoyé à son service pour connaître sa vraie destination. Le texte d’un message n’est jamais envoyé.",
   "settingsOnlineGoogleSwitchBody": "Google reçoit le lien (photo de la page, liste de sites dangereux) ; Quad9, Cloudflare et le registre reçoivent le nom du site ; le service d’un lien raccourci reçoit ce lien. Jamais le texte d’un message.",
   "analysisOnlineGoogleRunningBody": "Le texte d’un message n’est jamais envoyé.",
   "onlineSourceGoogle": "Google Safe Browsing",
@@ -633,5 +628,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "offlineTitle": "Pas de connexion",
+  "offlineBody": "Vérifié seulement sur le téléphone, sans photo ni listes de sites dangereux. Réessayez avec internet."
 }

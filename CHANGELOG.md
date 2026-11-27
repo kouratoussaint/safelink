@@ -6,6 +6,16 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Vérification en ligne activée par défaut (ADR 0013)
+
+- Analyse en ligne prioritaire : activée dès l'installation, annoncée à
+  la dernière étape de la présentation (« Continuer » ou « Rester hors
+  ligne ») et désactivable dans les paramètres ; un refus déjà donné est
+  respecté.
+- Carte « Vérifier aussi en ligne ? » retirée.
+- Sans connexion : bandeau « Pas de connexion » en haut du résultat, avec
+  « Réessayer » ; l'analyse sur le téléphone prend le relais.
+
 ### Ajouté — Liens d'application (onelink.to…)
 
 - `onelink.to`, `onelink.me`, `app.link` et `urlz.fr` traités comme des

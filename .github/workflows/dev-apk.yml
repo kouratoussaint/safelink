@@ -180,7 +180,7 @@ jobs:
             else
               echo "- Signature temporaire (certificat SHA-256 \`$CERT_SHA256\`)."
             fi
-            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne, si l’utilisateur l’active."
+            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne (activée par défaut, désactivable)."
             if [ -n "$GOOGLE_KEY_PRESENT" ]; then
               echo "- Services Google (Safe Browsing, photo des pages) : activés."
             else

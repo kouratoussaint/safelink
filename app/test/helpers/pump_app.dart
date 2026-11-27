@@ -30,18 +30,19 @@ const referenceSize = Size(393, 852);
 /// considérée comme déjà vue. L'analyse se fait par défaut sans isolat, de
 /// façon synchrone : [analysisService] permet de la remplacer ; les
 /// vérifications en ligne sont simulées ([onlineChecker], sans connexion par
-/// défaut) ; les services Google sont désactivés sauf si [googleKey] est
-/// fournie. Le mode expert est actif sauf si [expert] est faux : les tests
-/// de contenu voient ainsi toutes les explications ; la lecture à voix
-/// haute est simulée ([speaker]). L'historique
-/// est gardé en mémoire ([historyBackend]).
+/// défaut) et désactivées sauf choix contraire ([online] ; `null` : rien
+/// d'enregistré, comme à l'installation, donc activées) ; les services
+/// Google sont désactivés sauf si [googleKey] est fournie. Le mode expert
+/// est actif sauf si [expert] est faux : les tests de contenu voient ainsi
+/// toutes les explications ; la lecture à voix haute est simulée
+/// ([speaker]). L'historique est gardé en mémoire ([historyBackend]).
 Future<SharedPreferences> pumpSafeLinkApp(
   WidgetTester tester, {
   Map<String, Object> preferences = const {},
   Size size = referenceSize,
   double textScale = 1,
   bool onboarded = true,
-  OnlineChoice online = OnlineChoice.disabled,
+  OnlineChoice? online = OnlineChoice.disabled,
   AnalysisService? analysisService,
   OnlineChecker? onlineChecker,
   String googleKey = '',
@@ -53,8 +54,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
 }) async {
   SharedPreferences.setMockInitialValues({
     if (onboarded) OnboardingController.storageKey: true,
-    if (online != OnlineChoice.undecided)
-      OnlineChoiceController.storageKey: online.name,
+    if (online != null) OnlineChoiceController.storageKey: online.name,
     if (expert) ExpertModeController.storageKey: true,
     ...preferences,
   });

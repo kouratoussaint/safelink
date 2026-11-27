@@ -145,36 +145,23 @@ void main() {
   });
 
   group('consentement', () {
-    testWidgets('pas encore choisi : proposition, puis nouvelle analyse', (
+    testWidgets('par défaut : vérifié en ligne sans rien demander', (
       tester,
     ) async {
       final prefs = await pumpSafeLinkApp(
         tester,
-        online: OnlineChoice.undecided,
+        online: null,
         onlineChecker: cleanChecker(),
       );
       await history.analyzeLink(tester, 'https://lefaso.net/');
-      expect(find.text('Analyse insuffisante'), findsOneWidget);
-      expect(find.text('Vérifier aussi en ligne ?'), findsOneWidget);
-
-      await tester.tap(flow.button('Vérifier en ligne'));
-      await tester.pumpAndSettle();
-      expect(prefs.getString(OnlineChoiceController.storageKey), 'enabled');
-      expect(find.text('Vérifier aussi en ligne ?'), findsNothing);
       expect(find.text('Aucun danger connu détecté'), findsOneWidget);
+      expect(prefs.getString(OnlineChoiceController.storageKey), isNull);
     });
 
-    testWidgets('« Non merci » : retenu, rien n’est envoyé', (tester) async {
+    testWidgets('désactivée : rien n’est envoyé, réactivable', (tester) async {
       final dns = FakeDohTransport();
-      final prefs = await pumpSafeLinkApp(
-        tester,
-        online: OnlineChoice.undecided,
-        onlineChecker: fakeChecker(dns: dns),
-      );
+      await pumpSafeLinkApp(tester, onlineChecker: fakeChecker(dns: dns));
       await history.analyzeLink(tester, 'https://lefaso.net/');
-      await tester.tap(flow.button('Non merci').first);
-      await tester.pumpAndSettle();
-      expect(prefs.getString(OnlineChoiceController.storageKey), 'disabled');
       expect(dns.sentNames, isEmpty);
       await flow.scrollTo(
         tester,
@@ -257,14 +244,14 @@ void main() {
     final backend = MemoryHistoryBackend();
     await pumpSafeLinkApp(
       tester,
-      online: OnlineChoice.undecided,
       onlineChecker: cleanChecker(),
       preferences: history.enabled,
       historyBackend: backend,
     );
     await history.analyzeLink(tester, 'https://lefaso.net/');
     expect((await backend.entries()).single.verdictCode, 'INCONCLUSIVE');
-    await tester.tap(flow.button('Vérifier en ligne'));
+    await flow.scrollTo(tester, find.text('Activer'));
+    await tester.tap(flow.button('Activer'));
     await tester.pumpAndSettle();
     final entries = await backend.entries();
     expect(entries, hasLength(1));

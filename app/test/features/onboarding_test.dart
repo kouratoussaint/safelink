@@ -32,14 +32,10 @@ Future<void> toLastStep(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('mission, limites, confidentialité, puis choix en ligne', (
+  testWidgets('mission, limites, confidentialité, puis vérification en ligne', (
     tester,
   ) async {
-    final prefs = await pumpSafeLinkApp(
-      tester,
-      onboarded: false,
-      online: OnlineChoice.undecided,
-    );
+    final prefs = await pumpSafeLinkApp(tester, onboarded: false, online: null);
     expect(find.text('Vérifiez avant de cliquer'), findsOneWidget);
     expect(find.text('Étape 1 sur 4'), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
@@ -59,12 +55,12 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.textContaining('Rien n’est envoyé sans votre accord'),
+      find.textContaining('seul ce qui est utile est envoyé'),
       findsOneWidget,
     );
 
     await tapButton(tester, 'Suivant');
-    expect(find.text('Vérifier aussi en ligne ?'), findsOneWidget);
+    expect(find.text('Vérification en ligne activée'), findsOneWidget);
     expect(
       find.textContaining('Seul le nom du site est envoyé'),
       findsOneWidget,
@@ -72,7 +68,7 @@ void main() {
     expect(find.textContaining('Quad9 et Cloudflare'), findsOneWidget);
     expect(prefs.getBool(OnboardingController.storageKey), isNull);
 
-    await tapButton(tester, 'Activer la vérification en ligne');
+    await tapButton(tester, 'Continuer');
     expect(find.text('Lien à vérifier'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(prefs.getBool(OnboardingController.storageKey), isTrue);
@@ -80,11 +76,7 @@ void main() {
   });
 
   testWidgets('« Rester hors ligne » est retenu', (tester) async {
-    final prefs = await pumpSafeLinkApp(
-      tester,
-      onboarded: false,
-      online: OnlineChoice.undecided,
-    );
+    final prefs = await pumpSafeLinkApp(tester, onboarded: false, online: null);
     await toLastStep(tester);
     await tapButton(tester, 'Rester hors ligne');
     expect(find.text('Lien à vérifier'), findsOneWidget);
