@@ -87,8 +87,17 @@ abstract final class Confusables {
   /// Avec [ignoreMarks], les accents et autres signes combinants sont
   /// retirés : `pàypal` et `paypal` ont alors le même squelette.
   static String skeleton(String text, {bool ignoreMarks = false}) {
+    // Deux passes séparées par la mise en minuscules : « M » devient « m »,
+    // puis « rn », comme « m » ; « I » devient « l » avant d'être minuscule.
+    final firstPass = _map(unorm.nfd(text), ignoreMarks: ignoreMarks);
+    return unorm.nfd(
+      _map(unorm.nfd(firstPass.toLowerCase()), ignoreMarks: ignoreMarks),
+    );
+  }
+
+  static String _map(String text, {required bool ignoreMarks}) {
     final buffer = StringBuffer();
-    for (final rune in unorm.nfd(text).runes) {
+    for (final rune in text.runes) {
       if (ignoreMarks &&
           UnicodeScripts.scriptOf(rune) == UnicodeScripts.inherited) {
         continue;
@@ -97,16 +106,19 @@ abstract final class Confusables {
       if (prototype != null) {
         buffer.write(prototype);
       } else {
-        buffer.write(String.fromCharCode(rune).toLowerCase());
+        buffer.writeCharCode(rune);
       }
     }
-    return unorm.nfd(buffer.toString());
+    return buffer.toString();
   }
 
-  /// Vrai si [text] contient au moins un caractère non ASCII dont le
-  /// squelette est entièrement ASCII : il imite alors des lettres latines.
+  /// Vrai si [text] contient des lettres d'un alphabet autre que le latin
+  /// et que son squelette est entièrement ASCII : il imite alors des
+  /// lettres latines (`сосо` en cyrillique). Les lettres latines accentuées
+  /// (`bücher`) ne comptent pas.
   static bool imitatesAscii(String text) {
-    if (text.runes.every((rune) => rune < 0x80)) return false;
+    final scripts = UnicodeScripts.scriptsOf(text);
+    if (scripts.every((script) => script == 'Latin')) return false;
     return skeleton(text, ignoreMarks: true).runes.every((rune) => rune < 0x80);
   }
 }

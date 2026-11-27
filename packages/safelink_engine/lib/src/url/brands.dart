@@ -301,6 +301,9 @@ final class BrandMatcher {
     final subdomainCompact = subdomainSkeleton.replaceAll(RegExp('[-.]'), '');
     final subdomainTokens = _tokens(subdomainSkeleton);
 
+    final rawLower = labelUnicode.toLowerCase();
+    final rawCompact = rawLower.replaceAll('-', '');
+    final rawTokens = _tokens(rawLower);
     final hasLookalikeCharacters =
         labelSkeleton.replaceAll('-', '') !=
         labelUnicode.toLowerCase().replaceAll('-', '');
@@ -345,7 +348,14 @@ final class BrandMatcher {
             labelUnicode,
           );
         } else if (labelCompact.contains(keywordSkeleton)) {
-          consider(BrandMatchKind.keywordInDomain, labelUnicode);
+          // Le nom de la marque n'apparaît qu'après lecture des caractères
+          // trompeurs : il est imité, pas simplement cité.
+          consider(
+            rawCompact.contains(keyword)
+                ? BrandMatchKind.keywordInDomain
+                : BrandMatchKind.lookalike,
+            labelUnicode,
+          );
         } else if (_isTypo(
           labelCompact,
           keywordSkeleton,
@@ -362,9 +372,9 @@ final class BrandMatcher {
           consider(
             label == token
                 ? BrandMatchKind.sameNameOtherSuffix
-                : labelTokens.length == 1 && hasLookalikeCharacters
-                ? BrandMatchKind.lookalike
-                : BrandMatchKind.keywordInDomain,
+                : rawTokens.contains(token)
+                ? BrandMatchKind.keywordInDomain
+                : BrandMatchKind.lookalike,
             labelUnicode,
           );
         }
@@ -383,7 +393,11 @@ final class BrandMatcher {
   /// Marques citées dans [text] (chemin d'un lien, texte d'un message) :
   /// mot-clé à l'intérieur d'un mot, ou nom court isolé.
   Set<Brand> brandsMentionedIn(String text) {
-    final skeleton = Confusables.skeleton(text, ignoreMarks: true);
+    // Minuscules d'abord : « PAYPAL » ou « Gmail » dans un texte comptent.
+    final skeleton = Confusables.skeleton(
+      text.toLowerCase(),
+      ignoreMarks: true,
+    );
     final tokens = _tokens(skeleton);
     return {
       for (final brand in registry.brands)

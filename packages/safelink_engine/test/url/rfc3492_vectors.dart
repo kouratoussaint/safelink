@@ -1,5 +1,6 @@
 // Vecteurs de test de la RFC 3492, section 7.1 (« Sample strings »),
 // repris de la suite de tests de CPython (Lib/test/test_codecs.py).
+// ignore_for_file: lines_longer_than_80_chars
 const rfc3492Vectors = <(String, String)>[
   ('ليهمابتكلموشعربي؟', 'egbpdaj6bu4bxfgehfvwxn'),
   ('他们为什么不说中文', 'ihqwcrb4cv8a8dqg056pqjye'),
@@ -15,7 +16,10 @@ const rfc3492Vectors = <(String, String)>[
     '세계의모든사람들이한국어를이해한다면얼마나좋을까',
     '989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5jpsd879ccm6fea98c',
   ),
-  ('почемужеонинеговорятпорусски', 'b1abfaaepdrnnbgefbaDotcwatmq2g4l'),
+  (
+    '\u043F\u043E\u0447\u0435\u043C\u0443\u0436\u0435\u043E\u043D\u0438\u043D\u0435\u0433\u043E\u0432\u043E\u0440\u044F\u0442\u043F\u043E\u0440\u0443\u0441\u0441\u043A\u0438',
+    'b1abfaaepdrnnbgefbaDotcwatmq2g4l',
+  ),
   (
     'PorquénopuedensimplementehablarenEspañol',
     'PorqunopuedensimplementehablarenEspaol-fmd56a',

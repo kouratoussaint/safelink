@@ -13,13 +13,16 @@ void main() {
     });
 
     test('lettres pleine chasse ramenées à l’ASCII (NFKC)', () {
-      expect(Idna.toAscii('ｇｏｏｇｌｅ.com'), 'google.com');
+      expect(
+        Idna.toAscii('\uFF47\uFF4F\uFF4F\uFF47\uFF4C\uFF45.com'),
+        'google.com',
+      );
     });
 
     test('séparateurs idéographiques ramenés au point', () {
-      expect(Idna.toAscii('example。com'), 'example.com');
-      expect(Idna.toAscii('example．com'), 'example.com');
-      expect(Idna.toAscii('example｡com'), 'example.com');
+      expect(Idna.toAscii('example\u3002com'), 'example.com');
+      expect(Idna.toAscii('example\uFF0Ecom'), 'example.com');
+      expect(Idna.toAscii('example\uFF61com'), 'example.com');
     });
 
     test('point final unique accepté', () {
@@ -70,7 +73,11 @@ void main() {
     });
 
     test('aller-retour', () {
-      for (final domain in ['bücher.example', '食狮.中国', 'пример.рф']) {
+      for (final domain in [
+        'bücher.example',
+        '食狮.中国',
+        '\u043F\u0440\u0438\u043C\u0435\u0440.\u0440\u0444',
+      ]) {
         expect(Idna.toUnicode(Idna.toAscii(domain)!), domain);
       }
     });
