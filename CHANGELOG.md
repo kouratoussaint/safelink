@@ -6,6 +6,20 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Conseils, aide, exemples, confidentialité (lot D3)
+
+- Onze fiches de prévention en pictogrammes (codes secrets, faux
+  transfert « par erreur », codes à composer, faux agents, applications
+  hors Play Store, gains, faux emplois, liens, QR codes, messages qui
+  pressent) et « Déjà piégé ? Que faire », avec signalement sur
+  Alerte-BCLCC ; « Écouter » sur chaque fiche.
+- Aide : les trois gestes, la signification de chaque couleur, les
+  limites ; six exemples inventés, jamais envoyés ni enregistrés.
+- Écran Confidentialité : ce qui reste sur le téléphone, ce qui est
+  envoyé et à qui ; `docs/CONFIDENTIALITE.md`.
+- Page « introuvable » en français ; étape en ligne bornée à 45 s.
+- Espaces insécables dans la ponctuation française.
+
 ### Modifié — Vérification en ligne activée par défaut (ADR 0013)
 
 - Analyse en ligne prioritaire : activée dès l'installation, annoncée à

@@ -20,16 +20,16 @@ void main() {
       final summary = ResultSummary.of(outcome, l10n, date);
       expect(summary, startsWith('SafeLink — résultat d’analyse'));
       expect(summary, contains('Analysé le 1 janvier 2026 à 10:00'));
-      expect(summary, contains('Verdict : Lien suspect'));
+      expect(summary, contains('Verdict : Lien suspect'));
       expect(
         summary,
         contains(
-          'Lien : http://orange-money-bf.secure-login.xyz/verify?token=•••',
+          'Lien : http://orange-money-bf.secure-login.xyz/verify?token=•••',
         ),
       );
       expect(summary, isNot(contains('abcdefghijklmnop')));
-      expect(summary, contains('Pourquoi ce résultat ? :'));
-      expect(summary, contains('Ce qui n’a pas été vérifié :'));
+      expect(summary, contains('Pourquoi ce résultat ? :'));
+      expect(summary, contains('Ce qui n’a pas été vérifié :'));
       expect(summary, endsWith(l10n.summaryFooter));
     });
 
@@ -39,7 +39,7 @@ void main() {
         'mailto:contact@exemple.bf',
       );
       final summary = ResultSummary.of(outcome, l10n, date);
-      expect(summary, contains('Verdict : Adresse non analysable'));
+      expect(summary, contains('Verdict : Adresse non analysable'));
       expect(summary, isNot(contains('contact@exemple.bf')));
     });
 
@@ -59,7 +59,7 @@ void main() {
       expect(summary, isNot(contains('Extrait')));
       expect(
         summary,
-        contains('Lien : https://colis-bf.example/pay?phone=•••'),
+        contains('Lien : https://colis-bf.example/pay?phone=•••'),
       );
       final message = (outcome as MessageOutcome).result.message;
       for (final signal in message.signals) {

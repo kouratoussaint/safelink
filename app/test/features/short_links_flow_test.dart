@@ -69,14 +69,14 @@ void main() {
     await pumpShort(tester);
     await history.analyzeLink(tester, short);
     // En grand, et sur la carte de la destination.
-    expect(find.text('Danger !'), findsWidgets);
+    expect(find.text('Danger !'), findsWidgets);
     expect(
       find.text('Ce lien raccourci mène à un site dangereux. Ne l’ouvrez pas.'),
       findsOneWidget,
     );
-    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
+    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
     expect(
-      find.bySemanticsLabel('Vraie destination : faux-orange.xyz'),
+      find.bySemanticsLabel('Vraie destination : faux-orange.xyz'),
       findsOneWidget,
     );
     expect(find.text('Menace connue détectée'), findsWidgets);
@@ -84,8 +84,8 @@ void main() {
     await flow.scrollTo(tester, find.text('Voir ce site en détail'));
     await tester.tap(flow.button('Voir ce site en détail'));
     await tester.pumpAndSettle();
-    expect(find.text('Danger !'), findsOneWidget);
-    expect(find.text('Ce lien raccourci mène à :'), findsNothing);
+    expect(find.text('Danger !'), findsOneWidget);
+    expect(find.text('Ce lien raccourci mène à :'), findsNothing);
   });
 
   testWidgets('gestes de la destination quand elle est plus grave', (
@@ -105,7 +105,7 @@ void main() {
       tester,
       find.textContaining('Impossible de savoir où mène ce lien raccourci'),
     );
-    expect(find.text('Danger !'), findsNothing);
+    expect(find.text('Danger !'), findsNothing);
   });
 
   testWidgets('message : le lien raccourci montre où il mène', (tester) async {
@@ -114,13 +114,13 @@ void main() {
       tester,
       'Bonjour, voici votre colis à récupérer : $short',
     );
-    expect(find.text('Danger !'), findsOneWidget);
+    expect(find.text('Danger !'), findsOneWidget);
     final tile = find.textContaining('Mène à faux-orange.xyz');
     await flow.scrollTo(tester, tile);
     await tester.tap(tile);
     await tester.pumpAndSettle();
-    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
-    expect(find.text('Danger !'), findsWidgets);
+    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
+    expect(find.text('Danger !'), findsWidgets);
   });
 
   for (final theme in ['light', 'dark']) {
@@ -170,9 +170,9 @@ void main() {
       }),
     );
     await history.analyzeLink(tester, 'https://onelink.to/nn64xw');
-    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
+    await flow.scrollTo(tester, find.text('Ce lien raccourci mène à :'));
     expect(
-      find.bySemanticsLabel('Vraie destination : google.com'),
+      find.bySemanticsLabel('Vraie destination : google.com'),
       findsOneWidget,
     );
     await flow.scrollTo(tester, find.text('Aperçu de la page'));

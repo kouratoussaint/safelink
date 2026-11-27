@@ -154,7 +154,7 @@ class SignalTile extends StatelessWidget {
                 if (evidence != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    l10n.signalExcerpt('« $evidence »'),
+                    l10n.signalExcerpt('«\u00a0$evidence\u00a0»'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: SafeLinkColors.of(context).textSecondary,
                     ),

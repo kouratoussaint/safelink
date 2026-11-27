@@ -92,7 +92,7 @@ abstract final class ResultSummary {
     if (items.isEmpty) return;
     lines
       ..add('')
-      ..add('$title :');
+      ..add('$title\u00a0:');
     for (final item in items) {
       lines.add('- $item');
     }

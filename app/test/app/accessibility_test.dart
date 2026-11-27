@@ -6,6 +6,7 @@ import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/online_controller.dart';
 
 import '../features/analysis_flow_test.dart' as flow;
+import '../features/help_flow_test.dart' as help;
 import '../features/history_flow_test.dart' as history;
 import '../features/online_flow_test.dart' as online;
 import '../helpers/pump_app.dart';
@@ -16,6 +17,18 @@ typedef Navigate = Future<void> Function(WidgetTester tester);
 
 final screens = <String, Navigate>{
   'Accueil': (tester) async {},
+  'Fiche de prévention': (tester) => help.goTo(tester, '/conseils/codes'),
+  'Fiche d’urgence': (tester) => help.goTo(tester, '/conseils/victime'),
+  'Aide': (tester) => help.goTo(tester, '/accueil/aide'),
+  'Exemples': (tester) => help.goTo(tester, '/accueil/aide/exemples'),
+  'Résultat d’un exemple': (tester) async {
+    await help.goTo(tester, '/accueil/aide/exemples');
+    await tester.tap(find.text('SMS : code à composer'));
+    await tester.pumpAndSettle();
+  },
+  'Confidentialité': (tester) =>
+      help.goTo(tester, '/parametres/confidentialite'),
+  'Page introuvable': (tester) => help.goTo(tester, '/nulle-part'),
   'Historique': (tester) => tapDestination(tester, 'Historique'),
   'Conseils': (tester) => tapDestination(tester, 'Conseils'),
   'Paramètres': (tester) => tapDestination(tester, 'Paramètres'),
@@ -144,7 +157,7 @@ void main() {
         preferences: {ThemeModeController.storageKey: theme},
       );
       await history.analyzeLink(tester, secretUrl);
-      await flow.scrollTo(tester, find.text('Garder vos vérifications ?'));
+      await flow.scrollTo(tester, find.text('Garder vos vérifications ?'));
       await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
       await expectLater(tester, meetsGuideline(textContrastGuideline));
@@ -203,7 +216,7 @@ void main() {
     final node = tester.getSemantics(find.text('Lien suspect'));
     expect(node, isSemantics(isHeader: true));
     expect(node.label, startsWith('Lien suspect'));
-    expect(node.label, contains('Confiance : élevée'));
+    expect(node.label, contains('Confiance : élevée'));
     handle.dispose();
   });
 
@@ -243,7 +256,7 @@ void main() {
     final handle = tester.ensureSemantics();
     await pumpSafeLinkApp(tester);
     expect(
-      find.bySemanticsLabel('Logo SafeLink : bouclier et maillon de chaîne'),
+      find.bySemanticsLabel('Logo SafeLink : bouclier et maillon de chaîne'),
       findsWidgets,
     );
     expect(find.byType(AppBar), findsOneWidget);

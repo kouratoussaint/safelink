@@ -121,6 +121,7 @@ class HistoryRecorder extends AsyncNotifier<HistoryEntry?> {
   @override
   Future<HistoryEntry?> build() async {
     final outcome = await ref.watch(analysisProvider(request).future);
+    if (request.example) return null;
     if (ref.read(historyChoiceProvider) != HistoryChoice.enabled) return null;
     return await _save(outcome);
   }

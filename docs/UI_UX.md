@@ -155,6 +155,36 @@ montrés qu'à qui le demande.
 - « Tout effacer » dans l'onglet et dans les paramètres, toujours après
   confirmation.
 
+## Conseils, aide et confidentialité
+
+- **Conseils** : onze fiches de prévention en vignettes, la fiche
+  « Déjà piégé ? Que faire » en tête et en rouge. Chaque fiche : le piège,
+  les signes, que faire, en pictogrammes, avec « Écouter » et « Vérifier
+  un lien ou un message ». Signalement : plateforme officielle
+  Alerte-BCLCC (`alerte.bclcc.gov.bf`).
+- **Aide** (bouton « ? » de l'accueil, Paramètres) : les trois gestes, ce
+  que veut dire chaque couleur, ce que SafeLink ne peut pas faire, et
+  « Essayer avec un exemple ».
+- **Exemples** : six exemples inventés (faux site, lien raccourci, faux
+  transfert, code à composer, tombola, SMS ordinaire), analysés sur le
+  téléphone seulement, jamais enregistrés, avec le bandeau « Exemple
+  inventé ».
+- **Confidentialité** (Paramètres) : ce qui reste sur le téléphone, ce qui
+  est envoyé et à qui (texte dans `docs/CONFIDENTIALITE.md`), ce qui
+  n'arrive jamais, interrupteur de la vérification en ligne.
+- **Adresse inconnue** : « Page introuvable » et retour à l'accueil.
+- **Aucune attente sans fin** : chaque service en ligne a son délai, et
+  toute l'étape en ligne est bornée à 45 s ; au-delà, le résultat du
+  téléphone s'affiche avec « Pas de connexion ».
+
+## Typographie
+
+Espace insécable avant « : ; ? ! » et à l'intérieur des guillemets
+(« … »), pour qu'aucun signe ne se retrouve seul en début de ligne. Les
+textes de l'application (`app_fr.arb`) en contiennent ; les tests qui
+cherchent un texte doivent l'écrire de la même façon (copier depuis le
+fichier ARB).
+
 ## Accessibilité
 
 - Zones tactiles d'au moins 48 × 48 dp, libellés pour TalkBack, contraste :

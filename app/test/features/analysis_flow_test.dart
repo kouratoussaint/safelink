@@ -187,7 +187,7 @@ void main() {
       await pumpSafeLinkApp(tester);
       await enterText(tester, 'example.com');
       expect(
-        find.text('Sera analysé comme : https://example.com/'),
+        find.text('Sera analysé comme : https://example.com/'),
         findsOneWidget,
       );
       await enterText(tester, 'https://example.com');
@@ -246,7 +246,7 @@ void main() {
       expect(find.textContaining('sûr à'), findsNothing);
       // SafeLink n'ouvre jamais un lien analysé.
       expect(find.widgetWithText(ButtonStyleButton, 'Ouvrir'), findsNothing);
-      expect(find.text('Pourquoi ce résultat ?'), findsOneWidget);
+      expect(find.text('Pourquoi ce résultat ?'), findsOneWidget);
       await scrollTo(tester, find.text('Ce qui n’a pas été vérifié'));
       expect(find.text('Ce qui n’a pas été vérifié'), findsOneWidget);
     });
@@ -263,7 +263,7 @@ void main() {
       await analyze(tester, 'Analyser le lien');
 
       expect(find.text('Lien suspect'), findsOneWidget);
-      expect(find.text('Confiance : moyenne'), findsOneWidget);
+      expect(find.text('Confiance : moyenne'), findsOneWidget);
       expect(find.text('Indice moyen'), findsWidgets);
       // Le jeton est masqué partout.
       expect(find.textContaining('abcdefghijklmnop'), findsNothing);
@@ -315,13 +315,13 @@ void main() {
       await enterText(tester, scamMessage);
       await analyze(tester, 'Analyser le message');
 
-      expect(find.text('Synthèse : Danger'), findsOneWidget);
+      expect(find.text('Synthèse : Danger'), findsOneWidget);
       expect(find.text('Forts indices d’arnaque'), findsOneWidget);
       expect(find.text('Indices dans le texte'), findsOneWidget);
       // Extrait sans mot ni somme coupés, numéro masqué.
       await scrollTo(
         tester,
-        find.text('Extrait : « Vous avez gagné 500 000 FCFA »'),
+        find.text('Extrait : « Vous avez gagné 500 000 FCFA »'),
       );
       expect(find.textContaining('70 00 00 00'), findsNothing);
 
@@ -374,8 +374,8 @@ void main() {
       expect(clipboard.writes, hasLength(1));
       final summary = clipboard.writes.single;
       expect(summary, contains('Message analysé (texte non reproduit)'));
-      expect(summary, contains('Synthèse : Danger'));
-      expect(summary, contains('Lien : http://orange-gain.xyz/retrait'));
+      expect(summary, contains('Synthèse : Danger'));
+      expect(summary, contains('Lien : http://orange-gain.xyz/retrait'));
       expect(summary, isNot(contains('Félicitations')));
       expect(summary, isNot(contains('70 00 00 00')));
       expect(summary, isNot(contains('Extrait')));
