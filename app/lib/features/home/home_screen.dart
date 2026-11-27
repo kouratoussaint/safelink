@@ -111,6 +111,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const SafeLinkWordmark(),
         actions: [
           IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: l10n.homeHelpTooltip,
+            onPressed: () => context.go(AppRoutes.help),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: l10n.openSettingsTooltip,
             onPressed: () => context.go(AppRoutes.settings),
@@ -219,7 +224,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
+              icon: const Icon(Icons.science_outlined),
+              label: Text(l10n.homeExamples),
+              onPressed: () => context.go(AppRoutes.examples),
+            ),
+            const SizedBox(height: 16),
             InfoCard(
               icon: Icons.qr_code_scanner,
               title: l10n.homeComingSoonTitle,

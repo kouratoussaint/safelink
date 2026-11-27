@@ -58,8 +58,9 @@ class AnalysisScreen extends ConsumerWidget {
               destination: value.destinationOf(result),
               online: linkOnlineStatus(result, value.online),
               onRetry: () => ref.invalidate(analysisProvider(request)),
+              header: [if (request.example) const ExampleBanner()],
               footer: [
-                HistoryPanel(request: request),
+                if (!request.example) HistoryPanel(request: request),
                 ResultActions(outcome: value),
               ],
             ),
@@ -76,8 +77,9 @@ class AnalysisScreen extends ConsumerWidget {
                   value.destinationOf(link.result),
                 ),
               ),
+              header: [if (request.example) const ExampleBanner()],
               footer: [
-                HistoryPanel(request: request),
+                if (!request.example) HistoryPanel(request: request),
                 ResultActions(outcome: value),
               ],
             ),

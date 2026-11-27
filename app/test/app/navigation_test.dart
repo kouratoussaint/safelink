@@ -28,14 +28,11 @@ void main() {
 
     await tapDestination(tester, 'Historique');
     expect(appBarTitle('Historique'), findsOneWidget);
-    expect(find.text('Garder vos vérifications ?'), findsOneWidget);
+    expect(find.text('Garder vos vérifications ?'), findsOneWidget);
 
     await tapDestination(tester, 'Conseils');
     expect(appBarTitle('Conseils'), findsOneWidget);
-    expect(
-      find.text('Ne partagez jamais un code reçu par SMS'),
-      findsOneWidget,
-    );
+    expect(find.text('Déjà piégé ? Que faire'), findsOneWidget);
 
     await tapDestination(tester, 'Paramètres');
     expect(appBarTitle('Paramètres'), findsOneWidget);

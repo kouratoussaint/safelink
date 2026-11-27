@@ -58,7 +58,7 @@ void main() {
       expect(find.text('Le nom existe'), findsOneWidget);
       expect(
         find.text(
-          'Seul le nom « lefaso.net » a été envoyé, de façon chiffrée.',
+          'Seul le nom « lefaso.net » a été envoyé, de façon chiffrée.',
         ),
         findsOneWidget,
       );
@@ -115,7 +115,7 @@ void main() {
       expect(find.text('Analyse insuffisante'), findsOneWidget);
       await flow.scrollTo(
         tester,
-        find.text('Aucun service n’a répondu : vérifiez votre connexion.'),
+        find.text('Aucun service n’a répondu : vérifiez votre connexion.'),
       );
       expect(find.text('Réessayer'), findsOneWidget);
     });
@@ -215,11 +215,11 @@ void main() {
         tester,
         'Salut, voici les photos de la fête : https://photos-fete.com/a',
       );
-      expect(find.text('Synthèse : Danger'), findsOneWidget);
+      expect(find.text('Synthèse : Danger'), findsOneWidget);
       await flow.scrollTo(tester, find.text('https://photos-fete.com/a'));
       expect(
         find.text(
-          'Liens vérifiés en ligne : ouvrez un lien pour voir le détail.',
+          'Liens vérifiés en ligne : ouvrez un lien pour voir le détail.',
           skipOffstage: false,
         ),
         findsOneWidget,

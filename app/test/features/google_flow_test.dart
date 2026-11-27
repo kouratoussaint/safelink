@@ -41,11 +41,11 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text('Photo prise par Google : vous voyez la page sans l’ouvrir.'),
+      find.text('Photo prise par Google : vous voyez la page sans l’ouvrir.'),
       findsOneWidget,
     );
     expect(find.text('Faux site probable'), findsNothing);
-    expect(find.text('Ce lien mène en réalité à :'), findsNothing);
+    expect(find.text('Ce lien mène en réalité à :'), findsNothing);
   });
 
   testWidgets('redirection : vraie destination et nouvelle vérification', (
@@ -53,7 +53,7 @@ void main() {
   ) async {
     await pumpGoogle(tester, finalUrl: 'https://faux-orange.xyz/login');
     await history.analyzeLink(tester, 'https://lefaso.net/sortie');
-    await flow.scrollTo(tester, find.text('Ce lien mène en réalité à :'));
+    await flow.scrollTo(tester, find.text('Ce lien mène en réalité à :'));
     // Barre d'adresse de la photo (la page réellement photographiée) et
     // destination sous la photo.
     expect(find.text('faux-orange.xyz'), findsNWidgets(2));

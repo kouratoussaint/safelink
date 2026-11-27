@@ -30,11 +30,15 @@ class LinkResultView extends ConsumerWidget {
     this.destination,
     this.online = OnlineStatus.notRequested,
     this.onRetry,
+    this.header = const [],
     this.footer = const [],
     super.key,
   });
 
   final UrlAnalysisResult result;
+
+  /// Éléments ajoutés en haut (bandeau « Exemple inventé »).
+  final List<Widget> header;
 
   /// Vraie destination analysée, si le lien est raccourci.
   final UrlAnalysisResult? destination;
@@ -90,6 +94,7 @@ class LinkResultView extends ConsumerWidget {
       ),
     ];
     final children = <Widget>[
+      ...header,
       VerdictHero(
         presentation: presentation,
         expert: expert,
@@ -246,12 +251,16 @@ class MessageResultView extends ConsumerWidget {
     this.destinations = const {},
     this.online = OnlineStatus.notRequested,
     this.onRetry,
+    this.header = const [],
     this.footer = const [],
     super.key,
   });
 
   /// Relance l'analyse si les services en ligne n'ont pas répondu.
   final VoidCallback? onRetry;
+
+  /// Éléments ajoutés en haut (bandeau « Exemple inventé »).
+  final List<Widget> header;
 
   final CombinedResult result;
 
@@ -293,6 +302,7 @@ class MessageResultView extends ConsumerWidget {
       ),
     ];
     final children = <Widget>[
+      ...header,
       VerdictHero(
         presentation: presentation,
         expert: expert,
@@ -538,6 +548,40 @@ class OfflineBanner extends StatelessWidget {
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Bandeau d'un exemple inventé de l'aide.
+class ExampleBanner extends StatelessWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: theme.colorScheme.primary),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            PictoBadge(
+              icon: Icons.science_outlined,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context).exampleBanner,
+                style: theme.textTheme.bodyLarge,
+              ),
+            ),
           ],
         ),
       ),

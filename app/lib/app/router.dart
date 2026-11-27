@@ -4,6 +4,10 @@ import 'package:safelink/app/routes.dart';
 import 'package:safelink/app/shell.dart';
 import 'package:safelink/features/analysis/analysis_screen.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/help/examples_screen.dart';
+import 'package:safelink/features/help/help_screen.dart';
+import 'package:safelink/features/help/not_found_screen.dart';
+import 'package:safelink/features/help/privacy_screen.dart';
 import 'package:safelink/features/history/history_entry_screen.dart';
 import 'package:safelink/features/history/history_screen.dart';
 import 'package:safelink/features/home/home_screen.dart';
@@ -20,6 +24,8 @@ import 'package:safelink_engine/safelink_engine.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     initialLocation: AppRoutes.home,
+    // Adresse inconnue : page en français, retour à l'accueil.
+    errorBuilder: (context, state) => const NotFoundScreen(),
     redirect: (context, state) {
       final done = ref.read(onboardingDoneProvider);
       final onOnboarding = state.matchedLocation == AppRoutes.onboarding;
@@ -41,6 +47,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.home,
                 builder: (context, state) => const HomeScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'aide',
+                    builder: (context, state) => const HelpScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'exemples',
+                        builder: (context, state) => const ExamplesScreen(),
+                      ),
+                    ],
+                  ),
                   GoRoute(
                     path: 'analyse',
                     builder: (context, state) => AnalysisScreen(
@@ -100,6 +116,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.tips,
                 builder: (context, state) => const TipsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) =>
+                        TipDetailScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),
@@ -112,6 +135,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'a-propos',
                     builder: (context, state) => const AboutScreen(),
+                  ),
+                  GoRoute(
+                    path: 'confidentialite',
+                    builder: (context, state) => const PrivacyScreen(),
                   ),
                 ],
               ),

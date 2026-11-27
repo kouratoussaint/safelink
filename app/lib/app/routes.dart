@@ -9,6 +9,18 @@ abstract final class AppRoutes {
   /// Fiche d'une vérification enregistrée.
   static String historyEntry(String id) => '$history/$id';
   static const tips = '/conseils';
+
+  /// Fiche de prévention.
+  static String tip(String id) => '$tips/$id';
+
+  /// Aide : comment faire, comprendre le résultat, limites.
+  static const help = '/accueil/aide';
+
+  /// Exemples fictifs à analyser, jamais enregistrés.
+  static const examples = '/accueil/aide/exemples';
+
+  /// Confidentialité : ce qui reste sur le téléphone, ce qui est envoyé.
+  static const privacy = '/parametres/confidentialite';
   static const settings = '/parametres';
   static const about = '/parametres/a-propos';
 }

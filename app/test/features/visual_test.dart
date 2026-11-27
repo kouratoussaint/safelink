@@ -40,17 +40,17 @@ void main() {
     ) async {
       await pumpSimple(tester);
       await history.analyzeLink(tester, lookalike);
-      expect(find.text('Attention !'), findsOneWidget);
+      expect(find.text('Attention !'), findsOneWidget);
       expect(find.text('Lien suspect'), findsOneWidget);
       expect(
         find.text('Ce lien ressemble à un piège. Ne l’ouvrez pas.'),
         findsOneWidget,
       );
       expect(
-        find.bySemanticsLabel('Niveau de risque : Attention'),
+        find.bySemanticsLabel('Niveau de risque : Attention'),
         findsOneWidget,
       );
-      expect(find.text('Confiance : élevée'), findsNothing);
+      expect(find.text('Confiance : élevée'), findsNothing);
     });
 
     testWidgets('raisons en mots courts, explication au toucher', (
@@ -96,9 +96,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(speaker.spoken, hasLength(1));
       final text = speaker.spoken.single;
-      expect(text, startsWith('Attention ! Lien suspect.'));
+      expect(text, startsWith('Attention ! Lien suspect.'));
       expect(text, contains('Lettres trompeuses.'));
-      expect(text, contains('Que faire : Ne touchez pas le lien.'));
+      expect(text, contains('Que faire : Ne touchez pas le lien.'));
       expect(text, isNot(contains('URL_')));
     });
 
@@ -153,7 +153,7 @@ void main() {
         ),
       );
       await history.analyzeLink(tester, 'https://lefaso.net/');
-      expect(find.text('Danger !'), findsOneWidget);
+      expect(find.text('Danger !'), findsOneWidget);
       expect(find.text('Signalé comme dangereux'), findsWidgets);
       expect(haptics, contains('HapticFeedbackType.heavyImpact'));
     });
@@ -170,7 +170,7 @@ void main() {
       await history.analyzeLink(tester, lookalike);
       final opacities = tester.widgetList<FadeTransition>(
         find.ancestor(
-          of: find.text('Attention !'),
+          of: find.text('Attention !'),
           matching: find.byType(FadeTransition),
         ),
       );
@@ -197,7 +197,7 @@ void main() {
         'Votre compte sera bloqué aujourd’hui. Confirmez votre code PIN '
         'ici : https://lefaso.net/compte',
       );
-      expect(find.text('Danger !'), findsOneWidget);
+      expect(find.text('Danger !'), findsOneWidget);
       expect(find.textContaining('Synthèse'), findsOneWidget);
       await flow.scrollTo(tester, find.text('Aperçu de la page'));
       expect(
@@ -239,7 +239,7 @@ void main() {
     expect(prefs.getBool('expert_mode'), isTrue);
     await tapDestination(tester, 'Accueil');
     await history.analyzeLink(tester, lookalike);
-    expect(find.text('Confiance : élevée'), findsOneWidget);
+    expect(find.text('Confiance : élevée'), findsOneWidget);
     expect(find.text('Indice fort'), findsWidgets);
     await flow.scrollTo(tester, find.text('Détails techniques'));
   });

@@ -4,6 +4,7 @@ import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/online_controller.dart';
 
 import '../features/analysis_flow_test.dart' as flow;
+import '../features/help_flow_test.dart' as help;
 import '../features/history_flow_test.dart' as history;
 import '../features/online_flow_test.dart' as online;
 import '../helpers/pump_app.dart';
@@ -43,6 +44,29 @@ Future<void> visitAnalysisScreens(WidgetTester tester) async {
   await tester.tap(link);
   await tester.pumpAndSettle();
   expect(tester.takeException(), isNull, reason: 'lien du message');
+}
+
+/// Conseils, aide, exemples et confidentialité ; chaque fiche ouverte.
+Future<void> visitHelpScreens(WidgetTester tester) async {
+  for (final id in [
+    'victime', 'codes', 'transfert', 'ussd', 'agents', 'applis', 'gains', //
+    'emploi', 'liens', 'qr', 'urgence',
+  ]) {
+    await help.goTo(tester, '/conseils/$id');
+    expect(tester.takeException(), isNull, reason: 'fiche $id');
+    await flow.scrollTo(tester, find.text('Vérifier un lien ou un message'));
+    expect(tester.takeException(), isNull, reason: 'fiche $id (bas)');
+  }
+  for (final location in [
+    '/conseils',
+    '/accueil/aide',
+    '/accueil/aide/exemples',
+    '/parametres/confidentialite',
+    '/nulle-part',
+  ]) {
+    await help.goTo(tester, location);
+    expect(tester.takeException(), isNull, reason: location);
+  }
 }
 
 /// Mode simple : déplie chaque raison, chaque geste et les explications.
@@ -170,6 +194,26 @@ void main() {
   testWidgets('mode simple : format de référence, tout déplié', (tester) async {
     await pumpSafeLinkApp(tester, expert: false);
     await visitSimpleScreens(tester);
+  });
+
+  testWidgets('conseils, aide, confidentialité : 320 dp, texte à 200 %', (
+    tester,
+  ) async {
+    await pumpSafeLinkApp(
+      tester,
+      size: const Size(320, 640),
+      textScale: 2,
+      expert: false,
+      googleKey: 'test-key',
+    );
+    await visitHelpScreens(tester);
+  });
+
+  testWidgets('conseils, aide, confidentialité : format de référence', (
+    tester,
+  ) async {
+    await pumpSafeLinkApp(tester, expert: false, googleKey: 'test-key');
+    await visitHelpScreens(tester);
   });
 
   testWidgets('présentation : 320 dp, texte à 200 %', (tester) async {

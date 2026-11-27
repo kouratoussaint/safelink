@@ -48,7 +48,7 @@ void main() {
       await pumpSafeLinkApp(tester, historyBackend: backend);
       await analyzeLink(tester, secretUrl);
 
-      await flow.scrollTo(tester, find.text('Garder vos vérifications ?'));
+      await flow.scrollTo(tester, find.text('Garder vos vérifications ?'));
       expect(find.text('Activer l’historique'), findsOneWidget);
       expect(backend.openings, 0);
       expect(await backend.exists(), isFalse);
@@ -62,13 +62,13 @@ void main() {
       await analyzeLink(tester, secretUrl);
       await tapText(tester, 'Non merci');
 
-      expect(find.text('Garder vos vérifications ?'), findsNothing);
+      expect(find.text('Garder vos vérifications ?'), findsNothing);
       expect(prefs.getString(HistoryChoiceController.storageKey), 'disabled');
       expect(backend.openings, 0);
 
       await flow.pressBack(tester);
       await analyzeLink(tester, 'https://example.com');
-      expect(find.text('Garder vos vérifications ?'), findsNothing);
+      expect(find.text('Garder vos vérifications ?'), findsNothing);
       expect(backend.openings, 0);
     });
 
@@ -146,7 +146,7 @@ void main() {
       await analyzeMessage(tester, flow.scamMessage);
 
       await tapText(tester, 'Garder aussi le texte du message');
-      expect(find.text('Garder le texte du message ?'), findsOneWidget);
+      expect(find.text('Garder le texte du message ?'), findsOneWidget);
       await tester.tap(find.text('Annuler'));
       await tester.pumpAndSettle();
       expect((await backend.entries()).single.content, isNull);
@@ -278,7 +278,7 @@ void main() {
       await tapDestination(tester, 'Historique');
       await tester.tap(find.byTooltip('Tout effacer'));
       await tester.pumpAndSettle();
-      expect(find.text('Effacer tout l’historique ?'), findsOneWidget);
+      expect(find.text('Effacer tout l’historique ?'), findsOneWidget);
       expect(
         find.text(
           'Les 2 vérifications enregistrées seront supprimées de ce '
@@ -376,7 +376,7 @@ void main() {
 
       await tester.tap(find.text('Enregistrer mes vérifications'));
       await tester.pumpAndSettle();
-      expect(find.text('Arrêter l’historique ?'), findsOneWidget);
+      expect(find.text('Arrêter l’historique ?'), findsOneWidget);
       await tester.tap(find.text('Arrêter et effacer'));
       await tester.pumpAndSettle();
 

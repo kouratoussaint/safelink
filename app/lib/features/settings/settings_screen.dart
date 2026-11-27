@@ -74,6 +74,20 @@ class SettingsScreen extends ConsumerWidget {
             const Divider(),
             _SectionHeader(l10n.settingsAboutSection),
             ListTile(
+              leading: const Icon(Icons.help_outline),
+              title: Text(l10n.settingsHelpTile),
+              subtitle: Text(l10n.settingsHelpSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.go(AppRoutes.help),
+            ),
+            ListTile(
+              leading: const Icon(Icons.lock_outline),
+              title: Text(l10n.settingsPrivacyTile),
+              subtitle: Text(l10n.settingsPrivacySubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.go(AppRoutes.privacy),
+            ),
+            ListTile(
               leading: const Icon(Icons.info_outline),
               title: Text(l10n.settingsAboutTile),
               subtitle: Text(l10n.settingsAboutSubtitle),

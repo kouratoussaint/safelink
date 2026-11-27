@@ -269,7 +269,7 @@ class _ReasonTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              l10n.signalExcerpt('« $evidence »'),
+              l10n.signalExcerpt('«\u00a0$evidence\u00a0»'),
               style: theme.textTheme.bodyMedium?.copyWith(color: secondary),
             ),
           ),

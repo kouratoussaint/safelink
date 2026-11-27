@@ -23,11 +23,15 @@ enum AnalysisKind {
 @immutable
 final class AnalysisRequest {
   /// Crée une demande.
-  new(this.kind, this.text, {int? id})
+  new(this.kind, this.text, {int? id, this.example = false})
     : id = id ?? DateTime.now().microsecondsSinceEpoch;
 
   /// Nature du contenu.
   final AnalysisKind kind;
+
+  /// Exemple fictif de l'aide : analysé sur le téléphone seulement, jamais
+  /// enregistré dans l'historique.
+  final bool example;
 
   /// Texte saisi ou collé.
   final String text;
@@ -178,8 +182,17 @@ abstract interface class AnalysisService {
 /// l'écran reste fluide même avec un message de 10 000 caractères.
 final class DeviceAnalysisService implements AnalysisService {
   /// Crée le service.
-  new({OnlineChecker? checker, this.shortLinks, this.useIsolates = true})
-    : checker = checker ?? OnlineChecker();
+  new({
+    OnlineChecker? checker,
+    this.shortLinks,
+    this.useIsolates = true,
+    this.onlineBudget = const Duration(seconds: 45),
+  }) : checker = checker ?? OnlineChecker();
+
+  /// Durée maximale de l'étape en ligne : au-delà, le résultat du
+  /// téléphone est affiché avec « Pas de connexion » (aucune attente sans
+  /// fin, même si un service ne répond jamais).
+  final Duration onlineBudget;
 
   /// Vérificateur en ligne.
   final OnlineChecker checker;
@@ -213,6 +226,18 @@ final class DeviceAnalysisService implements AnalysisService {
     }
 
     onStage?.call(AnalysisStage.online);
+    return await _online(kind, text, links, isCheckable).timeout(
+      onlineBudget,
+      onTimeout: () => local.withOnline(OnlineStatus.unreachable),
+    );
+  }
+
+  Future<AnalysisOutcome> _online(
+    AnalysisKind kind,
+    String text,
+    List<ParsedUrl> links,
+    bool Function(ParsedUrl url) isCheckable,
+  ) async {
     // Vraie destination des liens raccourcis : seul le raccourcisseur est
     // contacté. Les destinations sont ensuite vérifiées comme les liens.
     final resolver = shortLinks;
@@ -343,7 +368,11 @@ class AnalysisStageController extends Notifier<AnalysisStage> {
 // ignore: specify_nonobvious_property_types
 final analysisProvider = FutureProvider.autoDispose
     .family<AnalysisOutcome, AnalysisRequest>((ref, request) {
-      final online = ref.watch(onlineChoiceProvider) == OnlineChoice.enabled;
+      // Un exemple fictif reste sur le téléphone : ses adresses inventées
+      // n'ont rien à faire chez les services en ligne.
+      final online =
+          !request.example &&
+          ref.watch(onlineChoiceProvider) == OnlineChoice.enabled;
       final stage = ref.read(analysisStageProvider(request).notifier);
       return ref
           .watch(analysisServiceProvider)
