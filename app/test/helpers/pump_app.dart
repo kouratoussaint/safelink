@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:safelink/app/app.dart';
+import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/settings/preferences.dart';
+import 'package:safelink/core/speech/speaker.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_store.dart';
@@ -14,6 +16,7 @@ import 'package:safelink/features/online/page_preview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_online.dart';
+import 'fake_speaker.dart';
 
 /// Taille de référence des maquettes (cahier des charges, §4).
 const referenceSize = Size(393, 852);
@@ -27,7 +30,9 @@ const referenceSize = Size(393, 852);
 /// façon synchrone : [analysisService] permet de la remplacer ; les
 /// vérifications en ligne sont simulées ([onlineChecker], sans connexion par
 /// défaut) ; les services Google sont désactivés sauf si [googleKey] est
-/// fournie. L'historique
+/// fournie. Le mode expert est actif sauf si [expert] est faux : les tests
+/// de contenu voient ainsi toutes les explications ; la lecture à voix
+/// haute est simulée ([speaker]). L'historique
 /// est gardé en mémoire ([historyBackend]).
 Future<SharedPreferences> pumpSafeLinkApp(
   WidgetTester tester, {
@@ -40,12 +45,15 @@ Future<SharedPreferences> pumpSafeLinkApp(
   OnlineChecker? onlineChecker,
   String googleKey = '',
   PagePreviewClient? pagePreviewClient,
+  bool expert = true,
+  Speaker? speaker,
   HistoryBackend? historyBackend,
 }) async {
   SharedPreferences.setMockInitialValues({
     if (onboarded) OnboardingController.storageKey: true,
     if (online != OnlineChoice.undecided)
       OnlineChoiceController.storageKey: online.name,
+    if (expert) ExpertModeController.storageKey: true,
     ...preferences,
   });
   PackageInfo.setMockInitialValues(
@@ -75,6 +83,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
               ),
         ),
         googleApiKeyProvider.overrideWithValue(googleKey),
+        speakerProvider.overrideWithValue(speaker ?? FakeSpeaker()),
         pagePreviewClientProvider.overrideWithValue(pagePreviewClient),
         historyBackendProvider.overrideWithValue(
           historyBackend ?? MemoryHistoryBackend(),

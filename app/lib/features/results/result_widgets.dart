@@ -19,6 +19,7 @@ class VerdictHeader extends StatelessWidget {
     required this.presentation,
     this.confidence,
     this.compact = false,
+    this.showConfidence = true,
     super.key,
   });
 
@@ -30,6 +31,9 @@ class VerdictHeader extends StatelessWidget {
   /// Variante plus discrète, pour un sous-résultat.
   final bool compact;
 
+  /// Affiche la confiance à l'écran ; sinon, seul TalkBack la lit.
+  final bool showConfidence;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -38,9 +42,13 @@ class VerdictHeader extends StatelessWidget {
     final title = compact
         ? theme.textTheme.titleMedium
         : theme.textTheme.headlineSmall;
+    final confidenceText = confidence == null
+        ? null
+        : VerdictPresentation.confidenceLabel(l10n, confidence!);
     return Semantics(
       container: true,
       header: true,
+      value: showConfidence ? null : confidenceText,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -64,10 +72,10 @@ class VerdictHeader extends StatelessWidget {
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],
-                if (confidence != null) ...[
+                if (showConfidence && confidenceText != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    VerdictPresentation.confidenceLabel(l10n, confidence!),
+                    confidenceText,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: SafeLinkColors.of(context).textSecondary,
                     ),

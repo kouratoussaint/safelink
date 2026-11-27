@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:safelink/features/analysis/analysis_screen.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 
 import '../helpers/pump_app.dart';
@@ -99,6 +100,12 @@ Future<void> selectMessageMode(WidgetTester tester) async {
     find.byType(Scrollable).first,
     const Offset(0, 2000),
     3000,
+  );
+  await tester.pumpAndSettle();
+  await tester.scrollUntilVisible(
+    find.text('Message'),
+    100,
+    scrollable: find.byType(Scrollable).first,
   );
   await tester.pumpAndSettle();
   await tester.tap(find.text('Message'));
@@ -393,10 +400,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.text('Analyse en cours…'), findsOneWidget);
-      final indicator = tester.widget<CircularProgressIndicator>(
-        find.byType(CircularProgressIndicator),
-      );
-      expect(indicator.value, isNull);
+      // Animation continue, sans pourcentage inventé.
+      expect(find.byType(Scanner), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+      expect(find.textContaining('%'), findsNothing);
 
       service.gate!.complete();
       await tester.pumpAndSettle();

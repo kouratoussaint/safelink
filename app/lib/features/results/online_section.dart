@@ -50,58 +50,55 @@ class OnlineOfferCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final choice = ref.read(onlineChoiceProvider.notifier);
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(
-                      Icons.travel_explore,
-                      color: theme.colorScheme.primary,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.travel_explore,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      l10n.onlineOfferTitle,
+                      style: theme.textTheme.titleMedium,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Semantics(
-                      header: true,
-                      child: Text(
-                        l10n.onlineOfferTitle,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                ref.watch(googleEnabledProvider)
-                    ? l10n.onlineOfferGoogleBody
-                    : l10n.onlineOfferBody,
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => choice.select(enabled: false),
-                    child: Text(l10n.onlineDecline),
-                  ),
-                  FilledButton(
-                    onPressed: () => choice.select(enabled: true),
-                    child: Text(l10n.onlineEnable),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              ref.watch(googleEnabledProvider)
+                  ? l10n.onlineOfferGoogleBody
+                  : l10n.onlineOfferBody,
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => choice.select(enabled: false),
+                  child: Text(l10n.onlineDecline),
+                ),
+                FilledButton(
+                  onPressed: () => choice.select(enabled: true),
+                  child: Text(l10n.onlineEnable),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

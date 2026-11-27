@@ -21,6 +21,7 @@ dependencies:
   flutter_riverpod: ^3.5.0
   flutter_secure_storage: ^11.2.0
   flutter_svg: ^2.5.1
+  flutter_tts: ^4.2.5
   go_router: ^18.1.4
   http2: ^3.2.0
   intl: any

@@ -44,25 +44,36 @@ final screens = <String, Navigate>{
 
 void main() {
   for (final theme in ['light', 'dark']) {
-    for (final MapEntry(key: name, value: navigate) in screens.entries) {
-      testWidgets('$name ($theme) respecte les règles d’accessibilité', (
-        tester,
-      ) async {
-        final handle = tester.ensureSemantics();
-        await pumpSafeLinkApp(
-          tester,
-          preferences: {ThemeModeController.storageKey: theme},
-        );
-        await navigate(tester);
+    for (final expert in [false, true]) {
+      final mode = expert ? 'expert' : 'simple';
+      for (final MapEntry(key: name, value: navigate) in screens.entries) {
+        testWidgets(
+          '$name ($theme, $mode) respecte les règles d’accessibilité',
+          (tester) async {
+            final handle = tester.ensureSemantics();
+            await pumpSafeLinkApp(
+              tester,
+              expert: expert,
+              preferences: {ThemeModeController.storageKey: theme},
+            );
+            await navigate(tester);
 
-        // Zones tactiles d'au moins 48 × 48 dp.
-        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-        // Chaque élément interactif a un libellé lu par TalkBack.
-        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-        // Contraste du texte affiché.
-        await expectLater(tester, meetsGuideline(textContrastGuideline));
-        handle.dispose();
-      });
+            // Zones tactiles d'au moins 48 × 48 dp.
+            await expectLater(
+              tester,
+              meetsGuideline(androidTapTargetGuideline),
+            );
+            // Chaque élément interactif a un libellé lu par TalkBack.
+            await expectLater(
+              tester,
+              meetsGuideline(labeledTapTargetGuideline),
+            );
+            // Contraste du texte affiché.
+            await expectLater(tester, meetsGuideline(textContrastGuideline));
+            handle.dispose();
+          },
+        );
+      }
     }
   }
 
