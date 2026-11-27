@@ -32,7 +32,7 @@ android {
     }
 
     signingConfigs {
-        // Signature de développement stable : les APK debug publiés par
+        // Signature de développement stable : les APK publiés par
         // dev-apk.yml sont tous signés avec la même clé, pour qu'une mise à
         // jour s'installe par-dessus la précédente. La clé vient des secrets
         // GitHub, via ces variables d'environnement ; sans elles (build
@@ -52,11 +52,12 @@ android {
 
     buildTypes {
         release {
-            // Lots A à C : les builds release ne servent qu'aux contrôles
-            // automatiques (permissions, taille) et sont signés avec la clé
-            // de débogage. Ils ne doivent jamais être distribués.
-            // La signature de distribution arrive au lot D (release.yml),
-            // à partir de secrets GitHub ; voir docs/BUILD.md.
+            // Jusqu'au lot D, les builds release servent aux contrôles
+            // automatiques et aux pré-versions de développement : ils sont
+            // signés avec la clé de développement (ou la clé de débogage de
+            // la machine sans les secrets) et ne doivent jamais être diffusés
+            // au public. La signature de distribution arrive au lot D
+            // (release.yml), à partir de secrets GitHub ; voir docs/BUILD.md.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
