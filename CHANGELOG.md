@@ -34,7 +34,8 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   onglets visités jusqu'à l'Accueil ; double appui pour quitter.
 - Signature de développement stable : tous les APK de développement sont
   signés avec la même clé et s'installent par-dessus la version précédente ;
-  taille de chaque APK indiquée dans les notes de pré-version.
+  taille de chaque APK indiquée dans les notes de pré-version. Sans la clé,
+  la publication continue avec une signature temporaire signalée.
 
 ### Modifié
 

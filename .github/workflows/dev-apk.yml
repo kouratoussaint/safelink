@@ -3,11 +3,13 @@ name: APK de développement
 # À chaque mise à jour de main ou d'une branche de lot, publie les APK debug
 # dans une pré-version GitHub « dev-<révision> », téléchargeable sans compte.
 #
-# Tous ces APK sont signés avec la même clé de développement (secrets
+# Les APK sont signés avec la même clé de développement (secrets
 # SAFELINK_DEV_KEYSTORE_BASE64 et SAFELINK_DEV_KEYSTORE_PASSWORD), pour
-# qu'une nouvelle version s'installe par-dessus la précédente. Sans ces
-# secrets, rien n'est publié : la signature ne doit jamais changer en
-# silence. Cette clé n'est pas celle des versions de distribution (lot D).
+# qu'une nouvelle version s'installe par-dessus la précédente. Si ces secrets
+# manquent, les APK sont quand même publiés, avec une signature temporaire
+# signalée en tête des notes : la publication n'est jamais bloquée, mais le
+# changement de signature n'est jamais silencieux. Cette clé n'est pas celle
+# des versions de distribution (lot D).
 on:
   push:
     branches:
@@ -43,12 +45,14 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.SAFELINK_DEV_KEYSTORE_PASSWORD }}
         run: |
           if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" ]]; then
-            echo "::error::Secrets SAFELINK_DEV_KEYSTORE_BASE64 et SAFELINK_DEV_KEYSTORE_PASSWORD absents : aucun APK n'est publié, pour ne pas changer de signature (voir docs/BUILD.md)."
-            exit 1
+            echo "::warning::Secrets de la clé de développement absents : APK signés avec une clé temporaire (voir docs/BUILD.md)."
+            echo "SIGNING=temporary" >> "$GITHUB_ENV"
+            exit 0
           fi
           keystore="$RUNNER_TEMP/safelink-dev.p12"
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore"
           echo "SAFELINK_DEV_KEYSTORE=$keystore" >> "$GITHUB_ENV"
+          echo "SIGNING=stable" >> "$GITHUB_ENV"
 
       - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
@@ -89,12 +93,12 @@ jobs:
             actual="$("$apksigner" verify --print-certs "$apk" |
               sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
             echo "$(basename "$apk") : $actual"
-            if [[ "$actual" != "$expected" ]]; then
+            if [[ "$SIGNING" == "stable" && "$actual" != "$expected" ]]; then
               echo "::error::$(basename "$apk") n'est pas signé avec la clé de développement attendue."
               exit 1
             fi
           done
-          echo "CERT_SHA256=$expected" >> "$GITHUB_ENV"
+          echo "CERT_SHA256=$actual" >> "$GITHUB_ENV"
 
       - name: Préparer les fichiers à publier
         run: |
@@ -120,6 +124,10 @@ jobs:
           {
             echo "**Version de développement — pour essai uniquement, ne pas diffuser.**"
             echo
+            if [[ "$SIGNING" != "stable" ]]; then
+              echo "> **Signature temporaire** : la clé de développement n'est pas configurée. Désinstaller la version précédente avant d'installer celle-ci."
+              echo
+            fi
             echo "Branche \`$BRANCH\`, révision \`$GITHUB_SHA\`."
             echo
             echo "| Fichier | Taille | Pour qui |"
@@ -133,7 +141,11 @@ jobs:
               echo "| [$name]($base/$name) | $(size "$f") | $who |"
             done
             echo
-            echo "- Signé avec la clé de développement SafeLink (certificat SHA-256 \`$CERT_SHA256\`) : s'installe par-dessus toute version de développement précédente signée avec cette clé."
+            if [[ "$SIGNING" == "stable" ]]; then
+              echo "- Signé avec la clé de développement SafeLink (certificat SHA-256 \`$CERT_SHA256\`) : s'installe par-dessus toute version de développement précédente signée avec cette clé."
+            else
+              echo "- Signature temporaire (certificat SHA-256 \`$CERT_SHA256\`)."
+            fi
             echo "- Un build debug contient la permission INTERNET, ajoutée par Flutter pour ses outils de développement ; l'application ne fait aucun appel réseau."
             echo "- Empreintes des fichiers : \`SHA256SUMS.txt\`."
           } > notes.md
