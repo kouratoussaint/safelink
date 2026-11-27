@@ -15,6 +15,9 @@ import 'package:safelink/features/onboarding/onboarding_controller.dart';
 import 'package:safelink/features/onboarding/onboarding_screen.dart';
 import 'package:safelink/features/settings/about_screen.dart';
 import 'package:safelink/features/settings/settings_screen.dart';
+import 'package:safelink/features/share/share_handler.dart';
+import 'package:safelink/features/share/share_screen.dart';
+import 'package:safelink/features/share/shared_content.dart';
 import 'package:safelink/features/tips/tips_screen.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
@@ -39,7 +42,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const OnboardingScreen(),
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, shell) => AppShell(shell: shell),
+        builder: (context, state, shell) =>
+            ShareHandler(child: AppShell(shell: shell)),
         branches: [
           StatefulShellBranch(
             routes: [
@@ -56,6 +60,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) => const ExamplesScreen(),
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: 'partage',
+                    builder: (context, state) => ShareScreen(
+                      plan: switch (state.extra) {
+                        final SharePlan plan => plan,
+                        _ => null,
+                      },
+                    ),
                   ),
                   GoRoute(
                     path: 'analyse',

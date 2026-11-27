@@ -235,6 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             InfoCard(
+              icon: Icons.share_rounded,
+              title: l10n.homeShareTipTitle,
+              body: l10n.homeShareTip,
+            ),
+            const SizedBox(height: 8),
+            InfoCard(
               icon: Icons.qr_code_scanner,
               title: l10n.homeComingSoonTitle,
               body: l10n.homeComingSoon,

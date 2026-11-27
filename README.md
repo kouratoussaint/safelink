@@ -106,7 +106,8 @@ code personnel ([ADR 0011](docs/adr/0011-services-google.md)) ; un lien
 raccourci est envoyé à son service pour connaître sa vraie destination,
 sans l'ouvrir ([ADR 0012](docs/adr/0012-liens-raccourcis.md)). Détail
 complet : [docs/CONFIDENTIALITE.md](docs/CONFIDENTIALITE.md). Le texte
-d'un message n'est jamais envoyé. La caméra ne
+d'un message n'est jamais envoyé ; un texte partagé vers SafeLink est
+traité comme un texte collé. La caméra ne
 sera demandée qu'au moment de scanner un QR code. Pas de compte, pas de
 publicité, pas de mesure d'audience. Les sauvegardes cloud de
 l'application sont désactivées et l'historique, facultatif, est chiffré.

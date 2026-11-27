@@ -224,7 +224,7 @@ void main() {
       await pumpSafeLinkApp(tester);
       await scrollTo(tester, find.textContaining('QR code'));
       expect(
-        find.textContaining('arrivent dans une prochaine version'),
+        find.textContaining('arrive dans une prochaine version'),
         findsOneWidget,
       );
     });

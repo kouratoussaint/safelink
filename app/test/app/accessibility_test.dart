@@ -4,11 +4,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/share/shared_content.dart';
 
 import '../features/analysis_flow_test.dart' as flow;
 import '../features/help_flow_test.dart' as help;
 import '../features/history_flow_test.dart' as history;
 import '../features/online_flow_test.dart' as online;
+import '../features/share_flow_test.dart' as share;
 import '../helpers/pump_app.dart';
 import '../history/history_store_test.dart' show entryOf, secretUrl;
 
@@ -29,6 +31,19 @@ final screens = <String, Navigate>{
   'Confidentialité': (tester) =>
       help.goTo(tester, '/parametres/confidentialite'),
   'Page introuvable': (tester) => help.goTo(tester, '/nulle-part'),
+  'Partage : choix': (tester) =>
+      share.openShare(tester, const SharedText(share.twoLinks)),
+  'Partage : choix du lien': (tester) async {
+    await share.openShare(
+      tester,
+      const SharedText(share.twoLinks, filesIgnored: true),
+    );
+    await flow.scrollTo(tester, find.text('Le lien seulement'));
+    await tester.tap(find.text('Le lien seulement'));
+    await tester.pumpAndSettle();
+  },
+  'Partage : refus': (tester) =>
+      share.openShare(tester, const SharedFiles(SharedFileKind.image)),
   'Historique': (tester) => tapDestination(tester, 'Historique'),
   'Conseils': (tester) => tapDestination(tester, 'Conseils'),
   'Paramètres': (tester) => tapDestination(tester, 'Paramètres'),

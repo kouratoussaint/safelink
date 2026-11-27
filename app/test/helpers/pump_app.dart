@@ -14,9 +14,11 @@ import 'package:safelink/features/online/online_checker.dart';
 import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/online/page_preview.dart';
 import 'package:safelink/features/online/short_links.dart';
+import 'package:safelink/features/share/share_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_online.dart';
+import 'fake_share.dart';
 import 'fake_speaker.dart';
 
 /// Taille de référence des maquettes (cahier des charges, §4).
@@ -35,7 +37,9 @@ const referenceSize = Size(393, 852);
 /// Google sont désactivés sauf si [googleKey] est fournie. Le mode expert
 /// est actif sauf si [expert] est faux : les tests de contenu voient ainsi
 /// toutes les explications ; la lecture à voix haute est simulée
-/// ([speaker]). L'historique est gardé en mémoire ([historyBackend]).
+/// ([speaker]). L'historique est gardé en mémoire ([historyBackend]). Les
+/// partages venus d'autres applications sont simulés ([shareSource], aucun
+/// par défaut).
 Future<SharedPreferences> pumpSafeLinkApp(
   WidgetTester tester, {
   Map<String, Object> preferences = const {},
@@ -51,6 +55,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
   Speaker? speaker,
   ShortLinkResolver? shortLinks,
   HistoryBackend? historyBackend,
+  ShareSource? shareSource,
 }) async {
   SharedPreferences.setMockInitialValues({
     if (onboarded) OnboardingController.storageKey: true,
@@ -91,6 +96,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
         historyBackendProvider.overrideWithValue(
           historyBackend ?? MemoryHistoryBackend(),
         ),
+        shareSourceProvider.overrideWithValue(shareSource ?? FakeShareSource()),
       ],
       child: const SafeLinkApp(),
     ),

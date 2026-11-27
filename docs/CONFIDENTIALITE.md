@@ -31,12 +31,15 @@ sont jamais enregistrés.
 ## Jamais
 
 - Ni compte, ni publicité, ni pistage.
-- SafeLink ne lit pas vos SMS : vous choisissez ce que vous collez.
+- SafeLink ne lit pas vos SMS : vous choisissez ce que vous collez ou
+  partagez. Un texte partagé est traité comme un texte collé ; un fichier
+  partagé n'est jamais ouvert.
 - Aucune vente ni aucun partage de vos données.
 
 ## Autorisation Android
 
-Une seule : Internet, pour la vérification en ligne.
+Une seule : Internet, pour la vérification en ligne. Recevoir un texte
+partagé ne demande aucune autorisation.
 
 ## Code source
 
