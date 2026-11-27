@@ -321,15 +321,13 @@ final class SafeBrowsingClient {
     if (cached != null && cached.$1.isAfter(checkedAt)) return cached.$2;
 
     final prefixes = SafeBrowsingExpressions.prefixes(expressions);
+    // Réponse en protobuf : `hashes:search` refuse `$alt=json`
+    // (« Unsupported Output Format », vérifié le 27/11/2026).
     final uri = Uri.https('safebrowsing.googleapis.com', '/v5/hashes:search', {
       'hashPrefixes': [for (final p in prefixes) base64Encode(p)],
-      r'$alt': 'json',
     });
     try {
-      final reply = await http.get(
-        uri,
-        headers: {'X-Goog-Api-Key': apiKey, 'Accept': 'application/json'},
-      );
+      final reply = await http.get(uri, headers: {'X-Goog-Api-Key': apiKey});
       if (reply.statusCode != 200) {
         return ProviderResult(
           providerId: providerId,

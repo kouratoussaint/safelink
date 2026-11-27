@@ -30,14 +30,17 @@ chaque analyse de lien, quand la vérification en ligne est acceptée.
   Google ; seuls les **4 premiers octets** de l'empreinte SHA-256 de chaque
   expression sont envoyés. Les empreintes complètes reçues sont comparées
   sur le téléphone. Les correspondances marquées `CANARY` ou `FRAME_ONLY`
-  sont ignorées. Réponse JSON ou protobuf acceptée. Réponses gardées
-  5 minutes en mémoire. Un signalement donne « Menace connue détectée »,
+  sont ignorées. Réponse demandée en protobuf (`hashes:search` refuse
+  `$alt=json`) ; JSON aussi accepté. Réponses gardées 5 minutes en
+  mémoire. Un signalement donne « Menace connue détectée »,
   avec l'attribution exigée par Google (« Avertissement fourni par
   Google… sa fiabilité ne peut pas être garantie »).
 - **Photo de la page** : API PageSpeed Insights (navigateur de Google), qui
   charge la page sur ses serveurs et renvoie une capture d'écran mobile et
   l'adresse finale après redirection. Le téléphone ne contacte jamais le
-  site. Seuls la capture et l'adresse finale sont demandées (`fields`).
+  site. Le filtre `fields` se limite à l'adresse finale, à l'erreur
+  éventuelle et aux audits (Google refuse de viser l'audit
+  `final-screenshot` seul) : réponse compressée de 30 à 200 Ko environ.
   Automatique après l'analyse d'un lien, **sauf** si le lien porte un code
   personnel (jeton, identifiant, numéro), qu'une visite pourrait consommer
   ou valider : l'utilisateur décide alors (« Prendre la photo quand
@@ -49,6 +52,14 @@ chaque analyse de lien, quand la vérification en ligne est acceptée.
 - **Consentement** : l'accord de vérification en ligne nomme Google et dit
   que Google reçoit le lien. Il est redemandé à ceux qui l'avaient donné
   avant cet ajout (préférence `online_checks_v2`).
+
+## Vérification en conditions réelles (27/11/2026)
+
+Avec la clé du porteur, depuis le code de l'application : les pages de
+test officielles de Google (`testsafebrowsing.appspot.com/s/phishing.html`
+et `…/malware.html`) sont signalées comme hameçonnage et logiciel
+malveillant ; `lefaso.net` ne l'est pas ; sa photo est reçue (35 Ko).
+Ces réponses réelles servent de données de test.
 
 ## Conséquences
 

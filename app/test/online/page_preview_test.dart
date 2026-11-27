@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,7 @@ void main() {
     expect(uri.queryParameters['fields'], PagePreviewClient.fields);
     expect(uri.queryParameters, isNot(contains('key')));
     expect(headers['X-Goog-Api-Key'], 'test-key');
+    expect(headers['Accept-Encoding'], 'gzip');
 
     // Même lien : pas de nouvelle requête.
     await client.capture('https://bit.ly/abc');
@@ -82,5 +84,24 @@ void main() {
       offline.capture('https://exemple.com/'),
       throwsA(isA<PagePreviewException>()),
     );
+  });
+
+  test('réponse réelle de Google : capture JPEG et adresse finale', () {
+    // Réponse enregistrée le 27/11/2026 pour https://example.com/ avec le
+    // filtre [PagePreviewClient.fields], réduite à deux audits.
+    final body = File('test/online/fixtures/pagespeed_example_com.json')
+        .readAsBytesSync();
+    final preview = PagePreviewClient.parse(
+      HttpReply(200, 'application/json', body),
+    );
+    expect(preview.finalUrl, 'https://example.com/');
+    // Début d'un fichier JPEG.
+    expect(preview.screenshot.sublist(0, 3), [0xFF, 0xD8, 0xFF]);
+  });
+
+  test('le filtre de champs ne vise pas un nom avec tiret', () {
+    // Google refuse « audits/final-screenshot/… » (HTTP 400).
+    expect(PagePreviewClient.fields, isNot(contains('final-screenshot')));
+    expect(PagePreviewClient.fields, contains('audits'));
   });
 }

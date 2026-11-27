@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -201,6 +202,8 @@ void main() {
       expect(uri.toString(), isNot(contains('test-key')));
       expect(headers['X-Goog-Api-Key'], 'test-key');
       expect(uri.queryParametersAll['hashPrefixes'], isNotEmpty);
+      // Google refuse « $alt=json » sur hashes:search.
+      expect(uri.queryParameters.keys, isNot(contains(r'$alt')));
     });
 
     test('empreinte voisine d’une autre page : ignorée', () async {
@@ -272,6 +275,40 @@ void main() {
       expect(http.requests, hasLength(1));
       await client.check(url, now.add(const Duration(minutes: 6)));
       expect(http.requests, hasLength(2));
+    });
+  });
+
+  group('réponse réelle de Google', () {
+    // Réponse enregistrée le 27/11/2026 pour la page de test officielle de
+    // Google (testsafebrowsing.appspot.com/s/phishing.html), en protobuf.
+    final body = File('test/online/fixtures/safe_browsing_test_phishing.pb')
+        .readAsBytesSync();
+    const testPage = 'https://testsafebrowsing.appspot.com/s/phishing.html';
+
+    test('protobuf réel : empreinte complète et type de menace lus', () {
+      final matches = SafeBrowsingResponse.parse(
+        body,
+        'application/x-protobuf',
+      );
+      final ours = base64Encode(
+        SafeBrowsingExpressions.fullHash(
+          'testsafebrowsing.appspot.com/s/phishing.html',
+        ),
+      );
+      final match = matches.singleWhere((m) => m.fullHash == ours);
+      expect(match.threatType, 'SOCIAL_ENGINEERING');
+    });
+
+    test('page de test de Google : hameçonnage signalé', () async {
+      final client = SafeBrowsingClient(
+        apiKey: 'k',
+        http: FakeHttpTransport(
+          (_) => HttpReply(200, 'application/x-protobuf', body),
+        ),
+      );
+      final result = await client.check(parse(testPage), now);
+      expect(result.status, ProviderStatus.match);
+      expect(result.matches.single.threatType, ThreatType.phishing);
     });
   });
 }

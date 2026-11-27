@@ -6,6 +6,15 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Corrigé — Services Google vérifiés en conditions réelles
+
+- Safe Browsing : la requête demandait du JSON, que `hashes:search`
+  refuse ; la réponse est désormais lue en protobuf.
+- Photo des pages : le filtre de champs visait l'audit
+  `final-screenshot`, refusé par Google ; il porte maintenant sur les
+  audits, avec réponse compressée.
+- Réponses réelles de Google ajoutées aux tests.
+
 ### Modifié — Images d'abord, mots simples, voix
 
 - Mode simple par défaut : verdict en grand avec jauge animée du vert au
