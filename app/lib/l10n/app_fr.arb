@@ -88,7 +88,7 @@
   "homeLocalNote": "L’analyse se fait sur votre téléphone. Le texte d’un message n’est jamais envoyé.",
   "homeHistoryShortcut": "Voir l’historique",
   "homeComingSoonTitle": "Bientôt",
-  "homeComingSoon": "Scanner un QR code et partager un texte vers SafeLink arrivent dans une prochaine version.",
+  "homeComingSoon": "Scanner un QR code arrive dans une prochaine version.",
   "analysisTitle": "Analyse",
   "analysisRunning": "Analyse en cours…",
   "analysisRunningBody": "Sur votre téléphone.",
@@ -775,7 +775,7 @@
   "privacySentSecure": "Toujours de façon chiffrée (HTTPS). Seulement si la vérification en ligne est activée.",
   "privacyNeverTitle": "Jamais",
   "privacyNever1": "Ni compte, ni publicité, ni pistage",
-  "privacyNever2": "SafeLink ne lit pas vos SMS : vous choisissez ce que vous collez",
+  "privacyNever2": "SafeLink ne lit pas vos SMS : vous choisissez ce que vous collez ou partagez",
   "privacyNever3": "Aucune vente ni aucun partage de vos données",
   "privacyPermissionTitle": "Autorisation demandée",
   "privacyPermission": "Une seule : Internet, pour la vérification en ligne.",
@@ -785,5 +785,47 @@
   "settingsPrivacyTile": "Confidentialité",
   "settingsPrivacySubtitle": "Ce qui reste sur le téléphone, ce qui est envoyé",
   "notFoundTitle": "Page introuvable",
-  "notFoundAction": "Revenir à l’accueil"
+  "notFoundAction": "Revenir à l’accueil",
+  "homeShareTipTitle": "Plus rapide : partager",
+  "homeShareTip": "Appuyez longtemps sur un message reçu, touchez « Partager », puis « Vérifier avec SafeLink ».",
+  "helpShareTitle": "Plus rapide : partager",
+  "helpShare1": "Appuyez longtemps sur le message ou le lien reçu",
+  "helpShare2": "Touchez « Partager », puis « Vérifier avec SafeLink »",
+  "helpShare3": "Pas de « Partager » ? Copiez, puis collez dans SafeLink",
+  "shareTitle": "Partage reçu",
+  "shareQuestion": "Que voulez-vous vérifier ?",
+  "shareReceivedLabel": "Texte reçu",
+  "shareWholeMessage": "Tout le message",
+  "shareWholeMessageHint": "{count, plural, =0{Le texte du message} =1{Le texte et son lien} other{Le texte et ses {count} liens}}",
+  "@shareWholeMessageHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareLinkOnly": "Le lien seulement",
+  "shareLinkOnlyMany": "{count} liens : choisissez-en un",
+  "@shareLinkOnlyMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharePickLink": "Quel lien vérifier ?",
+  "shareSpeechLinkOnly": "Ou bien : le lien seulement.",
+  "shareLongTitle": "Message très long",
+  "shareLong": "« Tout le message » ne vérifie que son début. Chaque lien peut être vérifié.",
+  "shareFileIgnoredTitle": "Fichier joint",
+  "shareFileIgnored": "Le fichier n’est pas ouvert : seul le texte est vérifié.",
+  "shareNotYetTitle": "Pas encore possible",
+  "shareFilesImage": "SafeLink ne vérifie pas encore les photos.",
+  "shareFilesVideo": "SafeLink ne vérifie pas encore les vidéos.",
+  "shareFilesOther": "SafeLink ne vérifie pas encore les fichiers.",
+  "shareFilesWhat": "Il vérifie les liens et le texte des messages.",
+  "shareFilesTip": "Si le message contient du texte, copiez-le, puis collez-le dans SafeLink.",
+  "shareEmptyTitle": "Rien à vérifier",
+  "shareEmpty": "Le partage ne contenait aucun texte.",
+  "shareGoHome": "Aller à l’accueil"
 }

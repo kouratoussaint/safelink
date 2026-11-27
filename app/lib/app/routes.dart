@@ -4,6 +4,9 @@ abstract final class AppRoutes {
   static const home = '/accueil';
   static const analysis = '/accueil/analyse';
   static const linkResult = '/accueil/analyse/lien';
+
+  /// Partage reçu d'une autre application : choix ou refus expliqué.
+  static const share = '/accueil/partage';
   static const history = '/historique';
 
   /// Fiche d'une vérification enregistrée.

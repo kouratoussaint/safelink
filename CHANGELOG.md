@@ -6,6 +6,21 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Partager vers SafeLink (lot E1)
+
+- « Partager → Vérifier avec SafeLink » depuis une autre application
+  (texte seulement, aucune permission), application fermée ou ouverte
+  ([ADR 0004](docs/adr/0004-partage-android.md), acceptée).
+- Un lien seul ou un texte sans lien est analysé tout de suite ; sinon,
+  écran « Partage reçu » : « Tout le message » ou « Le lien seulement »,
+  puis choix du lien s'il y en a plusieurs ; « Écouter ».
+- Photos, vidéos, fichiers et partages vides refusés avec une explication
+  en pictogrammes ; fichier joint à un texte jamais ouvert ; texte trop
+  long : seul le début est vérifié, avec un avertissement.
+- Un partage reçu pendant la présentation de première ouverture attend
+  qu'elle soit terminée.
+- Accueil et aide : comment partager, en trois pictogrammes.
+
 ### Ajouté — Publication des versions publiques (lot D4)
 
 - `release.yml` : sur un tag `v…`, tests, APK signés avec la clé de

@@ -5,7 +5,8 @@
   Principe : le minimum de permissions. INTERNET sert uniquement à la
   vérification en ligne, activée par défaut et désactivable (ADR 0010 à
   0013), toujours en HTTPS. CAMERA sera ajoutée avec le scanner
-  QR (lot E). La CI échoue si l'APK release contient une permission hors de
+  QR (lot E). Le partage entrant (texte seulement) ne demande aucune
+  permission. La CI échoue si l'APK release contient une permission hors de
   la liste autorisée (tools/check_apk_permissions.sh).
 
   Les sauvegardes cloud et les transferts d'appareil sont désactivés :
@@ -38,6 +39,16 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!--
+              « Partager → SafeLink » depuis une autre application : texte
+              seulement (ADR 0004). Aucune permission n'est nécessaire ; un
+              fichier joint au partage n'est jamais ouvert.
+            -->
+            <intent-filter android:label="@string/share_label">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <!-- Requis par l'outillage Flutter (GeneratedPluginRegistrant). -->

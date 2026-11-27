@@ -7,6 +7,7 @@ import '../features/analysis_flow_test.dart' as flow;
 import '../features/help_flow_test.dart' as help;
 import '../features/history_flow_test.dart' as history;
 import '../features/online_flow_test.dart' as online;
+import '../features/share_flow_test.dart' as share;
 import '../helpers/pump_app.dart';
 import '../history/history_store_test.dart' show entryOf, secretUrl;
 
@@ -195,6 +196,23 @@ void main() {
     await pumpSafeLinkApp(tester, expert: false);
     await visitSimpleScreens(tester);
   });
+
+  for (final (size, scale) in [
+    (const Size(320, 640), 2.0),
+    (referenceSize, 1.0),
+  ]) {
+    testWidgets('partage reçu : ${size.width} dp, texte × $scale', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(
+        tester,
+        size: size,
+        textScale: scale,
+        expert: false,
+      );
+      await share.visitShareScreens(tester);
+    });
+  }
 
   testWidgets('conseils, aide, confidentialité : 320 dp, texte à 200 %', (
     tester,

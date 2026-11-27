@@ -40,6 +40,11 @@ class HelpScreen extends StatelessWidget {
       (Icons.content_paste_rounded, l10n.helpStep2),
       (Icons.volume_up_rounded, l10n.helpStep3),
     ];
+    final share = [
+      (Icons.touch_app_outlined, l10n.helpShare1),
+      (Icons.share_rounded, l10n.helpShare2),
+      (Icons.content_copy_rounded, l10n.helpShare3),
+    ];
     final limits = [
       (Icons.gpp_maybe_outlined, l10n.helpLimit1),
       (Icons.person_off_outlined, l10n.helpLimit2),
@@ -49,6 +54,8 @@ class HelpScreen extends StatelessWidget {
     final speech = [
       l10n.helpHowTitle,
       for (final (i, (_, text)) in steps.indexed) '${i + 1}. $text',
+      l10n.helpShareTitle,
+      for (final (_, text) in share) text,
       l10n.helpLegendTitle,
       for (final level in _levels)
         '${VerdictPresentation.heroWord(l10n, level)} ${_meaning(l10n, level)}',
@@ -69,6 +76,13 @@ class HelpScreen extends StatelessWidget {
                     title: '${i + 1}',
                     text: text,
                   ),
+              ],
+            ),
+            HelpSection(
+              title: l10n.helpShareTitle,
+              children: [
+                for (final (icon, text) in share)
+                  PictoRow(icon: icon, color: primary, text: text),
               ],
             ),
             HelpSection(

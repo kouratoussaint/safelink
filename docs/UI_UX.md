@@ -155,6 +155,30 @@ montrés qu'à qui le demande.
 - « Tout effacer » dans l'onglet et dans les paramètres, toujours après
   confirmation.
 
+## Partager vers SafeLink
+
+Depuis une autre application : appui long sur le message ou le lien,
+« Partager », puis « Vérifier avec SafeLink » ([ADR 0004](adr/0004-partage-android.md)).
+L'accueil et l'aide l'expliquent en trois pictogrammes ; sans « Partager »,
+on copie puis on colle.
+
+- **Rien à choisir** : un lien seul est analysé comme un lien, un texte
+  sans lien comme un message, sans écran intermédiaire.
+- **Écran « Partage reçu »** sinon : grand pictogramme, « Que voulez-vous
+  vérifier ? », le texte reçu en citation (six lignes), puis deux grandes
+  vignettes : « Tout le message » (« Le texte et ses 2 liens ») et « Le
+  lien seulement » (le domaine, ou « 2 liens : choisissez-en un »). Avec
+  plusieurs liens, chacun est numéroté, masqué, domaine enregistré en
+  gras. « Écouter » lit la question et les choix.
+- **Avertissements** en carte : message trop long (seul le début est
+  vérifié), fichier joint (pas ouvert).
+- **Refus** : pictogramme barré (photo, vidéo, fichier, boîte vide),
+  « Pas encore possible » ou « Rien à vérifier », ce que SafeLink sait
+  faire, que faire à la place, « Aller à l'accueil ».
+- Le partage s'ouvre dans l'onglet Accueil, même reçu depuis un autre
+  onglet ; l'écran de partage est remplacé par l'analyse, Retour ramène
+  donc à l'accueil.
+
 ## Conseils, aide et confidentialité
 
 - **Conseils** : onze fiches de prévention en vignettes, la fiche
