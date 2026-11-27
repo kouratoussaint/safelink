@@ -350,6 +350,33 @@ void main() {
       }
     });
 
+    test('un extrait ne coupe ni un mot ni une somme', () {
+      String evidenceOf(String text, String code) =>
+          findings(text)
+              .firstWhere((f) => f.signal.code == code)
+              .signal
+              .evidence!;
+
+      expect(
+        evidenceOf(
+          'Félicitations, vous avez gagné 500 000 FCFA ce matin.',
+          MessageSignalCodes.prize,
+        ),
+        'vous avez gagné 500 000 FCFA',
+      );
+      expect(
+        evidenceOf('Tu as gagné 2 500 F chez nous.', MessageSignalCodes.prize),
+        'Tu as gagné 2 500 F',
+      );
+      expect(
+        evidenceOf(
+          'Vous avez remporté un smartphone neuf.',
+          MessageSignalCodes.prize,
+        ),
+        'Vous avez remporté un smartphone',
+      );
+    });
+
     test('tri : du plus grave au moins grave', () {
       final found = findings(
         'Urgent ! Vous avez gagné. Envoyez votre code au service client.',

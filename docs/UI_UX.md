@@ -60,6 +60,29 @@ Logique : `app/lib/app/tab_history.dart` et `app/lib/app/shell.dart` ;
 tests : `app/test/app/back_navigation_test.dart`, qui simulent le bouton
 Retour exactement comme Android l'envoie à Flutter.
 
+## Analyse et résultats
+
+- Première ouverture : trois étapes (mission, limites, confidentialité),
+  puis l'Accueil. Rien n'est demandé : ni compte, ni autorisation.
+- Accueil : choix « Lien » ou « Message », champ de saisie, « Coller »,
+  « Analyser ». Le presse-papiers n'est lu qu'à l'appui sur « Coller ».
+  Quand `https://` est ajouté d'office, l'adresse réellement analysée est
+  affichée sous le champ.
+- Pendant l'analyse : indicateur indéterminé et « Analyse en cours… ». En
+  cas d'erreur : aucun résultat affiché, bouton « Réessayer ».
+- Verdict : libellé, icône et couleur disent la même chose ; un libellé
+  rassurant est toujours accompagné de sa limite (« Cela ne garantit pas
+  que le lien soit sûr. »). La confiance est affichée en toutes lettres.
+- Ordre des sections : verdict, lien avec le domaine enregistré en gras,
+  « Pourquoi ce résultat ? », « Que faire ? », « Ce qui n'a pas été
+  vérifié », « Détails techniques » repliés.
+- Message : bandeau « Synthèse : <niveau> » au niveau le plus sévère entre
+  le texte et ses liens, puis le verdict du texte, ses indices et chaque
+  lien repéré avec son propre résultat, ouvrable en détail.
+- Jamais de bouton « Ouvrir le lien ». « Copier le résumé » ne recopie ni
+  le texte du message ni les extraits ; les liens y sont masqués.
+- Textes : apostrophe typographique (’) et espaces avant « : ; ? ! ».
+
 ## Accessibilité
 
 - Zones tactiles d'au moins 48 × 48 dp, libellés pour TalkBack, contraste :
@@ -71,12 +94,16 @@ Retour exactement comme Android l'envoie à Flutter.
 - Les mises en page sont testées à 320 dp de large avec un texte à 200 %.
 - Les tests chargent les vraies polices de l'application, pour que les
   mesures de contraste et de débordement correspondent au rendu réel.
+- La mesure automatique du contraste se fait à la résolution logique : un
+  texte informatif de 12 px y paraît plus pâle qu'à l'écran. Les textes à
+  lire (notes, points de la présentation) sont donc en 14 px au moins.
 
 ## Écarts assumés avec les maquettes initiales
 
 | Maquette | Décision |
 | --- | --- |
 | Onglets « Alertes » et « Profil », cloche | Remplacés par Conseils et Paramètres ; raccourci Paramètres en haut à droite |
-| Anneau de progression partiellement rempli | Interdit : aucune progression fictive ; indicateur indéterminé seulement pendant une étape réseau réelle |
-| Signaux de message dans un résultat de lien | Gabarits distincts pour lien, message et résultat combiné (lot D) |
-| Icône de partage sur le résultat | Remplacée par « Copier le résumé », expurgé (lot D) |
+| Anneau de progression partiellement rempli | Interdit : aucune progression fictive ; indicateur indéterminé pendant l'analyse seulement |
+| Signaux de message dans un résultat de lien | Gabarits distincts pour lien et message, avec synthèse combinée |
+| Icône de partage sur le résultat | Remplacée par « Copier le résumé », expurgé |
+| Bouton « Ouvrir » sur le résultat | Absent : SafeLink n'ouvre jamais un lien analysé |

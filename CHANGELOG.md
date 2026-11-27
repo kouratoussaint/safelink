@@ -6,6 +6,35 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — lot D1 (accueil, analyse et résultats)
+
+- Présentation de première ouverture en trois étapes (mission, limites,
+  confidentialité), sans compte ni autorisation ; Retour revient à l'étape
+  précédente.
+- Accueil à deux modes « Lien » et « Message » : champ de saisie, bouton
+  « Coller » (le presse-papiers n'est lu qu'à l'appui), aperçu de l'adresse
+  analysée quand `https://` est ajouté d'office, résultat en deux actions.
+- Analyse locale hors du fil d'affichage (isolat), indicateur sans fausse
+  progression, écran d'erreur avec « Réessayer » qui n'invente aucun
+  résultat.
+- Écrans de résultat des liens et des messages : verdict (libellé, icône et
+  couleur), confiance, « Pourquoi ce résultat ? », « Ce qui n'a pas été
+  vérifié », « Que faire ? », détails techniques repliables ; pour un
+  message, synthèse au niveau le plus sévère, indices du texte et liens
+  repérés avec leur propre résultat. Aucun bouton pour ouvrir un lien.
+- « Copier le résumé » : verdicts, raisons, gestes et liens masqués, sans
+  le texte du message ni les extraits.
+- Tests : parcours complets, états d'attente et d'erreur, résumé expurgé,
+  accessibilité et mise en page (320 dp, texte à 200 %) des nouveaux
+  écrans.
+
+### Modifié — lot D1
+
+- Moteur : un extrait de message ne coupe plus un mot ni une somme
+  (« vous avez gagné 500 000 FCFA » au lieu de « vous avez gagné 5 »).
+- Textes de l'application : apostrophe typographique (’), comme dans les
+  explications du moteur.
+
 ### Ajouté — lot A (fondations)
 
 - Moteur `safelink_engine` en Dart pur : types communs (verdicts normatifs

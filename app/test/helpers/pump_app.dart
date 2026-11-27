@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:safelink/app/app.dart';
 import 'package:safelink/core/settings/preferences.dart';
+import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/onboarding/onboarding_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Taille de référence des maquettes (cahier des charges, §4).
@@ -12,14 +14,22 @@ const referenceSize = Size(393, 852);
 /// Démarre l'application complète dans un environnement de test isolé.
 ///
 /// [preferences] initialise les réglages enregistrés, [size] la taille de
-/// l'écran et [textScale] le grossissement du texte (accessibilité).
+/// l'écran et [textScale] le grossissement du texte (accessibilité). Sauf
+/// si [onboarded] est faux, la présentation de première ouverture est
+/// considérée comme déjà vue. L'analyse se fait par défaut sans isolat, de
+/// façon synchrone : [analysisService] permet de la remplacer.
 Future<SharedPreferences> pumpSafeLinkApp(
   WidgetTester tester, {
   Map<String, Object> preferences = const {},
   Size size = referenceSize,
   double textScale = 1,
+  bool onboarded = true,
+  AnalysisService analysisService = const SynchronousAnalysisService(),
 }) async {
-  SharedPreferences.setMockInitialValues(preferences);
+  SharedPreferences.setMockInitialValues({
+    if (onboarded) OnboardingController.storageKey: true,
+    ...preferences,
+  });
   PackageInfo.setMockInitialValues(
     appName: 'SafeLink',
     packageName: 'com.fasosoft.safelink',
@@ -37,7 +47,10 @@ Future<SharedPreferences> pumpSafeLinkApp(
 
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        analysisServiceProvider.overrideWithValue(analysisService),
+      ],
       child: const SafeLinkApp(),
     ),
   );
@@ -55,4 +68,14 @@ Future<void> tapDestination(WidgetTester tester, String label) async {
     find.descendant(of: find.byType(NavigationBar), matching: find.text(label)),
   );
   await tester.pumpAndSettle();
+}
+
+/// Analyse locale dans le fil du test, sans isolat.
+final class SynchronousAnalysisService implements AnalysisService {
+  /// Crée le service.
+  const new();
+
+  @override
+  Future<AnalysisOutcome> analyze(AnalysisRequest request) async =>
+      LocalAnalysisService.analyzeNow(request.kind, request.text);
 }
