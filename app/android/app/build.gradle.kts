@@ -48,17 +48,33 @@ android {
                 keyPassword = System.getenv("SAFELINK_DEV_KEYSTORE_PASSWORD")
             }
         }
+        // Signature de distribution : seulement dans release.yml, depuis les
+        // secrets de l'environnement protégé « release » (clé créée et
+        // gardée par le mainteneur, docs/RELEASE.md). Format PKCS12 : le mot
+        // de passe de la clé est celui du fichier.
+        create("distribution") {
+            val keystore = System.getenv("SAFELINK_RELEASE_KEYSTORE")
+            if (!keystore.isNullOrEmpty()) {
+                storeFile = file(keystore)
+                storeType = "PKCS12"
+                storePassword = System.getenv("SAFELINK_RELEASE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("SAFELINK_RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("SAFELINK_RELEASE_KEYSTORE_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
-            // Jusqu'au lot D, les builds release servent aux contrôles
-            // automatiques et aux pré-versions de développement : ils sont
-            // signés avec la clé de développement (ou la clé de débogage de
-            // la machine sans les secrets) et ne doivent jamais être diffusés
-            // au public. La signature de distribution arrive au lot D
-            // (release.yml), à partir de secrets GitHub ; voir docs/BUILD.md.
-            signingConfig = signingConfigs.getByName("debug")
+            // Versions publiques (release.yml) : clé de distribution. Partout
+            // ailleurs (contrôles, pré-versions de développement, builds
+            // locaux) : clé de développement, ou clé de débogage de la
+            // machine sans les secrets ; ces APK ne sont jamais des versions
+            // publiques.
+            val distribution =
+                !System.getenv("SAFELINK_RELEASE_KEYSTORE").isNullOrEmpty()
+            signingConfig =
+                signingConfigs.getByName(if (distribution) "distribution" else "debug")
         }
     }
 }

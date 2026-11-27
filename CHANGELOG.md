@@ -6,6 +6,16 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Publication des versions publiques (lot D4)
+
+- `release.yml` : sur un tag `v…`, tests, APK signés avec la clé de
+  distribution (environnement protégé `release`), vérification du
+  certificat épinglé, des permissions et de l'alignement 16 Ko,
+  empreintes SHA-256, attestation de provenance, notes tirées du
+  CHANGELOG. Essai complet sans publier, avec une clé jetable.
+- `docs/RELEASE.md` : créer et garder la clé, préparer l'environnement,
+  publier, vérifier une version.
+
 ### Ajouté — Conseils, aide, exemples, confidentialité (lot D3)
 
 - Onze fiches de prévention en pictogrammes (codes secrets, faux

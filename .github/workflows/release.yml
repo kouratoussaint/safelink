@@ -1,0 +1,257 @@
+name: Version publique
+
+# Publie une version de SafeLink sur GitHub Releases quand un tag de version
+# est poussé (v0.1.0-alpha, v0.2.0-beta, v1.0.0…) : APK signés avec la clé
+# de distribution, empreintes SHA-256, attestation de provenance.
+#
+# La clé de distribution est créée et gardée par le mainteneur
+# (docs/RELEASE.md). Ses secrets ne vivent que dans l'environnement protégé
+# « release », réservé aux tags v* et soumis à son approbation : ni une pull
+# request ni une branche n'y ont accès. Sans clé, ou si le certificat ne
+# correspond pas à l'empreinte épinglée (tools/release-signing-cert.sha256),
+# rien n'est publié : une version publique ne doit jamais changer de
+# signature, sinon les mises à jour ne s'installent plus.
+#
+# Lancé à la main (« Run workflow »), il fait un essai complet avec une clé
+# jetable, sans rien publier : les APK restent trois jours en artefact.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Construire, signer et publier
+    if: github.repository == 'kouratoussaint/safelink'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    # Les secrets de distribution n'existent que dans cet environnement.
+    environment: ${{ github.event_name == 'push' && 'release' || '' }}
+    permissions:
+      contents: write
+      # Attestation de provenance (Sigstore).
+      id-token: write
+      attestations: write
+    env:
+      ESSAI: ${{ github.event_name != 'push' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Version du tag et de l'application
+        run: |
+          name="$(sed -n 's/^version: *\([^+ ]*\).*/\1/p' app/pubspec.yaml)"
+          echo "Version de l'application : $name"
+          if [[ "$ESSAI" == "true" ]]; then
+            echo "VERSION=$name" >> "$GITHUB_ENV"
+            echo "Essai : rien ne sera publié."
+            exit 0
+          fi
+          tag="$GITHUB_REF_NAME"
+          if [[ "$tag" != "v$name" ]]; then
+            echo "::error::Le tag $tag ne correspond pas à la version $name de app/pubspec.yaml."
+            exit 1
+          fi
+          if ! grep -q "^## \[$name\]" CHANGELOG.md; then
+            echo "::error::Section « ## [$name] » absente de CHANGELOG.md."
+            exit 1
+          fi
+          if [[ ! -s tools/release-signing-cert.sha256 ]]; then
+            echo "::error::Empreinte du certificat de distribution non épinglée (tools/release-signing-cert.sha256)."
+            exit 1
+          fi
+          echo "VERSION=$name" >> "$GITHUB_ENV"
+
+      - name: Clé de signature
+        env:
+          KEYSTORE_BASE64: ${{ secrets.SAFELINK_RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.SAFELINK_RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SAFELINK_RELEASE_KEY_ALIAS }}
+        run: |
+          keystore="$RUNNER_TEMP/safelink-release.p12"
+          if [[ "$ESSAI" == "true" ]]; then
+            # Clé jetable, détruite avec la machine : l'essai suit
+            # exactement le chemin d'une vraie version.
+            password="$(openssl rand -hex 24)"
+            echo "::add-mask::$password"
+            keytool -genkeypair -storetype PKCS12 -keystore "$keystore" \
+              -alias essai -keyalg RSA -keysize 2048 -validity 2 \
+              -dname "CN=SafeLink essai" \
+              -storepass "$password" -keypass "$password" >/dev/null 2>&1
+            {
+              echo "SAFELINK_RELEASE_KEYSTORE=$keystore"
+              echo "SAFELINK_RELEASE_KEYSTORE_PASSWORD=$password"
+              echo "SAFELINK_RELEASE_KEY_ALIAS=essai"
+            } >> "$GITHUB_ENV"
+            exit 0
+          fi
+          if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" || -z "$KEY_ALIAS" ]]; then
+            echo "::error::Secrets de distribution absents de l'environnement « release » (docs/RELEASE.md)."
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          {
+            echo "SAFELINK_RELEASE_KEYSTORE=$keystore"
+            echo "SAFELINK_RELEASE_KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "SAFELINK_RELEASE_KEY_ALIAS=$KEY_ALIAS"
+          } >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: ./.github/actions/setup-flutter
+
+      - name: Cache Gradle
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('app/android/**/*.gradle.kts', 'app/android/gradle/wrapper/gradle-wrapper.properties', '.flutter-version', 'app/pubspec.lock') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Tests de l'application
+        working-directory: app
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter test
+
+      - name: APK signés par architecture
+        working-directory: app
+        env:
+          SAFELINK_GOOGLE_API_KEY: ${{ secrets.SAFELINK_GOOGLE_API_KEY }}
+        run: |
+          flutter build apk --release --split-per-abi \
+            --target-platform android-arm,android-arm64 \
+            --dart-define=SAFELINK_GOOGLE_API_KEY="$SAFELINK_GOOGLE_API_KEY" \
+            --dart-define=SAFELINK_GIT_SHA="${GITHUB_SHA::7}"
+
+      - name: Effacer la clé du runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/safelink-release.p12"
+
+      - name: Vérifier la signature de chaque APK
+        run: |
+          set -o pipefail
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)"
+          expected=""
+          if [[ "$ESSAI" != "true" ]]; then
+            expected="$(tr -d '[:space:]' < tools/release-signing-cert.sha256)"
+          fi
+          digest=""
+          for apk in app/build/app/outputs/flutter-apk/app-*-release.apk; do
+            name="$(basename "$apk")"
+            report="$("$apksigner" verify --verbose --print-certs "$apk")"
+            actual="$(printf '%s\n' "$report" |
+              sed -nE 's/^(Signer #1|V[0-9.]+ Signer:) certificate SHA-256 digest: //p' |
+              head -n 1)"
+            echo "$name : ${actual:-empreinte illisible}"
+            if [[ -z "$actual" ]]; then
+              echo "::error::Empreinte du certificat illisible pour $name."
+              printf '%s\n' "$report"
+              exit 1
+            fi
+            if [[ -n "$expected" && "$actual" != "$expected" ]]; then
+              echo "::error::$name n'est pas signé avec la clé de distribution épinglée."
+              exit 1
+            fi
+            if [[ -n "$digest" && "$actual" != "$digest" ]]; then
+              echo "::error::Les APK ne sont pas tous signés avec la même clé."
+              exit 1
+            fi
+            digest="$actual"
+          done
+          echo "CERT_SHA256=$digest" >> "$GITHUB_ENV"
+
+      - name: Contrôler permissions et alignement 16 Ko
+        run: |
+          out=app/build/app/outputs/flutter-apk
+          for apk in "$out"/app-*-release.apk; do
+            tools/check_apk_permissions.sh "$apk" android.permission.INTERNET
+          done
+          python3 tools/check_16kb_alignment.py "$out/app-arm64-v8a-release.apk"
+
+      - name: Fichiers et empreintes
+        run: |
+          out=app/build/app/outputs/flutter-apk
+          mkdir dist
+          for abi in arm64-v8a armeabi-v7a; do
+            cp "$out/app-$abi-release.apk" "dist/SafeLink-$VERSION-$abi.apk"
+          done
+          (cd dist && sha256sum ./*.apk | sed 's# \./# #' > SHA256SUMS.txt)
+          cat dist/SHA256SUMS.txt
+
+      - name: Notes de version
+        run: |
+          section="$VERSION"
+          [[ "$ESSAI" == "true" ]] && section="Non publié"
+          size() { awk -v b="$(stat -c%s "$1")" 'BEGIN { printf "%.1f Mo", b / 1000000 }' | tr . ,; }
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME"
+          {
+            echo "## Télécharger"
+            echo
+            echo "| Fichier | Taille | Pour qui |"
+            echo "|---|---|---|"
+            echo "| [SafeLink-$VERSION-arm64-v8a.apk]($base/SafeLink-$VERSION-arm64-v8a.apk) | $(size "dist/SafeLink-$VERSION-arm64-v8a.apk") | La plupart des téléphones récents |"
+            echo "| [SafeLink-$VERSION-armeabi-v7a.apk]($base/SafeLink-$VERSION-armeabi-v7a.apk) | $(size "dist/SafeLink-$VERSION-armeabi-v7a.apk") | Téléphones plus anciens (32 bits) |"
+            echo
+            echo "Android 7 ou plus récent. Si le premier fichier refuse de s'installer, prenez le second."
+            echo
+            echo "## Vérifier"
+            echo
+            echo "- Certificat de signature (SHA-256) : \`$CERT_SHA256\`"
+            echo "- Empreintes des fichiers : \`SHA256SUMS.txt\`"
+            echo "- Provenance : \`gh attestation verify <fichier.apk> --repo $GITHUB_REPOSITORY\`"
+            echo
+            echo "## Nouveautés"
+            echo
+            # Section du CHANGELOG, sans son titre.
+            awk -v s="## [$section]" '
+              index($0, s) == 1 { on = 1; next }
+              on && /^## \[/ { exit }
+              on { print }
+            ' CHANGELOG.md
+          } > notes.md
+          head -n 30 notes.md
+
+      - name: Attestation de provenance
+        if: env.ESSAI != 'true'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/*.apk
+
+      - name: "Essai : APK en artefact"
+        if: env.ESSAI == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: essai-version-${{ github.sha }}
+          path: |
+            dist/
+            notes.md
+          retention-days: 3
+
+      - name: Publier la version
+        if: env.ESSAI != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          [[ "$VERSION" == *-* ]] && prerelease="--prerelease"
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "SafeLink $VERSION" \
+            --notes-file notes.md \
+            --verify-tag $prerelease
