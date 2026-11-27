@@ -41,6 +41,9 @@ jobs:
       - name: Analyse statique
         run: dart analyze --fatal-infos
 
+      - name: Marques de référence à jour
+        run: python3 ../../tools/generate_brands.py --check
+
       - name: Tests et couverture
         run: dart test --coverage-path=coverage/lcov.info
 

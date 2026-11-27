@@ -6,6 +6,7 @@ const embeddedLicenseAssets = [
   ('Poppins', 'assets/fonts/OFL-Poppins.txt'),
   ('Inter', 'assets/fonts/OFL-Inter.txt'),
   ('Public Suffix List', 'assets/licenses/public_suffix_list.txt'),
+  ('Unicode', 'assets/licenses/unicode.txt'),
 ];
 
 /// Ajoute les licences des polices et des données embarquées à la page

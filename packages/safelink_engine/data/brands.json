@@ -1,0 +1,1308 @@
+{
+  "description": "Marques de référence de SafeLink. Sert uniquement à repérer les imitations : figurer ici ne certifie jamais qu'un lien est sûr. Chaque domaine doit être justifié par une source officielle, avec sa date de vérification. Régénérer le code avec tools/generate_brands.py.",
+  "source_kinds": {
+    "wikidata": "Wikidata, propriété « site officiel » (P856) de l'élément",
+    "brvm": "BRVM (Bourse régionale des valeurs mobilières), fiche de la société cotée, rubrique « Site web »"
+  },
+  "brands": [
+    {
+      "id": "orange",
+      "name": "Orange",
+      "category": "telecom",
+      "domains": [
+        "orange.bf",
+        "orange.com",
+        "orange.fr"
+      ],
+      "keywords": [
+        "orangemoney"
+      ],
+      "tokens": [
+        "orange"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q115574306",
+          "kind": "wikidata",
+          "domains": [
+            "orange.bf"
+          ]
+        },
+        {
+          "url": "https://www.wikidata.org/wiki/Q1431486",
+          "kind": "wikidata",
+          "domains": [
+            "orange.com",
+            "orange.fr"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "moov_africa",
+      "name": "Moov Africa Burkina Faso",
+      "category": "telecom",
+      "domains": [
+        "moov-africa.bf",
+        "onatel.bf"
+      ],
+      "keywords": [
+        "moovafrica",
+        "moovmoney"
+      ],
+      "tokens": [
+        "moov",
+        "onatel"
+      ],
+      "sources": [
+        {
+          "url": "https://www.brvm.org/fr/emetteurs/societes-cotees/moov-africa-burkina-faso",
+          "kind": "brvm",
+          "domains": [
+            "moov-africa.bf"
+          ]
+        },
+        {
+          "url": "https://www.wikidata.org/wiki/Q2405619",
+          "kind": "wikidata",
+          "domains": [
+            "onatel.bf"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "telecel_faso",
+      "name": "Telecel Faso",
+      "category": "telecom",
+      "domains": [
+        "telecelfaso.bf"
+      ],
+      "keywords": [
+        "telecelfaso"
+      ],
+      "tokens": [
+        "telecel"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q115575309",
+          "kind": "wikidata",
+          "domains": [
+            "telecelfaso.bf"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "coris_bank",
+      "name": "Coris Bank International",
+      "category": "bank",
+      "domains": [
+        "coris-bank.com",
+        "coris.bank"
+      ],
+      "keywords": [
+        "corisbank",
+        "corismoney"
+      ],
+      "tokens": [
+        "coris"
+      ],
+      "sources": [
+        {
+          "url": "https://www.brvm.org/fr/emetteurs/societes-cotees/coris-bank-international",
+          "kind": "brvm",
+          "domains": [
+            "coris.bank",
+            "coris-bank.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "bank_of_africa",
+      "name": "Bank of Africa",
+      "category": "bank",
+      "domains": [
+        "bank-of-africa.net",
+        "bankofafrica.ma",
+        "boaburkinafaso.com"
+      ],
+      "keywords": [
+        "bankofafrica",
+        "boaburkina"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.brvm.org/fr/emetteurs/societes-cotees/bank-africa-burkina-faso",
+          "kind": "brvm",
+          "domains": [
+            "boaburkinafaso.com"
+          ]
+        },
+        {
+          "url": "https://www.wikidata.org/wiki/Q2882627",
+          "kind": "wikidata",
+          "domains": [
+            "bank-of-africa.net",
+            "bankofafrica.ma"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "ecobank",
+      "name": "Ecobank",
+      "category": "bank",
+      "domains": [
+        "ecobank.com"
+      ],
+      "keywords": [
+        "ecobank"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q930225",
+          "kind": "wikidata",
+          "domains": [
+            "ecobank.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "uba",
+      "name": "United Bank for Africa",
+      "category": "bank",
+      "domains": [
+        "ubagroup.com"
+      ],
+      "keywords": [
+        "ubagroup"
+      ],
+      "tokens": [
+        "uba"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q513457",
+          "kind": "wikidata",
+          "domains": [
+            "ubagroup.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "orabank",
+      "name": "Orabank",
+      "category": "bank",
+      "domains": [
+        "orabank.net"
+      ],
+      "keywords": [
+        "orabank"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q119064306",
+          "kind": "wikidata",
+          "domains": [
+            "orabank.net"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "banque_atlantique",
+      "name": "Banque Atlantique",
+      "category": "bank",
+      "domains": [
+        "banqueatlantique.net"
+      ],
+      "keywords": [
+        "banqueatlantique"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q2882890",
+          "kind": "wikidata",
+          "domains": [
+            "banqueatlantique.net"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "bceao",
+      "name": "BCEAO",
+      "category": "public_institution",
+      "domains": [
+        "bceao.int"
+      ],
+      "keywords": [
+        "bceao"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q620942",
+          "kind": "wikidata",
+          "domains": [
+            "bceao.int"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "sonabel",
+      "name": "SONABEL",
+      "category": "public_institution",
+      "domains": [
+        "sonabel.bf"
+      ],
+      "keywords": [
+        "sonabel"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q2297165",
+          "kind": "wikidata",
+          "domains": [
+            "sonabel.bf"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "onea",
+      "name": "ONEA",
+      "category": "public_institution",
+      "domains": [
+        "oneabf.com"
+      ],
+      "keywords": [
+        "oneabf"
+      ],
+      "tokens": [
+        "onea"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q15867459",
+          "kind": "wikidata",
+          "domains": [
+            "oneabf.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "canal_plus_afrique",
+      "name": "Canal+ Afrique",
+      "category": "media",
+      "domains": [
+        "canalplus-afrique.com"
+      ],
+      "keywords": [
+        "canalplus"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q2935823",
+          "kind": "wikidata",
+          "domains": [
+            "canalplus-afrique.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "mtn",
+      "name": "MTN",
+      "category": "telecom",
+      "domains": [
+        "mtn.co.za",
+        "mtn.com"
+      ],
+      "keywords": [
+        "mtnmomo"
+      ],
+      "tokens": [
+        "mtn"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q1813361",
+          "kind": "wikidata",
+          "domains": [
+            "mtn.co.za",
+            "mtn.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "airtel",
+      "name": "Airtel Africa",
+      "category": "telecom",
+      "domains": [
+        "airtel.com"
+      ],
+      "keywords": [
+        "airtel"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q4699029",
+          "kind": "wikidata",
+          "domains": [
+            "airtel.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "jumia",
+      "name": "Jumia",
+      "category": "ecommerce",
+      "domains": [
+        "jumia.ci",
+        "jumia.co.ke",
+        "jumia.com",
+        "jumia.com.eg",
+        "jumia.com.ng",
+        "jumia.ma"
+      ],
+      "keywords": [
+        "jumia"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q17061030",
+          "kind": "wikidata",
+          "domains": [
+            "jumia.ci",
+            "jumia.co.ke",
+            "jumia.com",
+            "jumia.com.eg",
+            "jumia.com.ng",
+            "jumia.ma"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "paypal",
+      "name": "PayPal",
+      "category": "payment",
+      "domains": [
+        "paypal.com"
+      ],
+      "keywords": [
+        "paypal"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q483959",
+          "kind": "wikidata",
+          "domains": [
+            "paypal.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "visa",
+      "name": "Visa",
+      "category": "payment",
+      "domains": [
+        "visa.com"
+      ],
+      "keywords": [],
+      "tokens": [
+        "visa"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q328840",
+          "kind": "wikidata",
+          "domains": [
+            "visa.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "mastercard",
+      "name": "Mastercard",
+      "category": "payment",
+      "domains": [
+        "mastercard.am",
+        "mastercard.at",
+        "mastercard.az",
+        "mastercard.ba",
+        "mastercard.bg",
+        "mastercard.by",
+        "mastercard.ca",
+        "mastercard.ch",
+        "mastercard.cl",
+        "mastercard.co.id",
+        "mastercard.co.il",
+        "mastercard.co.in",
+        "mastercard.co.jp",
+        "mastercard.co.kr",
+        "mastercard.co.nz",
+        "mastercard.co.th",
+        "mastercard.co.ve",
+        "mastercard.co.za",
+        "mastercard.com",
+        "mastercard.com.ar",
+        "mastercard.com.au",
+        "mastercard.com.br",
+        "mastercard.com.cn",
+        "mastercard.com.co",
+        "mastercard.com.cy",
+        "mastercard.com.ge",
+        "mastercard.com.hk",
+        "mastercard.com.mx",
+        "mastercard.com.my",
+        "mastercard.com.pe",
+        "mastercard.com.ph",
+        "mastercard.com.sg",
+        "mastercard.com.tr",
+        "mastercard.com.tw",
+        "mastercard.com.vn",
+        "mastercard.cz",
+        "mastercard.de",
+        "mastercard.dk",
+        "mastercard.es",
+        "mastercard.fi",
+        "mastercard.fr",
+        "mastercard.gr",
+        "mastercard.hr",
+        "mastercard.hu",
+        "mastercard.ie",
+        "mastercard.it",
+        "mastercard.kz",
+        "mastercard.lu",
+        "mastercard.md",
+        "mastercard.me",
+        "mastercard.mt",
+        "mastercard.nl",
+        "mastercard.no",
+        "mastercard.pl",
+        "mastercard.pt",
+        "mastercard.ro",
+        "mastercard.rs",
+        "mastercard.ru",
+        "mastercard.se",
+        "mastercard.si",
+        "mastercard.sk",
+        "mastercard.ua",
+        "mastercard.us",
+        "mastercard.uz",
+        "mojmastercard.sk",
+        "mujmastercard.cz"
+      ],
+      "keywords": [
+        "mastercard"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q489921",
+          "kind": "wikidata",
+          "domains": [
+            "mastercard.am",
+            "mastercard.at",
+            "mastercard.az",
+            "mastercard.ba",
+            "mastercard.bg",
+            "mastercard.by",
+            "mastercard.ca",
+            "mastercard.ch",
+            "mastercard.cl",
+            "mastercard.co.id",
+            "mastercard.co.il",
+            "mastercard.co.in",
+            "mastercard.co.jp",
+            "mastercard.co.kr",
+            "mastercard.co.nz",
+            "mastercard.co.th",
+            "mastercard.co.ve",
+            "mastercard.co.za",
+            "mastercard.com",
+            "mastercard.com.ar",
+            "mastercard.com.au",
+            "mastercard.com.br",
+            "mastercard.com.cn",
+            "mastercard.com.co",
+            "mastercard.com.cy",
+            "mastercard.com.ge",
+            "mastercard.com.hk",
+            "mastercard.com.mx",
+            "mastercard.com.my",
+            "mastercard.com.pe",
+            "mastercard.com.ph",
+            "mastercard.com.sg",
+            "mastercard.com.tr",
+            "mastercard.com.tw",
+            "mastercard.com.vn",
+            "mastercard.cz",
+            "mastercard.de",
+            "mastercard.dk",
+            "mastercard.es",
+            "mastercard.fi",
+            "mastercard.fr",
+            "mastercard.gr",
+            "mastercard.hr",
+            "mastercard.hu",
+            "mastercard.ie",
+            "mastercard.it",
+            "mastercard.kz",
+            "mastercard.lu",
+            "mastercard.md",
+            "mastercard.me",
+            "mastercard.mt",
+            "mastercard.nl",
+            "mastercard.no",
+            "mastercard.pl",
+            "mastercard.pt",
+            "mastercard.ro",
+            "mastercard.rs",
+            "mastercard.ru",
+            "mastercard.se",
+            "mastercard.si",
+            "mastercard.sk",
+            "mastercard.ua",
+            "mastercard.us",
+            "mastercard.uz",
+            "mojmastercard.sk",
+            "mujmastercard.cz"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "western_union",
+      "name": "Western Union",
+      "category": "money_transfer",
+      "domains": [
+        "westernunion.co.id",
+        "westernunion.com",
+        "westernunion.it",
+        "westernunion.pl",
+        "westernunion.ru"
+      ],
+      "keywords": [
+        "westernunion"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q861042",
+          "kind": "wikidata",
+          "domains": [
+            "westernunion.co.id",
+            "westernunion.com",
+            "westernunion.it",
+            "westernunion.pl",
+            "westernunion.ru"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "moneygram",
+      "name": "MoneyGram",
+      "category": "money_transfer",
+      "domains": [
+        "moneygram.ch",
+        "moneygram.com",
+        "moneygram.fr",
+        "moneygram.it"
+      ],
+      "keywords": [
+        "moneygram"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q1944412",
+          "kind": "wikidata",
+          "domains": [
+            "moneygram.ch",
+            "moneygram.com",
+            "moneygram.fr",
+            "moneygram.it"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "ria",
+      "name": "Ria Money Transfer",
+      "category": "money_transfer",
+      "domains": [
+        "riafinancial.com",
+        "riamoneytransfer.com"
+      ],
+      "keywords": [
+        "riamoneytransfer"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q18643673",
+          "kind": "wikidata",
+          "domains": [
+            "riafinancial.com",
+            "riamoneytransfer.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "worldremit",
+      "name": "WorldRemit",
+      "category": "money_transfer",
+      "domains": [
+        "worldremit.com"
+      ],
+      "keywords": [
+        "worldremit"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q22909828",
+          "kind": "wikidata",
+          "domains": [
+            "worldremit.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "binance",
+      "name": "Binance",
+      "category": "crypto",
+      "domains": [
+        "binance.com",
+        "binance.org"
+      ],
+      "keywords": [
+        "binance"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q51403327",
+          "kind": "wikidata",
+          "domains": [
+            "binance.com"
+          ]
+        },
+        {
+          "url": "https://www.wikidata.org/wiki/Q107313836",
+          "kind": "wikidata",
+          "domains": [
+            "binance.org"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "coinbase",
+      "name": "Coinbase",
+      "category": "crypto",
+      "domains": [
+        "coinbase.com"
+      ],
+      "keywords": [
+        "coinbase"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q16972754",
+          "kind": "wikidata",
+          "domains": [
+            "coinbase.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "whatsapp",
+      "name": "WhatsApp",
+      "category": "messaging",
+      "domains": [
+        "whatsapp.com"
+      ],
+      "keywords": [
+        "whatsapp"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q1049511",
+          "kind": "wikidata",
+          "domains": [
+            "whatsapp.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "category": "social",
+      "domains": [
+        "facebook.com"
+      ],
+      "keywords": [
+        "facebook"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q355",
+          "kind": "wikidata",
+          "domains": [
+            "facebook.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "category": "social",
+      "domains": [
+        "instagram.com"
+      ],
+      "keywords": [
+        "instagram"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q209330",
+          "kind": "wikidata",
+          "domains": [
+            "instagram.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "category": "social",
+      "domains": [
+        "tiktok.com"
+      ],
+      "keywords": [
+        "tiktok"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q48938223",
+          "kind": "wikidata",
+          "domains": [
+            "tiktok.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "category": "messaging",
+      "domains": [
+        "telegram.org"
+      ],
+      "keywords": [
+        "telegram"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q15616276",
+          "kind": "wikidata",
+          "domains": [
+            "telegram.org"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "x",
+      "name": "X (Twitter)",
+      "category": "social",
+      "domains": [
+        "twitter.com",
+        "x.com"
+      ],
+      "keywords": [
+        "twitter"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q918",
+          "kind": "wikidata",
+          "domains": [
+            "twitter.com",
+            "x.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "snapchat",
+      "name": "Snapchat",
+      "category": "social",
+      "domains": [
+        "snapchat.com"
+      ],
+      "keywords": [
+        "snapchat"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q333618",
+          "kind": "wikidata",
+          "domains": [
+            "snapchat.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "category": "social",
+      "domains": [
+        "linkedin.com"
+      ],
+      "keywords": [
+        "linkedin"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q213660",
+          "kind": "wikidata",
+          "domains": [
+            "linkedin.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "google",
+      "name": "Google",
+      "category": "tech",
+      "domains": [
+        "google.be",
+        "google.ca",
+        "google.ch",
+        "google.co.in",
+        "google.co.jp",
+        "google.co.uk",
+        "google.com",
+        "google.com.bd",
+        "google.com.tr",
+        "google.es",
+        "google.fr",
+        "google.gl",
+        "google.ie",
+        "google.it",
+        "google.nl"
+      ],
+      "keywords": [
+        "google"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q9366",
+          "kind": "wikidata",
+          "domains": [
+            "google.be",
+            "google.ca",
+            "google.ch",
+            "google.co.in",
+            "google.co.jp",
+            "google.co.uk",
+            "google.com",
+            "google.com.bd",
+            "google.com.tr",
+            "google.es",
+            "google.fr",
+            "google.gl",
+            "google.ie",
+            "google.it",
+            "google.nl"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "category": "email",
+      "domains": [
+        "gmail.com"
+      ],
+      "keywords": [
+        "gmail"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q9334",
+          "kind": "wikidata",
+          "domains": [
+            "gmail.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "category": "media",
+      "domains": [
+        "youtube.com"
+      ],
+      "keywords": [
+        "youtube"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q866",
+          "kind": "wikidata",
+          "domains": [
+            "youtube.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "microsoft",
+      "name": "Microsoft",
+      "category": "tech",
+      "domains": [
+        "microsoft.com",
+        "microsoft.cz"
+      ],
+      "keywords": [
+        "microsoft"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q2283",
+          "kind": "wikidata",
+          "domains": [
+            "microsoft.com",
+            "microsoft.cz"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "outlook",
+      "name": "Outlook.com",
+      "category": "email",
+      "domains": [
+        "live.com"
+      ],
+      "keywords": [
+        "outlook",
+        "hotmail"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q219136",
+          "kind": "wikidata",
+          "domains": [
+            "live.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "apple",
+      "name": "Apple",
+      "category": "tech",
+      "domains": [
+        "apple.com",
+        "apple.com.cn"
+      ],
+      "keywords": [
+        "appleid"
+      ],
+      "tokens": [
+        "apple"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q312",
+          "kind": "wikidata",
+          "domains": [
+            "apple.com",
+            "apple.com.cn"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "icloud",
+      "name": "iCloud",
+      "category": "tech",
+      "domains": [
+        "icloud.com"
+      ],
+      "keywords": [
+        "icloud"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q283469",
+          "kind": "wikidata",
+          "domains": [
+            "icloud.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "yahoo",
+      "name": "Yahoo",
+      "category": "email",
+      "domains": [
+        "yahoo.com"
+      ],
+      "keywords": [
+        "yahoo"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q37093",
+          "kind": "wikidata",
+          "domains": [
+            "yahoo.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "amazon",
+      "name": "Amazon",
+      "category": "ecommerce",
+      "domains": [
+        "amazon.co.jp",
+        "amazon.co.uk",
+        "amazon.com",
+        "amazon.com.au",
+        "amazon.com.br",
+        "amazon.com.mx",
+        "amazon.com.tr",
+        "amazon.de",
+        "amazon.es",
+        "amazon.in",
+        "amazon.it",
+        "amazon.nl",
+        "amazon.sa"
+      ],
+      "keywords": [
+        "amazon"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q3884",
+          "kind": "wikidata",
+          "domains": [
+            "amazon.co.jp",
+            "amazon.co.uk",
+            "amazon.com",
+            "amazon.com.au",
+            "amazon.com.br",
+            "amazon.com.mx",
+            "amazon.com.tr",
+            "amazon.de",
+            "amazon.es",
+            "amazon.in",
+            "amazon.it",
+            "amazon.nl",
+            "amazon.sa"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "category": "media",
+      "domains": [
+        "netflix.com"
+      ],
+      "keywords": [
+        "netflix"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q907311",
+          "kind": "wikidata",
+          "domains": [
+            "netflix.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "category": "media",
+      "domains": [
+        "spotify.com"
+      ],
+      "keywords": [
+        "spotify"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q689141",
+          "kind": "wikidata",
+          "domains": [
+            "spotify.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "dhl",
+      "name": "DHL",
+      "category": "delivery",
+      "domains": [
+        "dhl.co.uk",
+        "dhl.com",
+        "dhl.com.tr",
+        "dhl.es",
+        "dhl.ru",
+        "dhlparcel.nl",
+        "dhlproductosyservicios.com"
+      ],
+      "keywords": [],
+      "tokens": [
+        "dhl"
+      ],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q489815",
+          "kind": "wikidata",
+          "domains": [
+            "dhl.co.uk",
+            "dhl.com",
+            "dhl.com.tr",
+            "dhl.es",
+            "dhl.ru",
+            "dhlparcel.nl",
+            "dhlproductosyservicios.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    },
+    {
+      "id": "fedex",
+      "name": "FedEx",
+      "category": "delivery",
+      "domains": [
+        "fedex.com"
+      ],
+      "keywords": [
+        "fedex"
+      ],
+      "tokens": [],
+      "sources": [
+        {
+          "url": "https://www.wikidata.org/wiki/Q459477",
+          "kind": "wikidata",
+          "domains": [
+            "fedex.com"
+          ]
+        }
+      ],
+      "verified_on": "2026-11-27"
+    }
+  ]
+}

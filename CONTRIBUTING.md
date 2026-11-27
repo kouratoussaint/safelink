@@ -55,6 +55,14 @@ et SDK Android 36.
 
 Les messages de commit décrivent le pourquoi, en français ou en anglais.
 
+## Proposer une marque de référence
+
+Ajoutez l'entrée dans `packages/safelink_engine/data/brands.json` avec, pour
+chaque domaine, une source publique vérifiable (Wikidata P856 ou fiche BRVM)
+et la date de vérification, puis lancez `python3 tools/generate_brands.py`.
+Les règles complètes sont dans [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
+Une pull request sans source n'est pas fusionnée.
+
 ## Signaler un résultat d'analyse contestable
 
 Utilisez le modèle « Résultat d'analyse contestable » et anonymisez le

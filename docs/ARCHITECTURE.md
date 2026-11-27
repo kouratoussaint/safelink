@@ -45,6 +45,8 @@ Briques d'analyse des liens (`lib/src/url/`) :
 | `PublicSuffixList` | Domaine réellement enregistré (`example.co.uk`, `arnaque.blogspot.com`) ; liste embarquée, sections ICANN et privée, tests officiels |
 | `UrlParser`, `ParsedUrl` | Lecture d'un lien comme un navigateur (standard URL du WHATWG) : identifiants avant `@`, IPv4 sous toutes leurs formes, IPv6, ports, `%XX`, barres inversées, segments `..` ; 2 048 caractères au plus (réglable) |
 | `UrlNormalization` | Chaque transformation appliquée, avec un code et une explication montrés à l'utilisateur (ex. « https:// supposé ») |
+| `UnicodeScripts`, `Confusables` | Écriture de chaque caractère et « squelette » UTS #39 : `pаypal` (« а » cyrillique), `paypa1` et `paypal` se ressemblent |
+| `BrandRegistry`, `BrandMatcher` | Marques souvent imitées, domaines officiels sourcés ; repère caractères trompeurs, fautes de frappe, nom de marque dans un domaine tiers ou un sous-domaine. **Ne certifie jamais** un domaine officiel |
 | `UrlParseFailure` | Refus motivé : schéma non web (`mailto:`, `tel:`, `javascript:`…), adresse e-mail, texte qui n'est pas un lien, hôte ou port invalide |
 
 Règles de conception :

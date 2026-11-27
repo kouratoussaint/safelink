@@ -42,3 +42,37 @@ la structure d'un lien, sur l'appareil.
 | Donnée | Usage | Licence | Mise à jour |
 | --- | --- | --- | --- |
 | [Public Suffix List](https://publicsuffix.org/list/) | Trouver le domaine réellement enregistré d'un lien | MPL-2.0, notice dans l'application (Paramètres › À propos › Licences) | `tools/update_psl.py`, par pull request |
+| [Unicode](https://www.unicode.org/) `confusables.txt` (UTS #39) et `Scripts.txt` | Caractères qui imitent des lettres latines ; mélange d'écritures | Licence Unicode v3, notice dans l'application | `tools/update_unicode_data.py`, par pull request |
+| Marques de référence (`packages/safelink_engine/data/brands.json`) | Repérer les imitations de marques souvent visées | Données du projet ; chaque domaine renvoie à sa source | `tools/generate_brands.py`, par pull request |
+
+## Marques de référence
+
+La liste sert **uniquement à repérer les imitations**. Un lien vers un
+domaine officiel n'est jamais déclaré sûr : la page peut être compromise,
+et un domaine officiel peut héberger du contenu de tiers.
+
+Règles d'ajout :
+
+1. Chaque domaine officiel est justifié par une source publique et
+   vérifiable, citée dans le fichier avec sa date de vérification :
+   - Wikidata, propriété « site officiel » (P856) de l'entreprise ;
+   - BRVM, fiche de la société cotée (rubrique « Site web »), pour les
+     sociétés cotées de l'UEMOA.
+   Un domaine trouvé par une simple recherche, une publicité ou un message
+   n'est jamais ajouté.
+2. Seuls des domaines enregistrables sont inscrits (`orange.bf`, pas
+   `www.orange.bf`) ; un domaine n'appartient qu'à une marque.
+3. Les mots-clés (`keywords`, cherchés à l'intérieur des noms) comptent au
+   moins 5 caractères ; les noms courts ou courants (`tokens` : `orange`,
+   `moov`, `dhl`) ne sont cherchés que comme mots isolés.
+4. `python3 tools/generate_brands.py` valide ces règles et régénère le code ;
+   la CI échoue si le code et le fichier divergent.
+
+État au 27 novembre 2026 : 46 marques, 167 domaines officiels. Les
+institutions burkinabè sans source de ce type (LONAB, CNSS, administrations
+en `.gov.bf`) n'y figurent pas encore.
+
+Limite connue : des domaines techniques appartenant aux marques
+(`googleusercontent.com`, `amazonaws.com`, `tiktokcdn.com`…) contiennent le
+nom de la marque sans figurer dans la liste ; ils produisent un indice de
+gravité moyenne, insuffisant à lui seul pour un verdict « Lien suspect ».

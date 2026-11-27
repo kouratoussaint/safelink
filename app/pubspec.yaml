@@ -39,6 +39,7 @@ flutter:
     - assets/fonts/OFL-Poppins.txt
     - assets/fonts/OFL-Inter.txt
     - assets/licenses/public_suffix_list.txt
+    - assets/licenses/unicode.txt
   # Polices embarquées (SIL Open Font License 1.1) : aucune police n'est
   # téléchargée au lancement.
   fonts:
