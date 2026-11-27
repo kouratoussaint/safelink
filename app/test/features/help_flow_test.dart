@@ -201,6 +201,8 @@ void main() {
       );
       await tapDestination(tester, 'Paramètres');
       await tester.scrollUntilVisible(find.text('Confidentialité'), 200);
+      await tester.ensureVisible(find.text('Confidentialité'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Confidentialité'));
       await tester.pumpAndSettle();
       expect(

@@ -53,6 +53,17 @@ clair, aéré, épuré.
   carte de saisie (champ, « Coller », « Analyser »), puis « Plus rapide » :
   partager, exemples, QR code (bientôt).
 - Barre de navigation blanche, filet en haut, onglet actif en turquoise.
+- **Onglets** Historique, Conseils, Paramètres : grand titre à gauche
+  (`TabAppBar`) ; contenus en cartes groupées (`GroupedCard`, `CardRow`),
+  petits titres gris au-dessus (`GroupLabel`).
+- **Historique** : une carte par jour, pastille ronde pleine du niveau.
+- **Conseils** : vignettes blanches de même hauteur (`TileGrid`) ; « Déjà
+  piégé ? » en rouge plein.
+- **Partage** et **refus** : pictogramme dans un disque plein entouré d'un
+  halo (`HaloIcon`), barré pour un refus.
+- **Présentation** : illustration à halos, titre et texte centrés,
+  « Écouter » à chaque étape, points dans une carte, points de
+  progression ; fond blanc.
 
 ## Typographie
 

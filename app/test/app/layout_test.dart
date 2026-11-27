@@ -19,6 +19,8 @@ Future<void> visitAllScreens(WidgetTester tester) async {
     expect(tester.takeException(), isNull, reason: tab);
   }
   await tester.scrollUntilVisible(find.text('À propos de SafeLink'), 200);
+  await tester.ensureVisible(find.text('À propos de SafeLink'));
+  await tester.pumpAndSettle();
   await tester.tap(find.text('À propos de SafeLink'));
   await tester.pumpAndSettle();
   expect(tester.takeException(), isNull, reason: 'À propos');

@@ -9,6 +9,7 @@ import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_dialogs.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 
 /// Paramètres de l'application.
@@ -19,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final colors = SafeLinkColors.of(context);
     final mode = ref.watch(themeModeProvider);
     final options = [
       (ThemeMode.system, l10n.themeSystem),
@@ -29,78 +31,116 @@ class SettingsScreen extends ConsumerWidget {
       appBar: TabAppBar(title: l10n.settingsTitle),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           children: [
-            _SectionHeader(l10n.settingsAppearanceSection),
-            RadioGroup<ThemeMode>(
-              groupValue: mode,
-              onChanged: (value) {
-                if (value != null) {
-                  ref.read(themeModeProvider.notifier).select(value).ignore();
-                }
-              },
-              child: Column(
-                children: [
-                  for (final (value, label) in options)
-                    RadioListTile<ThemeMode>(value: value, title: Text(label)),
-                ],
-              ),
+            GroupLabel(l10n.settingsOnlineSection),
+            GroupedCard(
+              children: [
+                SwitchListTile(
+                  secondary: PictoBadge(
+                    icon: Icons.travel_explore,
+                    color: theme.colorScheme.primary,
+                    size: 40,
+                  ),
+                  title: Text(l10n.settingsOnlineSwitch),
+                  subtitle: Text(
+                    ref.watch(googleEnabledProvider)
+                        ? l10n.settingsOnlineGoogleSwitchBody
+                        : l10n.settingsOnlineSwitchBody,
+                  ),
+                  value:
+                      ref.watch(onlineChoiceProvider) == OnlineChoice.enabled,
+                  onChanged: (value) => ref
+                      .read(onlineChoiceProvider.notifier)
+                      .select(enabled: value),
+                ),
+              ],
             ),
-            SwitchListTile(
-              secondary: const Icon(Icons.tune),
-              title: Text(l10n.settingsExpertSwitch),
-              subtitle: Text(l10n.settingsExpertBody),
-              value: ref.watch(expertModeProvider),
-              onChanged: (value) =>
-                  ref.read(expertModeProvider.notifier).select(enabled: value),
-            ),
-            const Divider(),
-            _SectionHeader(l10n.settingsOnlineSection),
-            SwitchListTile(
-              secondary: const Icon(Icons.travel_explore),
-              title: Text(l10n.settingsOnlineSwitch),
-              subtitle: Text(
-                ref.watch(googleEnabledProvider)
-                    ? l10n.settingsOnlineGoogleSwitchBody
-                    : l10n.settingsOnlineSwitchBody,
-              ),
-              value: ref.watch(onlineChoiceProvider) == OnlineChoice.enabled,
-              onChanged: (value) => ref
-                  .read(onlineChoiceProvider.notifier)
-                  .select(enabled: value),
-            ),
-            const Divider(),
-            _SectionHeader(l10n.settingsHistorySection),
+            const SizedBox(height: 20),
+            GroupLabel(l10n.settingsHistorySection),
             const _HistorySettings(),
-            const Divider(),
-            _SectionHeader(l10n.settingsAboutSection),
-            ListTile(
-              leading: const Icon(Icons.help_outline),
-              title: Text(l10n.settingsHelpTile),
-              subtitle: Text(l10n.settingsHelpSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go(AppRoutes.help),
+            const SizedBox(height: 20),
+            GroupLabel(l10n.settingsAppearanceSection),
+            GroupedCard(
+              children: [
+                RadioGroup<ThemeMode>(
+                  groupValue: mode,
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .select(value)
+                          .ignore();
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      for (final (value, label) in options)
+                        RadioListTile<ThemeMode>(
+                          value: value,
+                          title: Text(label),
+                        ),
+                    ],
+                  ),
+                ),
+                SwitchListTile(
+                  secondary: PictoBadge(
+                    icon: Icons.tune,
+                    color: colors.info,
+                    size: 40,
+                  ),
+                  title: Text(l10n.settingsExpertSwitch),
+                  subtitle: Text(l10n.settingsExpertBody),
+                  value: ref.watch(expertModeProvider),
+                  onChanged: (value) => ref
+                      .read(expertModeProvider.notifier)
+                      .select(enabled: value),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.lock_outline),
-              title: Text(l10n.settingsPrivacyTile),
-              subtitle: Text(l10n.settingsPrivacySubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go(AppRoutes.privacy),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: Text(l10n.settingsAboutTile),
-              subtitle: Text(l10n.settingsAboutSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go(AppRoutes.about),
+            const SizedBox(height: 20),
+            GroupLabel(l10n.settingsAboutSection),
+            GroupedCard(
+              children: [
+                CardRow(
+                  leading: PictoBadge(
+                    icon: Icons.help_outline,
+                    color: colors.textSecondary,
+                    size: 40,
+                  ),
+                  title: l10n.settingsHelpTile,
+                  subtitle: l10n.settingsHelpSubtitle,
+                  onTap: () => context.go(AppRoutes.help),
+                ),
+                CardRow(
+                  leading: PictoBadge(
+                    icon: Icons.lock_outline,
+                    color: colors.textSecondary,
+                    size: 40,
+                  ),
+                  title: l10n.settingsPrivacyTile,
+                  subtitle: l10n.settingsPrivacySubtitle,
+                  onTap: () => context.go(AppRoutes.privacy),
+                ),
+                CardRow(
+                  leading: PictoBadge(
+                    icon: Icons.info_outline,
+                    color: colors.textSecondary,
+                    size: 40,
+                  ),
+                  title: l10n.settingsAboutTile,
+                  subtitle: l10n.settingsAboutSubtitle,
+                  onTap: () => context.go(AppRoutes.about),
+                ),
+              ],
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(4, 16, 4, 0),
               child: Text(
                 l10n.settingsPrivacyNote,
+                textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: SafeLinkColors.of(context).textSecondary,
+                  color: colors.textSecondary,
                 ),
               ),
             ),
@@ -120,10 +160,15 @@ class _HistorySettings extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final enabled = ref.watch(historyChoiceProvider) == HistoryChoice.enabled;
     final count = ref.watch(historyProvider).value?.length ?? 0;
-    return Column(
+    final colors = SafeLinkColors.of(context);
+    return GroupedCard(
       children: [
         SwitchListTile(
-          secondary: const Icon(Icons.history),
+          secondary: PictoBadge(
+            icon: Icons.history,
+            color: colors.info,
+            size: 40,
+          ),
           title: Text(l10n.settingsHistorySwitch),
           subtitle: Text(l10n.settingsHistorySwitchBody),
           value: enabled,
@@ -138,36 +183,17 @@ class _HistorySettings extends ConsumerWidget {
           },
         ),
         ListTile(
-          leading: const Icon(Icons.delete_sweep_outlined),
+          leading: PictoBadge(
+            icon: Icons.delete_sweep_outlined,
+            color: colors.danger,
+            size: 40,
+          ),
           title: Text(l10n.settingsHistoryClear),
           subtitle: Text(l10n.settingsHistoryClearBody(count)),
           enabled: count > 0,
           onTap: () => confirmClearHistory(context, ref),
         ),
       ],
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const new(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Semantics(
-        header: true,
-        child: Text(
-          label,
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: theme.colorScheme.primary,
-          ),
-        ),
-      ),
     );
   }
 }

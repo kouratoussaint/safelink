@@ -121,6 +121,8 @@ Future<void> tapDestination(WidgetTester tester, String label) async {
 Future<void> openAbout(WidgetTester tester) async {
   await tapDestination(tester, 'Paramètres');
   await tester.scrollUntilVisible(find.text('À propos de SafeLink'), 200);
+  await tester.ensureVisible(find.text('À propos de SafeLink'));
+  await tester.pumpAndSettle();
   await tester.tap(find.text('À propos de SafeLink'));
   await tester.pumpAndSettle();
 }

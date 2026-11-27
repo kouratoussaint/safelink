@@ -7,9 +7,7 @@
   "navHistory": "Historique",
   "navTips": "Conseils",
   "navSettings": "Paramètres",
-  "openSettingsTooltip": "Ouvrir les paramètres",
   "backAgainToExit": "Appuyez de nouveau sur Retour pour quitter SafeLink",
-  "homeTitle": "Vérifiez un lien ou un message avant d’agir",
   "historyTitle": "Historique",
   "tipsTitle": "Conseils",
   "tipsIntro": "Les pièges les plus courants, et comment les éviter. Touchez une fiche.",
@@ -86,8 +84,6 @@
   },
   "homeClipboardEmpty": "Le presse-papiers ne contient pas de texte.",
   "homeLocalNote": "Le texte d’un message ne quitte jamais votre téléphone.",
-  "homeHistoryShortcut": "Voir l’historique",
-  "homeComingSoonTitle": "Bientôt",
   "homeComingSoon": "Bientôt dans SafeLink",
   "analysisTitle": "Analyse",
   "analysisRunning": "Analyse en cours…",
@@ -592,8 +588,6 @@
   "analysisStepOnline": "En ligne",
   "analysisStepDone": "Terminé",
   "analysisStepWorking": "En cours",
-  "homeModeLinkHint": "Une adresse internet",
-  "homeModeMessageHint": "Un SMS, un message WhatsApp",
   "@gaugeSemantics": {
     "placeholders": {
       "level": {
@@ -786,8 +780,6 @@
   "settingsPrivacySubtitle": "Ce qui reste sur le téléphone, ce qui est envoyé",
   "notFoundTitle": "Page introuvable",
   "notFoundAction": "Revenir à l’accueil",
-  "homeShareTipTitle": "Plus rapide : partager",
-  "homeShareTip": "Appuyez longtemps sur un message reçu, touchez « Partager », puis « Vérifier avec SafeLink ».",
   "helpShareTitle": "Plus rapide : partager",
   "helpShare1": "Appuyez longtemps sur le message ou le lien reçu",
   "helpShare2": "Touchez « Partager », puis « Vérifier avec SafeLink »",
