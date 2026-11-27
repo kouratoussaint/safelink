@@ -198,15 +198,10 @@ celle des versions de distribution (lot D).
 
 ## Signature des versions de distribution
 
-À venir avec le lot D : génération du keystore sur votre machine, stockage
-en secrets GitHub de l'environnement protégé `release`, vérification de la
-signature dans `release.yml`. Le keystore et ses mots de passe ne doivent
-jamais être versionnés ni envoyés dans un message.
-
-## Versions publiques
-
 Les versions publiques (`v0.1.0-alpha`…) sont construites et signées par
 `.github/workflows/release.yml` avec la clé de distribution, créée et
-gardée par le mainteneur. Procédure complète, de la création de la clé à la
-publication : [RELEASE.md](RELEASE.md).
+gardée par le mainteneur, stockée dans les secrets de l'environnement
+protégé `release`. Le keystore et ses mots de passe ne doivent jamais être
+versionnés ni envoyés dans un message. Procédure complète, de la création
+de la clé à la publication : [RELEASE.md](RELEASE.md).
 
