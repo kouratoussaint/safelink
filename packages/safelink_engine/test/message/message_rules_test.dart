@@ -395,6 +395,7 @@ void main() {
         paymentVerbs: base.paymentVerbs,
         paymentPurposes: base.paymentPurposes,
         scamFees: base.scamFees,
+        ordinaryFees: base.ordinaryFees,
         prizes: [PhrasePattern('test', 'gros lot')],
         selections: const [],
         accountThreats: base.accountThreats,
@@ -405,6 +406,7 @@ void main() {
         mistakenTransfers: base.mistakenTransfers,
         returnRequests: base.returnRequests,
         dialVerbs: base.dialVerbs,
+        linkActionVerbs: base.linkActionVerbs,
       );
       final rules = MessageRules(dictionary: custom);
       final message = MessagePreprocessor.prepare('Le gros lot est à vous.');

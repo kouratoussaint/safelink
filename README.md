@@ -19,11 +19,12 @@ a vérifié, ce qu'elle ne sait pas et les précautions à prendre.
 Marché initial : Burkina Faso, puis Afrique francophone.
 
 > [!IMPORTANT]
-> **État du projet : en développement (lot B terminé).** Le moteur analyse
-> les liens hors ligne ([règles](docs/URL_RULES.md)) ; l'analyse des
-> messages arrive au lot C et les écrans d'analyse au lot D. Aucune version
-> n'est publiée pour le grand public ; la première pré-version installable
-> est prévue à la fin du lot D. Aucune vérification n'est simulée.
+> **État du projet : en développement (lot C terminé).** Le moteur analyse
+> hors ligne les liens ([règles](docs/URL_RULES.md)) et les messages
+> ([règles](docs/MESSAGE_RULES.md)) ; les écrans d'analyse arrivent au lot
+> D. Aucune version n'est publiée pour le grand public ; la première
+> pré-version installable est prévue à la fin du lot D. Aucune vérification
+> n'est simulée.
 
 ## Ce que fait SafeLink, et ce qu'il ne fait pas
 

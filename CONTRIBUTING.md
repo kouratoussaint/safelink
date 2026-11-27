@@ -63,6 +63,13 @@ et la date de vérification, puis lancez `python3 tools/generate_brands.py`.
 Les règles complètes sont dans [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
 Une pull request sans source n'est pas fusionnée.
 
+## Proposer un message pour le corpus
+
+Inventez entièrement le message (ne copiez jamais un message reçu : il
+contient des données personnelles), ajoutez-le à `data/corpus/messages.tsv`
+avec le verdict attendu et sa raison, puis lancez
+`cd packages/safelink_engine && dart run tool/evaluate_messages.dart`.
+
 ## Signaler un résultat d'analyse contestable
 
 Utilisez le modèle « Résultat d'analyse contestable » et anonymisez le

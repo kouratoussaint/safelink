@@ -48,6 +48,9 @@ abstract final class MessageSignalCodes {
   /// Urgence ou pression.
   static const urgency = 'MSG_URGENCY';
 
+  /// Invitation à agir sur un lien (cliquer, confirmer, réactiver…).
+  static const linkAction = 'MSG_LINK_ACTION';
+
   /// Lien écrit sous une forme déguisée.
   static const defangedLink = 'MSG_DEFANGED_LINK';
 
@@ -55,7 +58,7 @@ abstract final class MessageSignalCodes {
   static const List<String> all = [
     credentialsRequest, secretEntry, mistakenTransfer, ussdTransfer, //
     paymentRequest, prize, accountThreat, offChannel, linkBrandMismatch,
-    selection, impersonation, callNumber, urgency, defangedLink,
+    selection, impersonation, callNumber, linkAction, urgency, defangedLink,
   ];
 
   /// Catégorie du cahier des charges de chaque code.
@@ -71,6 +74,7 @@ abstract final class MessageSignalCodes {
     offChannel: MessageSignalCategory.offChannel,
     callNumber: MessageSignalCategory.offChannel,
     linkBrandMismatch: MessageSignalCategory.deceptiveLink,
+    linkAction: MessageSignalCategory.deceptiveLink,
     defangedLink: MessageSignalCategory.deceptiveLink,
     impersonation: MessageSignalCategory.impersonation,
     urgency: MessageSignalCategory.urgency,
@@ -184,6 +188,7 @@ final class MessageRules {
       '(?<![a-z])pour (?:les? |la )?${d.paymentPurposes}',
     );
     _scamFees = RegExp('(?<![a-z])${d.scamFees}(?![a-z])');
+    _ordinaryFees = RegExp('(?<![a-z])${d.ordinaryFees}(?![a-z])');
     _offChannel = RegExp(
       '(?<![a-z])${d.contactVerbs}(?![a-z])[^.!?\\n]{0,40}?'
       '(?<![a-z])${d.messagingApps}(?![a-z])',
@@ -191,6 +196,7 @@ final class MessageRules {
     _contact = RegExp('(?<![a-z])${d.contactVerbs}(?![a-z])');
     _returnRequest = RegExp('(?<![a-z])${d.returnRequests}(?![a-z])');
     _dial = RegExp('(?<![a-z])${d.dialVerbs}(?![a-z])');
+    _linkAction = RegExp('(?<![a-z])${d.linkActionVerbs}(?![a-z])');
   }
 
   /// Dictionnaire utilisé.
@@ -206,15 +212,26 @@ final class MessageRules {
   late final RegExp _paymentVerb;
   late final RegExp _paymentPurpose;
   late final RegExp _scamFees;
+  late final RegExp _ordinaryFees;
   late final RegExp _offChannel;
   late final RegExp _contact;
   late final RegExp _returnRequest;
   late final RegExp _dial;
+  late final RegExp _linkAction;
 
   /// Phrases qui décrivent une arnaque au lieu d'en commettre une.
   static final _warningContext = RegExp(
     r'(?<![a-z])(?:arnaque\w*|escroc\w*|fraude\w*|fraudeur\w*|attention|'
     r'mefie\w*|prudence|vigilan\w*|jamais)(?![a-z])',
+  );
+
+  /// Pronoms qui s'adressent au destinataire.
+  static final _addressee = RegExp(
+    '(?<![a-z])(?:vous|votre|vos|tu|ton|ta|tes|toi)(?![a-z])',
+  );
+
+  static final _noFees = RegExp(
+    '(?<![a-z])(?:sans|aucun|aucuns|pas de|zero) (?:frais|taxes?|caution)',
   );
 
   /// Verbes qui désignent toujours un paiement.
@@ -342,8 +359,12 @@ final class MessageRules {
     for (final pattern in dictionary.mistakenTransfers) {
       for (final match in pattern.regex.allMatches(c.text)) {
         final span = MessageSpan(match.start, match.end);
-        if (c.message.isNegated(span)) continue;
-        final asksReturn = _returnRequest.hasMatch(c.text.substring(match.end));
+        // « Des escrocs prétendent que… » : une mise en garde, pas une
+        // demande.
+        if (c.message.isNegated(span) || c.isWarning(span)) continue;
+        final asksReturn = _returnRequest
+            .allMatches(c.text, match.end)
+            .any((r) => !c.message.isNegated(MessageSpan(r.start, r.end)));
         c.add(
           MessageSignalCodes.mistakenTransfer,
           asksReturn ? Severity.high : Severity.medium,
@@ -385,7 +406,10 @@ final class MessageRules {
 
   void _payment(_Context c) {
     for (final sentence in c.message.sentences) {
-      final text = sentence.of(c.text);
+      // « Livraison sans frais » : les frais sont écartés, pas demandés.
+      final text = sentence
+          .of(c.text)
+          .replaceAllMapped(_noFees, (m) => ' ' * m[0]!.length);
       final verb = _paymentVerb.firstMatch(text);
       final fees = _scamFees.firstMatch(text);
       final original = c.message.folded.toOriginal(
@@ -422,9 +446,23 @@ final class MessageRules {
         );
         if (!negated &&
             money &&
-            (fees != null || purpose || (hasAmount && (hasPhone || threat)))) {
+            (fees != null || purpose || hasPhone || (hasAmount && threat))) {
           span = MessageSpan(verbSpan.start, sentence.end);
         }
+      }
+      var ordinary = false;
+      if (span == null &&
+          verb != null &&
+          hasAmount &&
+          _ordinaryFees.hasMatch(text) &&
+          !c.message.isNegated(
+            MessageSpan(
+              sentence.start + verb.start,
+              (sentence.start + verb.end + 15).clamp(0, sentence.end),
+            ),
+          )) {
+        span = MessageSpan(sentence.start, sentence.end);
+        ordinary = true;
       }
       if (span == null && fees != null && hasAmount) {
         final feeSpan = MessageSpan(
@@ -438,11 +476,14 @@ final class MessageRules {
       if (span == null) continue;
       c.add(
         MessageSignalCodes.paymentRequest,
-        Severity.medium,
-        Confidence.medium,
-        'Le message demande de payer ou d’envoyer de l’argent pour recevoir '
-        'ou débloquer quelque chose : c’est le principe des arnaques aux '
-        'frais anticipés.',
+        ordinary ? Severity.low : Severity.medium,
+        ordinary ? Confidence.low : Confidence.medium,
+        ordinary
+            ? 'Le message demande un paiement. Payez seulement par les canaux '
+                  'officiels, après avoir vérifié la demande.'
+            : 'Le message demande de payer ou d’envoyer de l’argent pour '
+                  'recevoir ou débloquer quelque chose : c’est le principe des '
+                  'arnaques aux frais anticipés.',
         _trim(c.text, span),
       );
     }
@@ -504,6 +545,24 @@ final class MessageRules {
         );
       }
     }
+    for (final (i, link) in c.extraction.links.indexed) {
+      if (link.isDefanged) continue;
+      final sentence = c.message.sentenceAt(linkSpans[i].start);
+      final before = c.text.substring(sentence.start, linkSpans[i].start);
+      final action = _linkAction.allMatches(before).lastOrNull;
+      if (action == null) continue;
+      final span = MessageSpan(sentence.start + action.start, linkSpans[i].end);
+      if (c.message.isNegated(span)) continue;
+      c.add(
+        MessageSignalCodes.linkAction,
+        Severity.low,
+        Confidence.low,
+        'Le message demande d’agir sur un lien (cliquer, confirmer, '
+        'réactiver…). Passez plutôt par l’application ou le site officiel '
+        'que vous connaissez.',
+        span,
+      );
+    }
     final textWithoutLinks = StringBuffer();
     var last = 0;
     for (final span in linkSpans) {
@@ -516,6 +575,8 @@ final class MessageRules {
     final cited = brandMatcher.brandsMentionedIn(textWithoutLinks.toString());
     if (cited.isEmpty) return;
     for (final (i, link) in c.extraction.links.indexed) {
+      // Un lien déguisé ne se clique pas : il vient d'une mise en garde.
+      if (link.isDefanged) continue;
       final parsed = _parser.parse(link.url);
       if (parsed is! ParsedUrl) continue;
       final registrable = parsed.registrableDomain ?? parsed.host;
@@ -578,6 +639,10 @@ final class MessageRules {
       for (final match in pattern.regex.allMatches(c.text)) {
         final span = MessageSpan(match.start, match.end);
         if (c.message.isNegated(span)) continue;
+        if (pattern.addressed &&
+            !_addressee.hasMatch(c.message.sentenceAt(span.start).of(c.text))) {
+          continue;
+        }
         c.add(code, severity, confidence, reason, span);
       }
     }
@@ -616,6 +681,10 @@ final class _Context {
   final Map<String, List<_Occurrence>> _occurrences = {};
 
   String get text => message.text;
+
+  bool isWarning(MessageSpan span) => MessageRules._warningContext.hasMatch(
+    message.sentenceAt(span.start).of(text),
+  );
 
   bool isWarningOrHypothetical(MessageSpan span) {
     final sentence = message.sentenceAt(span.start);

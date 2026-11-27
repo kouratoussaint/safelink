@@ -14,3 +14,4 @@ charges, §14). Format : contexte, décision, conséquences.
 | [0006](0006-chiffrement-historique.md) | Historique : sqflite et chiffrement AES-GCM | Proposé (lot D) |
 | [0007](0007-material-ui.md) | Interface avec le package `material_ui` | Accepté |
 | [0008](0008-regles-liens.md) | Règles heuristiques des liens et verdict sans réputation | Accepté |
+| [0009](0009-verdict-messages.md) | Verdict des messages et résultat combiné | Accepté |

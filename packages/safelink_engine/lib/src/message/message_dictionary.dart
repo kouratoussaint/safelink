@@ -42,11 +42,17 @@ enum MessageSignalCategory {
 /// sans accents, apostrophes droites).
 @immutable
 final class PhrasePattern {
-  /// Crée une expression.
-  new(this.id, String source) : regex = RegExp(source);
+  /// Crée une expression. Avec [addressed], l'expression ne compte que si
+  /// la phrase s'adresse au destinataire (« vous », « votre », « tu »…) :
+  /// « grande tombola de la paroisse » n'est pas une annonce de gain.
+  new(this.id, String source, {this.addressed = false})
+    : regex = RegExp(source);
 
   /// Identifiant stable, pour les tests et la documentation.
   final String id;
+
+  /// Vrai si la phrase doit s'adresser au destinataire.
+  final bool addressed;
 
   /// Motif compilé.
   final RegExp regex;
@@ -68,6 +74,7 @@ final class MessageDictionary {
     required this.paymentVerbs,
     required this.paymentPurposes,
     required this.scamFees,
+    required this.ordinaryFees,
     required this.prizes,
     required this.selections,
     required this.accountThreats,
@@ -78,6 +85,7 @@ final class MessageDictionary {
     required this.mistakenTransfers,
     required this.returnRequests,
     required this.dialVerbs,
+    required this.linkActionVerbs,
   });
 
   /// Version du dictionnaire, citée dans les résultats.
@@ -105,6 +113,10 @@ final class MessageDictionary {
 
   /// Frais typiques des arnaques : dossier, déblocage, inscription…
   final String scamFees;
+
+  /// Frais ordinaires (« frais de scolarité ») : une demande de paiement
+  /// avec ces frais n'est qu'un indice faible, sauf combinée à un gain.
+  final String ordinaryFees;
 
   /// Expressions de gain.
   final List<PhrasePattern> prizes;
@@ -136,19 +148,28 @@ final class MessageDictionary {
   /// Verbes pour composer un code.
   final String dialVerbs;
 
+  /// Verbes qui demandent d'agir sur un lien : cliquer, confirmer,
+  /// réactiver…
+  final String linkActionVerbs;
+
   /// Dictionnaire français du MVP.
   static final MessageDictionary french = MessageDictionary(
     version: 'fr-1.0.0',
     transmissionVerbs:
         r'(?:r?envoi\w*|r?envoy\w*|communiqu\w*|donn\w*|transmet\w*|'
         r'transmis|partag\w*|dict\w*|indiqu\w*|fourni\w*|remet\w*|'
-        r'demand\w*|dis|dites|dire|file|filez|faire parvenir|'
+        r'demand\w*|dis|dites|dire|file|filez|faire parvenir|repond\w*|'
         r'fai\w* parvenir)',
     entryVerbs:
         r'(?:saisi\w*|entre[rz]?|entrez|tape[rz]?|inscri\w*|'
         r'renseign\w*|rempli\w*|confirm\w*|valid\w*)',
+    // « code » seul, sauf les codes qui ne donnent accès à rien d'important
+    // (« code du wifi », « code promo », « code postal »…).
     secrets:
-        '(?:codes?|code secret|code pin|pin|otp|mots? de passe|mdp|'
+        "(?:codes?(?! (?:du |de la |de l'|d')?(?:wifi|wi-fi|porte|portail|"
+        'cadenas|promo|promotionnel|postal|route|couleur|vestimentaire|'
+        'source|qr|barre|article|civil|penal|travail|electoral|reduction|'
+        'parrainage))|code secret|code pin|pin|otp|mots? de passe|mdp|'
         'identifiants?|numero de (?:votre |ta )?carte|cvv|cvc|'
         "code (?:de |d')(?:confirmation|validation|verification|retrait|"
         'securite|transaction|activation))',
@@ -165,11 +186,15 @@ final class MessageDictionary {
     paymentPurposes:
         '(?:recevoir|debloquer|deblocage|retirer|valider|activer|obtenir|'
         'beneficier|toucher|recuperer|liberer|finaliser|confirmer|'
-        'encaisser)',
+        "encaisser|eviter|(?:l'|le |la |les |votre |ton |vos )?"
+        '(?:enregistrement|inscription|dossier|activation|validation|'
+        'traitement|ouverture|liberation|deblocage|reception|remise))',
     scamFees:
         "(?:frais (?:de |d')(?:dossier|deblocage|inscription|douane|"
         'activation|traitement|enregistrement|validation|'
-        'dedouanement|liberation|ouverture))',
+        'dedouanement|liberation|ouverture|livraison|reexpedition)|'
+        'taxes?|amendes?|penalites?|caution|droits de douane)',
+    ordinaryFees: "(?:frais (?:de |d')[a-z]+|cotisations?|contributions?)",
     prizes: [
       PhrasePattern(
         'won',
@@ -184,15 +209,34 @@ final class MessageDictionary {
       PhrasePattern(
         'winner',
         '(?<![a-z])(?:gagnant|gagnante|gagnants)(?![a-z])',
+        addressed: true,
       ),
-      PhrasePattern('draw', '(?<![a-z])tirage au sort(?![a-z])'),
+      PhrasePattern(
+        'draw',
+        '(?<![a-z])(?:tirage au sort|tire au sort)(?![a-z])',
+        addressed: true,
+      ),
       PhrasePattern(
         'lottery',
-        '(?<![a-z])(?:loterie|jackpot|tombola)(?![a-z])',
+        '(?<![a-z])(?:loterie|jackpot|tombola|jeu concours)(?![a-z])',
+        addressed: true,
       ),
       PhrasePattern(
         'lucky',
         '(?<![a-z])(?:heureux|heureuse|grand) (?:gagnant|beneficiaire|elu)',
+      ),
+      PhrasePattern(
+        'multiply',
+        '(?<![a-z])(?:doublez|triplez|multipliez|doubler|tripler) '
+            '(?:votre|ton|vos|tes|son) (?:argent|capital|mise|investissement|'
+            'gain|solde)',
+      ),
+      PhrasePattern('earn', r'(?<![a-z])gagnez (?:jusqu.a |plus de )?\d'),
+      PhrasePattern(
+        'pending_money',
+        '(?<![a-z])(?:argent|fonds|paiement|transfert|remboursement|gain|'
+            r'somme|\d[\d .]* ?(?:f|fcfa|francs?))(?![a-z])[^.!?\n]{0,20}?'
+            'en attente',
       ),
       PhrasePattern(
         'gift',
@@ -204,6 +248,12 @@ final class MessageDictionary {
       PhrasePattern(
         'selected',
         '(?<![a-z])(?:vous avez|tu as) ete (?:selectionne|retenu|choisi)',
+      ),
+      PhrasePattern(
+        'windfall',
+        '(?<![a-z])(?:pret|credit|subvention|bourse|aide|financement|'
+            r'indemnite)(?![a-z])[^.!?\n]{0,40}?(?<![a-z])(?:accorde|'
+            'approuve|octroye|debloque|attribue)',
       ),
       PhrasePattern(
         'job',
@@ -254,14 +304,14 @@ final class MessageDictionary {
         'authority',
         '(?<![a-z])(?:police|gendarmerie|douanes?|tresor public|'
             'impots|direction generale|ministere|presidence|interpol|'
-            'tribunal|huissier)(?![a-z])',
+            'tribunal|huissier|la poste|sonapost)(?![a-z])',
       ),
     ],
     messagingApps:
         '(?:whatsapp|telegram|messenger|signal|imo|viber|'
         'en prive|inbox|en mp|par mp|en dm)',
     contactVerbs:
-        r'(?:ecri\w*|contact\w*|rejoin\w*|ajout\w*|parl\w*|discut\w*|'
+        r'(?:ecri\w*|contact\w*|rejoi\w*|ajout\w*|parl\w*|discut\w*|'
         r'appel\w*|joign\w*|rappel\w*|ecrivez|ecris|bip\w*|'
         r'envoy\w* (?:un |moi un |nous un )?(?:message|sms|vocal))',
     urgencies: [
@@ -271,7 +321,7 @@ final class MessageDictionary {
       ),
       PhrasePattern(
         'deadline',
-        '(?<![a-z])(?:dernier delai|derniere chance|sans delai|'
+        '(?<![a-z])(?:dernier delai|derniere chance|sans delai|vite|'
             'immediatement|au plus vite|des maintenant|tout de suite|'
             'dans les plus brefs delais)(?![a-z])',
       ),
@@ -306,5 +356,10 @@ final class MessageDictionary {
     dialVerbs:
         r'(?:compos\w*|tape[rz]?|tapez|fai\w*|saisi\w*|entre[rz]?|'
         'lance[rz]?|valide[rz]?)',
+    linkActionVerbs:
+        '(?:cliquez|clique|cliquer|confirmez|validez|connectez-vous|'
+        'connecte-toi|mettez a jour|verifiez|reactivez|suivez|'
+        'rendez-vous|accedez|recuperez|reclamez|payez|inscrivez-vous|'
+        'telechargez|installez|ouvrez|activez|completez|renseignez)',
   );
 }
