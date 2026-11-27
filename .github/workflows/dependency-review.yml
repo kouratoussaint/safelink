@@ -7,8 +7,8 @@ permissions:
   contents: read
 
 jobs:
-  review:
-    name: Vulnérabilités et licences
+  vulnerabilities:
+    name: Vulnérabilités (GitHub)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -16,14 +16,29 @@ jobs:
         with:
           persist-credentials: false
 
-      # Bloque une pull request qui introduit une dépendance vulnérable
-      # (gravité moyenne ou plus) ou sous une licence hors de cette liste,
-      # compatible avec la GPL-3.0-or-later du projet.
+      # Bloque une pull request qui introduit une dépendance vulnérable de
+      # gravité moyenne ou plus. Le contrôle des licences est désactivé ici :
+      # le graphe de dépendances de GitHub ne sait pas valider les licences
+      # des paquets Dart. Elles sont vérifiées par le job suivant.
       - uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1
         with:
           fail-on-severity: moderate
-          allow-licenses: >-
-            MIT, BSD-2-Clause, BSD-3-Clause, Apache-2.0, ISC, Zlib,
-            MPL-2.0, OFL-1.1, Unicode-3.0, Unicode-DFS-2016,
-            GPL-3.0-only, GPL-3.0-or-later, LGPL-3.0-or-later
+          license-check: false
           comment-summary-in-pr: never
+
+  licenses:
+    name: Licences (pub.dev)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Toutes les dépendances verrouillées doivent avoir une licence
+      # compatible avec la GPL-3.0-or-later (liste dans le script).
+      - name: Licences compatibles GPL-3.0-or-later
+        run: >-
+          python3 tools/check_licenses.py
+          app/pubspec.lock
+          packages/safelink_engine/pubspec.lock
