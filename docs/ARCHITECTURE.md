@@ -80,7 +80,7 @@ Règles de conception :
 | --- | --- |
 | `lib/app/` | Racine, routes (go_router, quatre onglets), barre de navigation |
 | `lib/core/` | Thème et jetons de couleur, réglages persistants, informations de build, licences, widgets communs |
-| `lib/features/` | Un dossier par écran : `home`, `history`, `tips`, `settings` |
+| `lib/features/` | Un dossier par fonction : `onboarding`, `home`, `analysis` (service et écran d'analyse), `results` (présentation des verdicts), `history`, `tips`, `settings` |
 | `lib/l10n/` | Textes français (ARB) ; code généré non versionné |
 
 - **État et injection** : Riverpod 3, sans génération de code.
@@ -88,7 +88,12 @@ Règles de conception :
 - **Interface** : `material_ui`, le package Material officiel découplé du
   SDK depuis Flutter 3.47 (ADR 0007).
 - **Réglages** : `shared_preferences`, pour les réglages non sensibles
-  uniquement (thème). L'historique utilisera une base chiffrée (ADR 0006).
+  uniquement (thème, présentation vue, choix pour l'historique).
+- **Analyse** : `LocalAnalysisService` appelle le moteur dans un isolat ;
+  les tests le remplacent par une version synchrone.
+- **Historique** : base `sqflite` aux champs sensibles chiffrés en
+  AES-256-GCM, clé dans le Keystore ; rien n'est créé avant que
+  l'utilisateur l'active (ADR 0006).
 
 ## Android
 
@@ -102,8 +107,8 @@ Règles de conception :
 
 Les futurs `ImageAnalyzer`, `DocumentAnalyzer` et `VideoAnalyzer`
 s'ajouteront en étendant `ContentType` et en implémentant `ContentAnalyzer`
-avec leurs propres verdicts. L'historique portera dès sa création une
-colonne `content_type` et des migrations versionnées. Chaque type de média
+avec leurs propres verdicts. L'historique porte une colonne
+`content_type` et un schéma versionné. Chaque type de média
 exigera ses propres consentements : sélection explicite du fichier, aucune
 lecture de la galerie, aucun envoi silencieux. Rien de cela n'est développé
 au MVP.

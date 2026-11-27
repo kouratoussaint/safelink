@@ -127,7 +127,12 @@ Future<void> scrollTo(WidgetTester tester, Finder finder) async {
   await tester.scrollUntilVisible(
     finder,
     200,
-    scrollable: find.byType(Scrollable).last,
+    scrollable: find
+        .descendant(
+          of: find.byType(ListView).last,
+          matching: find.byType(Scrollable),
+        )
+        .first,
   );
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();

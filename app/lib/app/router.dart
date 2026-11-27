@@ -4,6 +4,7 @@ import 'package:safelink/app/routes.dart';
 import 'package:safelink/app/shell.dart';
 import 'package:safelink/features/analysis/analysis_screen.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/history/history_entry_screen.dart';
 import 'package:safelink/features/history/history_screen.dart';
 import 'package:safelink/features/home/home_screen.dart';
 import 'package:safelink/features/onboarding/onboarding_controller.dart';
@@ -69,6 +70,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.history,
                 builder: (context, state) => const HistoryScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) =>
+                        HistoryEntryScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),

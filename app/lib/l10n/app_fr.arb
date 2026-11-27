@@ -11,7 +11,6 @@
   "backAgainToExit": "Appuyez de nouveau sur Retour pour quitter SafeLink",
   "homeTitle": "Vérifiez un lien ou un message avant d’agir",
   "historyTitle": "Historique",
-  "historyEmptyTitle": "Aucune vérification enregistrée",
   "tipsTitle": "Conseils",
   "tipsIntro": "Quelques réflexes simples pour éviter les arnaques les plus courantes.",
   "tipCodesTitle": "Ne partagez jamais un code reçu par SMS",
@@ -46,7 +45,6 @@
   "aboutComponentLicenses": "Licences des composants",
   "aboutLoading": "Chargement…",
   "aboutVersionUnavailable": "Indisponible",
-  "historyEmptyBody": "L’historique n’est pas encore disponible dans cette version. Vos analyses ne sont conservées nulle part.",
   "onboardingMissionTitle": "Vérifiez avant de cliquer",
   "onboardingMissionBody": "Collez un lien ou un message reçu : SafeLink y cherche, sur votre téléphone, les indices d’arnaque courants et vous dit quoi faire.",
   "onboardingMissionPoint1": "Liens : faux sites, imitations de marques, adresses déguisées.",
@@ -244,5 +242,123 @@
     }
   },
   "summaryMessage": "Message analysé (texte non reproduit)",
-  "summaryFooter": "Analyse locale par SafeLink. Un résultat ne garantit jamais qu’un lien ou un message est sûr."
+  "summaryFooter": "Analyse locale par SafeLink. Un résultat ne garantit jamais qu’un lien ou un message est sûr.",
+  "historyOfferTitle": "Garder vos vérifications ?",
+  "historyOfferBody": "SafeLink peut enregistrer vos vérifications sur ce téléphone, chiffrées : verdict, date, domaine et raisons. Jamais le texte d’un message sans votre accord. Vous pourrez tout effacer à tout moment.",
+  "historyEnable": "Activer l’historique",
+  "historyDecline": "Non merci",
+  "historyDisabledTitle": "Historique désactivé",
+  "historyDisabledBody": "Vos vérifications ne sont pas enregistrées. Vous pouvez activer l’historique ici ou dans les paramètres.",
+  "historyEmptyTitle": "Aucune vérification enregistrée",
+  "historyEmptyBody": "Vos prochaines vérifications apparaîtront ici.",
+  "historyLoadError": "L’historique n’a pas pu être ouvert.",
+  "historyRetry": "Réessayer",
+  "historyFilterAll": "Tous",
+  "historyFilterLinks": "Liens",
+  "historyFilterMessages": "Messages",
+  "historyFilterKindLabel": "Type de vérification",
+  "historySearchLabel": "Rechercher un domaine",
+  "historyPeriodAll": "Toutes les dates",
+  "historyPeriodToday": "Aujourd’hui",
+  "historyPeriodWeek": "7 derniers jours",
+  "historyPeriodMonth": "30 derniers jours",
+  "historyNoMatch": "Aucune vérification ne correspond à ces filtres.",
+  "historyClearFilters": "Effacer les filtres",
+  "historyToday": "Aujourd’hui",
+  "historyYesterday": "Hier",
+  "historyMessageTitle": "Message",
+  "historyMessageLinks": "{count, plural, =0{Message sans lien} =1{Message · 1 lien} other{Message · {count} liens}}",
+  "@historyMessageLinks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyInvalidLink": "Adresse non analysable",
+  "historyUnreadable": "Vérification illisible",
+  "historyUnreadableBody": "Le détail de cette vérification ne peut plus être déchiffré, par exemple après une restauration du téléphone. Vous pouvez la supprimer.",
+  "historyFooter": "{count, plural, =1{1 vérification, chiffrée sur ce téléphone. Rien n’est envoyé.} other{{count} vérifications, chiffrées sur ce téléphone. Rien n’est envoyé.}}",
+  "@historyFooter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyClearAll": "Tout effacer",
+  "historyClearAllTitle": "Effacer tout l’historique ?",
+  "historyClearAllBody": "{count, plural, =1{La vérification enregistrée sera supprimée de ce téléphone.} other{Les {count} vérifications enregistrées seront supprimées de ce téléphone.}}",
+  "@historyClearAllBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyCleared": "Historique effacé.",
+  "historyDelete": "Supprimer",
+  "historyDeleteTitle": "Supprimer cette vérification ?",
+  "historyDeleteBody": "Elle sera effacée de ce téléphone.",
+  "historyDeleted": "Vérification supprimée.",
+  "historyCancel": "Annuler",
+  "historyMore": "Plus d’options",
+  "historyEntryTitle": "Vérification enregistrée",
+  "historyEntryDate": "Date",
+  "historyEntryKind": "Type",
+  "historyEntryDomain": "Domaine",
+  "historyEntryReasons": "Raisons enregistrées",
+  "historyEntryNoReasons": "Aucun indice n’avait été repéré.",
+  "historyEntryLinks": "Liens du message",
+  "historyEntryRules": "Version des règles",
+  "historyEntryStale": "Le verdict date de cette vérification ; les règles de SafeLink ont pu évoluer depuis.",
+  "historyKeptUrl": "Lien complet conservé",
+  "historyKeptText": "Texte du message conservé",
+  "historyForgetContent": "Ne plus le conserver",
+  "historyReanalyze": "Analyser à nouveau",
+  "historySavedLink": "Enregistrée dans l’historique, sans le lien complet.",
+  "historySavedMessage": "Enregistrée dans l’historique, sans le texte du message.",
+  "historySavedWithContent": "Enregistrée dans l’historique, avec le contenu complet chiffré.",
+  "historyRemove": "Retirer",
+  "historyRemoved": "Retirée de l’historique.",
+  "historyKeepUrl": "Garder aussi le lien complet",
+  "historyKeepText": "Garder aussi le texte du message",
+  "historyKeepUrlTitle": "Garder le lien complet ?",
+  "historyKeepUrlBody": "Un lien complet peut contenir des codes d’accès ou des informations personnelles (par exemple « token= » ou un numéro). Il sera chiffré sur ce téléphone et vous pourrez l’effacer à tout moment.",
+  "historyKeepTextTitle": "Garder le texte du message ?",
+  "historyKeepTextBody": "Le message peut contenir des noms, des numéros ou des codes. Il sera chiffré sur ce téléphone et vous pourrez l’effacer à tout moment.",
+  "historyKeepConfirm": "Garder",
+  "historyStopTitle": "Arrêter l’historique ?",
+  "historyStopBody": "{count, plural, =0{Les prochaines vérifications ne seront plus enregistrées.} =1{Les prochaines vérifications ne seront plus enregistrées. Voulez-vous aussi effacer celle déjà enregistrée ?} other{Les prochaines vérifications ne seront plus enregistrées. Voulez-vous aussi effacer les {count} déjà enregistrées ?}}",
+  "@historyStopBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStopOnly": "Arrêter seulement",
+  "historyStopAndClear": "Arrêter et effacer",
+  "settingsHistorySection": "Historique",
+  "settingsHistorySwitch": "Enregistrer mes vérifications",
+  "settingsHistorySwitchBody": "Verdict, date, domaine et raisons, chiffrés sur ce téléphone. Jamais le texte d’un message sans votre accord.",
+  "settingsHistoryClear": "Effacer tout l’historique",
+  "settingsHistoryClearBody": "{count, plural, =0{Aucune vérification enregistrée} =1{1 vérification enregistrée} other{{count} vérifications enregistrées}}",
+  "@settingsHistoryClearBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyMoreFilters": "Niveau et période",
+  "historyActiveFilters": "{count, plural, =0{Aucun filtre} =1{1 filtre actif} other{{count} filtres actifs}}",
+  "@historyActiveFilters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyEntryInfo": "Détails enregistrés"
 }

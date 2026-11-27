@@ -2,9 +2,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
+import 'package:safelink/features/analysis/analysis_service.dart';
 
 import '../features/analysis_flow_test.dart' as flow;
+import '../features/history_flow_test.dart' as history;
 import '../helpers/pump_app.dart';
+import '../history/history_store_test.dart' show entryOf, secretUrl;
 
 /// Ouvre l'écran voulu à partir de l'accueil.
 typedef Navigate = Future<void> Function(WidgetTester tester);
@@ -82,6 +85,58 @@ void main() {
           await tester.pumpAndSettle();
         }
       }
+      handle.dispose();
+    });
+  }
+
+  for (final theme in ['light', 'dark']) {
+    testWidgets('Historique et fiche ($theme) respectent les règles', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final entry = entryOf(
+        AnalysisKind.link,
+        secretUrl,
+      ).withContent(secretUrl);
+      final backend = await history.filledBackend([
+        entry,
+        entryOf(AnalysisKind.message, flow.scamMessage),
+      ]);
+      await pumpSafeLinkApp(
+        tester,
+        preferences: {
+          ...history.enabled,
+          ThemeModeController.storageKey: theme,
+        },
+        historyBackend: backend,
+      );
+      Future<void> check() async {
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+      }
+
+      await tapDestination(tester, 'Historique');
+      await check();
+      await tester.tap(find.text('secure-login.xyz'));
+      await tester.pumpAndSettle();
+      await check();
+      handle.dispose();
+    });
+
+    testWidgets('Résultat avec proposition d’historique ($theme)', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpSafeLinkApp(
+        tester,
+        preferences: {ThemeModeController.storageKey: theme},
+      );
+      await history.analyzeLink(tester, secretUrl);
+      await flow.scrollTo(tester, find.text('Garder vos vérifications ?'));
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
       handle.dispose();
     });
   }

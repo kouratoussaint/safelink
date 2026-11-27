@@ -18,78 +18,101 @@ final class VerdictPresentation {
   });
 
   /// Présentation du verdict d'un lien.
-  factory forUrl(UrlAnalysisResult result, AppLocalizations l10n) {
-    final quiet = result.signals.every((s) => s.severity.rank < 2);
-    return switch (result.verdict) {
-      UrlVerdict.knownThreat => VerdictPresentation(
-        label: l10n.verdictKnownThreat,
-        subtitle: l10n.subtitleKnownThreat,
-        icon: Icons.gpp_bad_outlined,
-        level: result.level,
-      ),
-      UrlVerdict.suspicious => VerdictPresentation(
-        label: l10n.verdictSuspicious,
-        subtitle: l10n.subtitleSuspicious,
-        icon: Icons.warning_amber_rounded,
-        level: result.level,
-      ),
-      UrlVerdict.noKnownThreat => VerdictPresentation(
-        label: l10n.verdictNoKnownThreat,
-        subtitle: l10n.subtitleNoKnownThreat,
-        icon: Icons.shield_outlined,
-        level: result.level,
-      ),
-      UrlVerdict.inconclusive => VerdictPresentation(
-        label: l10n.verdictInconclusive,
-        subtitle: quiet
-            ? l10n.subtitleInconclusiveQuiet
-            : l10n.subtitleInconclusiveSignals,
-        icon: Icons.help_outline,
-        level: result.level,
-      ),
-      UrlVerdict.invalid => VerdictPresentation(
-        label: l10n.verdictInvalid,
-        subtitle: result.failure?.error.description ?? '',
-        icon: Icons.block_outlined,
-        level: result.level,
-      ),
-    };
-  }
+  factory forUrl(UrlAnalysisResult result, AppLocalizations l10n) =>
+      VerdictPresentation.forUrlVerdict(
+        result.verdict,
+        l10n,
+        quiet: result.signals.every((s) => s.severity.rank < 2),
+        invalidReason: result.failure?.error.description,
+      );
+
+  /// Présentation d'un verdict de lien enregistré ; [quiet] si aucun indice
+  /// moyen ou fort n'a été relevé.
+  factory forUrlVerdict(
+    UrlVerdict verdict,
+    AppLocalizations l10n, {
+    bool quiet = true,
+    String? invalidReason,
+  }) => switch (verdict) {
+    UrlVerdict.knownThreat => VerdictPresentation(
+      label: l10n.verdictKnownThreat,
+      subtitle: l10n.subtitleKnownThreat,
+      icon: Icons.gpp_bad_outlined,
+      level: verdict.level,
+    ),
+    UrlVerdict.suspicious => VerdictPresentation(
+      label: l10n.verdictSuspicious,
+      subtitle: l10n.subtitleSuspicious,
+      icon: Icons.warning_amber_rounded,
+      level: verdict.level,
+    ),
+    UrlVerdict.noKnownThreat => VerdictPresentation(
+      label: l10n.verdictNoKnownThreat,
+      subtitle: l10n.subtitleNoKnownThreat,
+      icon: Icons.shield_outlined,
+      level: verdict.level,
+    ),
+    UrlVerdict.inconclusive => VerdictPresentation(
+      label: l10n.verdictInconclusive,
+      subtitle: quiet
+          ? l10n.subtitleInconclusiveQuiet
+          : l10n.subtitleInconclusiveSignals,
+      icon: Icons.help_outline,
+      level: verdict.level,
+    ),
+    UrlVerdict.invalid => VerdictPresentation(
+      label: l10n.verdictInvalid,
+      subtitle: invalidReason ?? '',
+      icon: Icons.block_outlined,
+      level: verdict.level,
+    ),
+  };
 
   /// Présentation du verdict du texte d'un message.
   factory forMessage(MessageAnalysisResult result, AppLocalizations l10n) =>
-      switch (result.verdict) {
-        MessageVerdict.highRiskMessage => VerdictPresentation(
-          label: l10n.verdictHighRisk,
-          subtitle: l10n.subtitleHighRisk,
-          icon: Icons.gpp_bad_outlined,
-          level: result.level,
-        ),
-        MessageVerdict.suspiciousMessage => VerdictPresentation(
-          label: l10n.verdictSuspiciousMessage,
-          subtitle: l10n.subtitleSuspiciousMessage,
-          icon: Icons.warning_amber_rounded,
-          level: result.level,
-        ),
-        MessageVerdict.noObviousSignals => VerdictPresentation(
-          label: l10n.verdictNoObviousSignals,
-          subtitle: l10n.subtitleNoObviousSignals,
-          icon: Icons.shield_outlined,
-          level: result.level,
-        ),
-        MessageVerdict.inconclusiveMessage => VerdictPresentation(
-          label: l10n.verdictInconclusiveMessage,
-          subtitle: l10n.subtitleInconclusiveMessage,
-          icon: Icons.help_outline,
-          level: result.level,
-        ),
-        MessageVerdict.invalidMessage => VerdictPresentation(
-          label: l10n.verdictInvalidMessage,
-          subtitle: result.limitations.first.description,
-          icon: Icons.block_outlined,
-          level: result.level,
-        ),
-      };
+      VerdictPresentation.forMessageVerdict(
+        result.verdict,
+        l10n,
+        invalidReason: result.limitations.firstOrNull?.description,
+      );
+
+  /// Présentation d'un verdict de message enregistré.
+  factory forMessageVerdict(
+    MessageVerdict verdict,
+    AppLocalizations l10n, {
+    String? invalidReason,
+  }) => switch (verdict) {
+    MessageVerdict.highRiskMessage => VerdictPresentation(
+      label: l10n.verdictHighRisk,
+      subtitle: l10n.subtitleHighRisk,
+      icon: Icons.gpp_bad_outlined,
+      level: verdict.level,
+    ),
+    MessageVerdict.suspiciousMessage => VerdictPresentation(
+      label: l10n.verdictSuspiciousMessage,
+      subtitle: l10n.subtitleSuspiciousMessage,
+      icon: Icons.warning_amber_rounded,
+      level: verdict.level,
+    ),
+    MessageVerdict.noObviousSignals => VerdictPresentation(
+      label: l10n.verdictNoObviousSignals,
+      subtitle: l10n.subtitleNoObviousSignals,
+      icon: Icons.shield_outlined,
+      level: verdict.level,
+    ),
+    MessageVerdict.inconclusiveMessage => VerdictPresentation(
+      label: l10n.verdictInconclusiveMessage,
+      subtitle: l10n.subtitleInconclusiveMessage,
+      icon: Icons.help_outline,
+      level: verdict.level,
+    ),
+    MessageVerdict.invalidMessage => VerdictPresentation(
+      label: l10n.verdictInvalidMessage,
+      subtitle: invalidReason ?? '',
+      icon: Icons.block_outlined,
+      level: verdict.level,
+    ),
+  };
 
   /// Libellé du verdict.
   final String label;

@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/history/history_controller.dart';
+import 'package:safelink/features/history/history_panel.dart';
 import 'package:safelink/features/results/result_views.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
@@ -36,6 +38,9 @@ class AnalysisScreen extends ConsumerWidget {
       );
     }
     final analysis = ref.watch(analysisProvider(request));
+    // Enregistre le résultat si l'historique est activé, même si le panneau
+    // du bas n'est pas encore affiché.
+    if (analysis.hasValue) ref.watch(historyRecordProvider(request));
     return Scaffold(
       appBar: AppBar(
         title: Text(analysis.hasValue ? l10n.resultTitle : l10n.analysisTitle),
@@ -45,13 +50,19 @@ class AnalysisScreen extends ConsumerWidget {
           AsyncData(:final value) => switch (value) {
             LinkOutcome(:final result) => LinkResultView(
               result: result,
-              footer: [ResultActions(outcome: value)],
+              footer: [
+                HistoryPanel(request: request),
+                ResultActions(outcome: value),
+              ],
             ),
             MessageOutcome(:final result) => MessageResultView(
               result: result,
               onOpenLink: (link) =>
                   context.push(AppRoutes.linkResult, extra: link.result),
-              footer: [ResultActions(outcome: value)],
+              footer: [
+                HistoryPanel(request: request),
+                ResultActions(outcome: value),
+              ],
             ),
           },
           AsyncError() => _Message(
