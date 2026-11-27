@@ -49,6 +49,13 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   ports, encodage `%XX`, barres inversées, segments `..`, caractères
   invisibles) ; chaque transformation est notée pour être montrée ; schémas
   non web, adresses e-mail et textes ordinaires refusés avec un motif.
+- Moteur : caractères trompeurs (squelettes UTS #39, Unicode 18) et mélanges
+  d'écritures (`pаypal` avec un « а » cyrillique).
+- Moteur : 46 marques de référence (opérateurs et banques du Burkina Faso,
+  paiement, transfert d'argent, réseaux sociaux…), chaque domaine officiel
+  sourcé (Wikidata, BRVM) et daté ; détection des imitations : caractères
+  trompeurs, fautes de frappe, nom de marque dans un domaine tiers ou un
+  sous-domaine. La liste ne certifie jamais un lien.
 
 ### Modifié
 

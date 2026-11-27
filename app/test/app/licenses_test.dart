@@ -19,5 +19,13 @@ void main() {
     final text = psl.paragraphs.map((p) => p.text).join('\n');
     expect(text, contains('Mozilla Public License Version 2.0'));
     expect(text, contains('psl_data.g.dart'));
+
+    final unicode = entries.firstWhere(
+      (entry) => entry.packages.contains('Unicode'),
+    );
+    expect(
+      unicode.paragraphs.map((p) => p.text).join('\n'),
+      contains('UNICODE LICENSE V3'),
+    );
   });
 }

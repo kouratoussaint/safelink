@@ -103,6 +103,13 @@ Le script régénère `lib/src/url/psl_data.g.dart` (date et empreinte SHA-256
 de la liste) et les tests officiels `test/data/psl_tests.txt`. La mise à
 jour fait l'objet d'une pull request ordinaire, relue comme du code.
 
+### Données Unicode et marques de référence
+
+```bash
+python3 tools/update_unicode_data.py   # confusables.txt et Scripts.txt d'Unicode
+python3 tools/generate_brands.py       # après modification de data/brands.json
+```
+
 ### Logo et icônes
 
 Toutes les ressources graphiques sont générées depuis une seule géométrie :
