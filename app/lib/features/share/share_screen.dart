@@ -5,6 +5,7 @@ import 'package:safelink/core/motion/appear.dart';
 import 'package:safelink/core/speech/speaker.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/core/widgets/info_card.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/help/help_widgets.dart';
 import 'package:safelink/features/results/listen_button.dart';
@@ -269,12 +270,7 @@ class _ReceivedText extends StatelessWidget {
     return Semantics(
       container: true,
       label: l10n.shareReceivedLabel,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(14),
+      child: SoftCard(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

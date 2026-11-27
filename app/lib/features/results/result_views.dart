@@ -6,6 +6,7 @@ import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/motion/appear.dart';
 import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink/features/results/checklist.dart';
@@ -127,7 +128,7 @@ class LinkResultView extends ConsumerWidget {
           level: presentation.level,
           showRedirect: destination == null,
         ),
-      ResultSection(
+      SectionBlock(
         title: l10n.sectionWhy,
         children: [
           ReasonList(
@@ -137,7 +138,7 @@ class LinkResultView extends ConsumerWidget {
           ),
         ],
       ),
-      ResultSection(
+      SectionBlock(
         title: l10n.sectionWhatToDo,
         children: [ActionGrid(actions: actions, expert: expert)],
       ),
@@ -188,19 +189,41 @@ class AddressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(28),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
+    final colors = SafeLinkColors.of(context);
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ExcludeSemantics(child: Icon(Icons.link_rounded, color: color)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: HighlightedUrl(displayed: displayed, domain: domain),
+          MergeSemantics(
+            child: Row(
+              children: [
+                PictoBadge(icon: Icons.link_rounded, color: color, size: 40),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).addressRealSite,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                      Text(
+                        domain,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontSize: 20,
+                          height: 1.25,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 10),
+          HighlightedUrl(displayed: displayed, domain: domain),
         ],
       ),
     );
@@ -228,6 +251,7 @@ class HighlightedUrl extends StatelessWidget {
               style: base?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: theme.colorScheme.onSurface,
+                backgroundColor: SafeLinkColors.of(context).neutralSoft,
               ),
             ),
             TextSpan(text: displayed.substring(index + domain.length)),
@@ -318,18 +342,20 @@ class MessageResultView extends ConsumerWidget {
         ),
       ),
       if (online == OnlineStatus.unreachable) OfflineBanner(onRetry: onRetry),
-      ResultSection(
+      SectionBlock(
         title: l10n.sectionTextSignals,
         children: [
-          VerdictHeader(
-            presentation: VerdictPresentation.forMessage(message, l10n),
-            confidence: message.verdict == MessageVerdict.invalidMessage
-                ? null
-                : message.confidence,
-            compact: true,
-            showConfidence: expert,
+          SoftCard(
+            child: VerdictHeader(
+              presentation: VerdictPresentation.forMessage(message, l10n),
+              confidence: message.verdict == MessageVerdict.invalidMessage
+                  ? null
+                  : message.confidence,
+              compact: true,
+              showConfidence: expert,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           ReasonList(
             signals: message.signals,
             expert: expert,
@@ -379,7 +405,7 @@ class MessageResultView extends ConsumerWidget {
             l10n,
           ).level,
         ),
-      ResultSection(
+      SectionBlock(
         title: l10n.sectionWhatToDo,
         children: [
           ActionGrid(actions: result.recommendedActions, expert: expert),

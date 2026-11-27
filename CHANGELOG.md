@@ -6,6 +6,17 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Refonte « Clarté », étape 1 : accueil et résultats
+
+- Nouveau style clair et épuré (piste A des maquettes) : fond gris très
+  clair, cartes blanches à ombre douce, pastilles arrondies, un seul
+  bouton principal par écran ; thème sombre accordé.
+- Accueil : titre et accroche, choix Lien / Message en segments, carte de
+  saisie, raccourcis « Partager », « Exemples » et QR code (bientôt).
+- Résultat : verdict sur carte teintée avec halo animé et barre de niveau
+  en quatre couleurs, « Le vrai site » en grand, raisons en grille,
+  gestes en liste.
+
 ### Ajouté — Partager vers SafeLink (lot E1)
 
 - « Partager → Vérifier avec SafeLink » depuis une autre application

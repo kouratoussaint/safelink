@@ -85,10 +85,10 @@
     }
   },
   "homeClipboardEmpty": "Le presse-papiers ne contient pas de texte.",
-  "homeLocalNote": "L’analyse se fait sur votre téléphone. Le texte d’un message n’est jamais envoyé.",
+  "homeLocalNote": "Le texte d’un message ne quitte jamais votre téléphone.",
   "homeHistoryShortcut": "Voir l’historique",
   "homeComingSoonTitle": "Bientôt",
-  "homeComingSoon": "Scanner un QR code arrive dans une prochaine version.",
+  "homeComingSoon": "Bientôt dans SafeLink",
   "analysisTitle": "Analyse",
   "analysisRunning": "Analyse en cours…",
   "analysisRunningBody": "Sur votre téléphone.",
@@ -827,5 +827,12 @@
   "shareFilesTip": "Si le message contient du texte, copiez-le, puis collez-le dans SafeLink.",
   "shareEmptyTitle": "Rien à vérifier",
   "shareEmpty": "Le partage ne contenait aucun texte.",
-  "shareGoHome": "Aller à l’accueil"
+  "shareGoHome": "Aller à l’accueil",
+  "addressRealSite": "Le vrai site",
+  "homeSubtitle": "Un lien ou un message reçu ? SafeLink vous dit s’il est dangereux.",
+  "homeQuickTitle": "Plus rapide",
+  "homeShareRowTitle": "Partager vers SafeLink",
+  "homeShareRowSubtitle": "Depuis WhatsApp ou vos SMS",
+  "homeExamplesSubtitle": "Des arnaques inventées, pour voir",
+  "homeQrTitle": "Scanner un QR code"
 }

@@ -42,6 +42,7 @@ void main() {
         'surface': scheme.surface,
         'surfaceContainerLow': scheme.surfaceContainerLow,
         'surfaceContainer': scheme.surfaceContainer,
+        'canvas': colors.canvas,
       };
 
       void expectText(String label, Color foreground) {
@@ -53,6 +54,24 @@ void main() {
           );
         }
       }
+
+      test('chaque couleur de niveau se lit sur son fond teinté', () {
+        for (final (label, fg, bg) in [
+          ('danger', colors.danger, colors.dangerSoft),
+          ('warning', colors.warning, colors.warningSoft),
+          ('success', colors.success, colors.successSoft),
+          ('info', colors.info, colors.infoSoft),
+          ('textSecondary', colors.textSecondary, colors.neutralSoft),
+          ('onSurface/dangerSoft', scheme.onSurface, colors.dangerSoft),
+          ('onSurface/warningSoft', scheme.onSurface, colors.warningSoft),
+        ]) {
+          expect(
+            contrastRatio(fg, bg),
+            greaterThanOrEqualTo(textMinimum),
+            reason: label,
+          );
+        }
+      });
 
       test('le texte principal et secondaire est lisible', () {
         expectText('onSurface', scheme.onSurface);

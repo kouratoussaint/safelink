@@ -1,20 +1,35 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/motion/appear.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/results/pictograms.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
-/// Pictogramme dans un disque teinté.
+/// Pictogramme sur une pastille teintée (ou pleine, ou ronde).
 class PictoBadge extends StatelessWidget {
   const new({
     required this.icon,
     required this.color,
     this.size = 44,
     this.forbid = false,
+    this.filled = false,
+    this.round = false,
     super.key,
   });
+
+  /// Couleur pleine, pictogramme blanc (ou noir sur une couleur claire).
+  final bool filled;
+
+  /// Rond plutôt que carré aux coins arrondis.
+  final bool round;
+
+  /// Couleur lisible posée sur [background].
+  static Color onColor(Color background) =>
+      ThemeData.estimateBrightnessForColor(background) == Brightness.dark
+      ? Colors.white
+      : const Color(0xFF081E33);
 
   final IconData icon;
   final Color color;
@@ -34,11 +49,17 @@ class PictoBadge extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.14),
-                shape: BoxShape.circle,
+                color: filled ? color : color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(
+                  round ? size / 2 : size * 0.3,
+                ),
               ),
               alignment: Alignment.center,
-              child: Icon(icon, color: color, size: size * 0.56),
+              child: Icon(
+                icon,
+                color: filled ? onColor(color) : color,
+                size: size * 0.5,
+              ),
             ),
             if (forbid)
               Positioned(
@@ -70,13 +91,14 @@ class ExplainTile extends StatefulWidget {
     this.details = const [],
     this.initiallyOpen = false,
     this.vertical = false,
+    this.flat = false,
     super.key,
   });
 
   final Widget badge;
   final String title;
 
-  /// Couleur du cadre.
+  /// Couleur du niveau (pastille).
   final Color color;
 
   /// Mention au-dessus du titre (gravité, en mode expert).
@@ -87,8 +109,11 @@ class ExplainTile extends StatefulWidget {
 
   final bool initiallyOpen;
 
-  /// Vignette : pictogramme au-dessus, mots centrés (grille de gestes).
+  /// Vignette : pictogramme au-dessus, mots dessous (grille).
   final bool vertical;
+
+  /// Ligne d'une carte groupée : pas de carte propre.
+  final bool flat;
 
   @override
   State<ExplainTile> createState() => _ExplainTileState();
@@ -107,8 +132,11 @@ class _ExplainTileState extends State<ExplainTile> {
         : const Duration(milliseconds: 220);
     final title = Text(
       widget.title,
-      textAlign: widget.vertical ? TextAlign.center : TextAlign.start,
-      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+      style: theme.textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+        height: 1.3,
+      ),
     );
     final details = AnimatedSize(
       duration: duration,
@@ -118,9 +146,7 @@ class _ExplainTileState extends State<ExplainTile> {
           ? Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Column(
-                crossAxisAlignment: widget.vertical
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: widget.details,
               ),
             )
@@ -130,26 +156,38 @@ class _ExplainTileState extends State<ExplainTile> {
       child: AnimatedRotation(
         turns: _open ? 0.5 : 0,
         duration: duration,
-        child: const Icon(Icons.expand_more),
+        child: Icon(
+          Icons.expand_more,
+          color: SafeLinkColors.of(context).textSecondary,
+        ),
       ),
     );
     final content = Padding(
-      padding: const EdgeInsets.all(12),
+      padding: widget.flat
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+          : const EdgeInsets.all(14),
       child: widget.vertical
           ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                widget.badge,
-                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    widget.badge,
+                    const Spacer(),
+                    if (expandable) chevron,
+                  ],
+                ),
+                const SizedBox(height: 10),
                 ?widget.overline,
                 title,
                 details,
-                if (expandable) chevron,
               ],
             )
           : Row(
               children: [
                 widget.badge,
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,29 +198,16 @@ class _ExplainTileState extends State<ExplainTile> {
               ],
             ),
     );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Semantics(
-        button: expandable,
-        expanded: expandable ? _open : null,
-        onTapHint: expandable
-            ? (_open ? l10n.reasonHide : l10n.reasonShow)
-            : null,
-        child: Material(
-          type: MaterialType.transparency,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: widget.color.withValues(alpha: 0.45)),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: expandable
-              ? InkWell(
-                  onTap: () => setState(() => _open = !_open),
-                  child: content,
-                )
-              : content,
-        ),
-      ),
+    final toggle = expandable ? () => setState(() => _open = !_open) : null;
+    return Semantics(
+      button: expandable,
+      expanded: expandable ? _open : null,
+      onTapHint: expandable
+          ? (_open ? l10n.reasonHide : l10n.reasonShow)
+          : null,
+      child: widget.flat
+          ? (toggle == null ? content : InkWell(onTap: toggle, child: content))
+          : SoftCard(padding: EdgeInsets.zero, onTap: toggle, child: content),
     );
   }
 }
@@ -223,21 +248,87 @@ class ReasonList extends StatelessWidget {
         ),
       );
     }
-    return Column(
+    return TileGrid(
+      columns: expert ? 1 : 2,
       children: [
         for (final signal in shown)
-          _ReasonTile(signal: signal, expert: expert, l10n: l10n),
+          _ReasonTile(
+            signal: signal,
+            expert: expert,
+            l10n: l10n,
+            vertical: !expert,
+          ),
       ],
     );
   }
 }
 
+/// Vignettes en grille : [columns] par ligne quand la largeur le permet
+/// (texte grossi compris), sinon une seule ; les vignettes d'une même
+/// ligne ont la même hauteur.
+class TileGrid extends StatelessWidget {
+  const new({required this.children, this.columns = 2, super.key});
+
+  final List<Widget> children;
+  final int columns;
+
+  static const gap = 10.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = MediaQuery.textScalerOf(context).scale(1);
+        final perRow = columns > 1 && constraints.maxWidth >= 280 * scale
+            ? columns
+            : 1;
+        final rows = <Widget>[];
+        for (var i = 0; i < children.length; i += perRow) {
+          final cells = children.sublist(
+            i,
+            (i + perRow).clamp(0, children.length),
+          );
+          rows.add(
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var j = 0; j < perRow; j++) ...[
+                    if (j > 0) const SizedBox(width: gap),
+                    Expanded(
+                      child: j < cells.length ? cells[j] : const SizedBox(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        }
+        return Column(
+          children: [
+            for (final (i, row) in rows.indexed) ...[
+              if (i > 0) const SizedBox(height: gap),
+              row,
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _ReasonTile extends StatelessWidget {
-  const new({required this.signal, required this.expert, required this.l10n});
+  const new({
+    required this.signal,
+    required this.expert,
+    required this.l10n,
+    this.vertical = false,
+  });
 
   final RiskSignal signal;
   final bool expert;
   final AppLocalizations l10n;
+  final bool vertical;
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +342,7 @@ class _ReasonTile extends StatelessWidget {
       key: ValueKey('reason-${signal.code}-${signal.evidence}'),
       color: color,
       initiallyOpen: expert,
+      vertical: vertical,
       badge: PictoBadge(
         icon: picto?.icon ?? VerdictPresentation.iconOf(level),
         color: color,
@@ -278,8 +370,9 @@ class _ReasonTile extends StatelessWidget {
   }
 }
 
-/// Gestes recommandés, en grandes vignettes ; en mode expert, avec leur
-/// phrase complète.
+/// Gestes recommandés : lignes d'une même carte, pictogramme rond ; le
+/// premier geste d'un interdit est en couleur pleine. Un appui montre la
+/// phrase complète (dépliée d'office en mode expert).
 class ActionGrid extends StatelessWidget {
   const new({required this.actions, required this.expert, super.key});
 
@@ -291,55 +384,41 @@ class ActionGrid extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colors = SafeLinkColors.of(context);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final scale = MediaQuery.textScalerOf(context).scale(1);
-        final columns = !expert && constraints.maxWidth >= 280 * scale ? 2 : 1;
-        final width = (constraints.maxWidth - 8 * (columns - 1)) / columns;
-        return Wrap(
-          spacing: 8,
-          children: [
-            for (final action in actions)
-              SizedBox(
-                width: width,
-                child: Builder(
-                  builder: (context) {
-                    final picto = actionPictogram(action.code, l10n);
-                    final color = picto == null
-                        ? theme.colorScheme.primary
-                        : picto.forbid
-                        ? colors.danger
-                        : theme.colorScheme.primary;
-                    final grid = columns > 1;
-                    return ExplainTile(
-                      key: ValueKey('action-${action.code}'),
-                      color: color,
-                      initiallyOpen: expert,
-                      vertical: grid,
-                      badge: PictoBadge(
-                        icon: picto?.icon ?? Icons.check_circle_outline,
-                        color: color,
-                        forbid: picto?.forbid ?? false,
-                        size: grid ? 60 : 44,
-                      ),
-                      title: picto?.label ?? action.description,
-                      details: [
-                        if (picto != null)
-                          Text(
-                            action.description,
-                            textAlign: grid
-                                ? TextAlign.center
-                                : TextAlign.start,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                      ],
-                    );
-                  },
+    return GroupedCard(
+      children: [
+        for (final (i, action) in actions.indexed)
+          Builder(
+            builder: (context) {
+              final picto = actionPictogram(action.code, l10n);
+              final forbid = picto?.forbid ?? false;
+              final color = forbid ? colors.danger : theme.colorScheme.primary;
+              return ExplainTile(
+                key: ValueKey('action-${action.code}'),
+                color: color,
+                initiallyOpen: expert,
+                flat: true,
+                badge: PictoBadge(
+                  icon: picto?.icon ?? Icons.check_circle_outline,
+                  color: color,
+                  forbid: forbid,
+                  filled: forbid && i == 0,
+                  round: true,
+                  size: 40,
                 ),
-              ),
-          ],
-        );
-      },
+                title: picto?.label ?? action.description,
+                details: [
+                  if (picto != null)
+                    Text(
+                      action.description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+      ],
     );
   }
 }

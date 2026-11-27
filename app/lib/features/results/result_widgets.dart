@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/results/verdict_presentation.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 import 'package:safelink_engine/safelink_engine.dart';
@@ -100,20 +101,21 @@ class ResultSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Semantics(
-              header: true,
-              child: Text(title, style: theme.textTheme.titleMedium),
+    return SoftCard(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(fontSize: 17),
             ),
-            const SizedBox(height: 8),
-            ...children,
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          ...children,
+        ],
       ),
     );
   }
