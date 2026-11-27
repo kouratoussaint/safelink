@@ -21,8 +21,7 @@ safelink_engine (packages/safelink_engine/), Dart pur
 
 ## Moteur `safelink_engine`
 
-État : types communs (lot A) et premières briques d'analyse des liens
-(lot B, en cours).
+État : types communs (lot A) et analyse locale complète des liens (lot B).
 
 | Type | Rôle |
 | --- | --- |
@@ -47,6 +46,10 @@ Briques d'analyse des liens (`lib/src/url/`) :
 | `UrlNormalization` | Chaque transformation appliquée, avec un code et une explication montrés à l'utilisateur (ex. « https:// supposé ») |
 | `UnicodeScripts`, `Confusables` | Écriture de chaque caractère et « squelette » UTS #39 : `pаypal` (« а » cyrillique), `paypa1` et `paypal` se ressemblent |
 | `BrandRegistry`, `BrandMatcher` | Marques souvent imitées, domaines officiels sourcés ; repère caractères trompeurs, fautes de frappe, nom de marque dans un domaine tiers ou un sous-domaine. **Ne certifie jamais** un domaine officiel |
+| `UrlRules` | Indices heuristiques avec gravité, confiance, explication et extrait masqué ; liste dans [URL_RULES.md](URL_RULES.md) |
+| `UrlVerdictPolicy` | Verdict prudent : `KNOWN_THREAT` réservé à une source de réputation récente, `INCONCLUSIVE` sans source |
+| `UrlMasking` | Jetons, codes, e-mails, téléphones et mots de passe masqués à l'affichage |
+| `UrlAnalyzer`, `UrlAnalysisResult` | Analyse complète d'un lien : verdict, confiance, indices, limites, gestes recommandés, détails techniques |
 | `UrlParseFailure` | Refus motivé : schéma non web (`mailto:`, `tel:`, `javascript:`…), adresse e-mail, texte qui n'est pas un lien, hôte ou port invalide |
 
 Règles de conception :

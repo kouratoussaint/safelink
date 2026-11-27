@@ -1,0 +1,220 @@
+# Corpus annoté de liens pour SafeLink — dédié au domaine public (CC0 1.0).
+# Colonnes séparées par une tabulation : verdict attendu, lien, indices, note.
+# Lien : \uXXXX désigne un caractère Unicode ; <vide> un texte vide ;
+# <long:N> un lien de N caractères.
+# Indices : codes attendus séparés par des virgules ; !CODE = absent ;
+# quiet = aucun indice de gravité moyenne ou forte ; - = rien à vérifier.
+# Les domaines d’exemple sont fictifs ou réservés ; certains imitent des
+# marques pour tester la détection et ne doivent pas être ouverts.
+INCONCLUSIVE	https://www.orange.bf/	quiet	Orange Burkina
+INCONCLUSIVE	https://www.orange.bf/fr/particuliers/orange-money.html	quiet	Orange Money, page officielle
+INCONCLUSIVE	https://moov-africa.bf/	quiet	Moov Africa Burkina
+INCONCLUSIVE	https://www.telecelfaso.bf/	quiet	Telecel Faso
+INCONCLUSIVE	https://burkina.coris.bank/	quiet	Coris Bank, site indiqué par la BRVM
+INCONCLUSIVE	https://www.boaburkinafaso.com/	quiet	Bank of Africa Burkina
+INCONCLUSIVE	https://www.ecobank.com/bf/personal-banking	quiet	Ecobank
+INCONCLUSIVE	https://www.ubagroup.com/burkinafaso/	quiet	UBA
+INCONCLUSIVE	https://www.bceao.int/fr	quiet	BCEAO
+INCONCLUSIVE	https://www.sonabel.bf/	quiet	SONABEL
+INCONCLUSIVE	https://www.oneabf.com/	quiet	ONEA
+INCONCLUSIVE	https://www.paypal.com/signin	quiet	PayPal
+INCONCLUSIVE	https://accounts.google.com/signin/v2/identifier	quiet	Google
+INCONCLUSIVE	https://mail.google.com/mail/u/0/#inbox	quiet	Gmail sur google.com
+INCONCLUSIVE	https://www.youtube.com/watch?v=dQw4w9WgXcQ	quiet	YouTube
+INCONCLUSIVE	https://www.facebook.com/orange.burkina	quiet	page de marque sur un réseau social
+INCONCLUSIVE	https://web.whatsapp.com/	quiet	WhatsApp Web
+INCONCLUSIVE	https://www.instagram.com/p/C1a2b3c4d5e/	quiet	Instagram
+INCONCLUSIVE	https://www.tiktok.com/@compte/video/7300000000000000000	quiet	TikTok
+INCONCLUSIVE	https://telegram.org/faq	quiet	Telegram
+INCONCLUSIVE	https://x.com/home	quiet	X
+INCONCLUSIVE	https://www.linkedin.com/in/une-personne	quiet	LinkedIn
+INCONCLUSIVE	https://www.microsoft.com/fr-fr/	quiet	Microsoft
+INCONCLUSIVE	https://outlook.live.com/mail/0/	quiet	Outlook
+INCONCLUSIVE	https://www.apple.com/fr/iphone/	quiet	Apple
+INCONCLUSIVE	https://www.icloud.com/	quiet	iCloud
+INCONCLUSIVE	https://www.netflix.com/browse	quiet	Netflix
+INCONCLUSIVE	https://open.spotify.com/	quiet	Spotify
+INCONCLUSIVE	https://www.dhl.com/bf-fr/home.html	quiet	DHL
+INCONCLUSIVE	https://www.fedex.com/fr-fr/home.html	quiet	FedEx
+INCONCLUSIVE	https://www.westernunion.com/fr/fr/home.html	quiet	Western Union
+INCONCLUSIVE	https://www.moneygram.com/mgo/fr/fr/	quiet	MoneyGram
+INCONCLUSIVE	https://www.binance.com/fr	quiet	Binance
+INCONCLUSIVE	https://www.jumia.ci/	quiet	Jumia Côte d’Ivoire
+INCONCLUSIVE	https://lefaso.net/spip.php?article130000	quiet	presse burkinabè
+INCONCLUSIVE	https://www.burkina24.com/2026/11/27/actualite/	quiet	presse burkinabè
+INCONCLUSIVE	https://www.sidwaya.info/	quiet	presse burkinabè
+INCONCLUSIVE	https://fr.wikipedia.org/wiki/Burkina_Faso	quiet	encyclopédie
+INCONCLUSIVE	https://www.gouvernement.gov.bf/	quiet	administration en .gov.bf
+INCONCLUSIVE	https://www.impots.gov.bf/	quiet	administration en .gov.bf
+INCONCLUSIVE	https://github.com/kouratoussaint/safelink	quiet	dépôt du projet
+INCONCLUSIVE	https://pub.dev/packages/unorm_dart	quiet	registre de paquets
+INCONCLUSIVE	https://www.rfi.fr/fr/afrique/	quiet	presse internationale
+INCONCLUSIVE	https://www.bbc.com/afrique	quiet	presse internationale
+INCONCLUSIVE	https://www.jeuneafrique.com/	quiet	presse internationale
+INCONCLUSIVE	https://www.who.int/fr	quiet	OMS
+INCONCLUSIVE	https://stackoverflow.com/questions/1	quiet	questions-réponses
+INCONCLUSIVE	https://docs.flutter.dev/	quiet	documentation
+INCONCLUSIVE	https://www.google.com/search?q=orange+money	quiet	recherche Google citant une marque
+INCONCLUSIVE	https://maps.google.com/?q=Ouagadougou	quiet	carte
+INCONCLUSIVE	https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/view	quiet	identifiant de fichier masqué
+INCONCLUSIVE	https://www.paypal.com/myaccount/summary?token=EC-1AB23456CD789012E	quiet	jeton masqué à l’affichage
+INCONCLUSIVE	https://wa.me/22670000000	quiet	lien WhatsApp vers un numéro
+INCONCLUSIVE	https://t.me/canal_officiel	quiet	lien Telegram
+INCONCLUSIVE	https://www.lonab.bf/	quiet	domaine absent de la liste de marques
+INCONCLUSIVE	https://EXAMPLE.COM/A?B=C#D	quiet	majuscules
+INCONCLUSIVE	https://example.com/a/../b/./c	quiet	segments résolus
+INCONCLUSIVE	https://example.com/%7Euser/	quiet	encodage du chemin
+INCONCLUSIVE	https://example.com/recherche?q=caf%C3%A9&page=2	quiet	requête encodée
+INCONCLUSIVE	https://www.example.com:443/	quiet	port par défaut retiré
+INCONCLUSIVE	https://example.com./	quiet	point final
+INCONCLUSIVE	example.com	quiet	sans protocole : https:// supposé
+INCONCLUSIVE	www.orange.bf/promotions	quiet	sans protocole
+INCONCLUSIVE	//example.org/page	quiet	protocole relatif
+INCONCLUSIVE	https://bücher.de/	URL_INTERNATIONALIZED,!URL_IMITATES_LATIN,quiet	nom international ordinaire
+INCONCLUSIVE	https://пример.рф/	quiet	nom cyrillique ordinaire
+INCONCLUSIVE	https://例え.jp/	quiet	nom japonais
+INCONCLUSIVE	https://faso.example.org/actualites	quiet	sous-domaine ordinaire
+INCONCLUSIVE	https://mon-site.github.io/	quiet	hébergement partagé sans autre indice
+INCONCLUSIVE	https://www.amazon.com/	quiet	Amazon
+INCONCLUSIVE	http://lefaso.net/	URL_UNENCRYPTED,quiet	http non chiffré : information
+INCONCLUSIVE	https://www.amazon.fr/	URL_BRAND_OTHER_SUFFIX,quiet	domaine réel absent des sources : indice faible
+INCONCLUSIVE	https://www.google.bf/	URL_BRAND_OTHER_SUFFIX,quiet	domaine national absent des sources
+INCONCLUSIVE	https://orange.ci/	URL_BRAND_OTHER_SUFFIX,quiet	filiale d’un autre pays
+INCONCLUSIVE	https://ｐａｙｐａｌ.com/	URL_UNUSUAL_HOST_CHARACTERS,quiet	pleine chasse ramenée à paypal.com
+INCONCLUSIVE	https://bit.ly/3xYzAbC	URL_SHORTENER,quiet	raccourcisseur
+INCONCLUSIVE	https://tinyurl.com/promo2026	URL_SHORTENER,quiet	raccourcisseur
+INCONCLUSIVE	https://t.co/AbCdEf	URL_SHORTENER,quiet	raccourcisseur
+INCONCLUSIVE	https://cutt.ly/abc	URL_SHORTENER,quiet	raccourcisseur
+INCONCLUSIVE	https://example.com:8443/	URL_UNUSUAL_PORT,quiet	port inhabituel
+INCONCLUSIVE	https://a.b.c.d.example.com/	URL_MANY_SUBDOMAINS,quiet	sous-domaines nombreux
+INCONCLUSIVE	https://site.inexistant/	URL_UNLISTED_SUFFIX,quiet	extension inconnue
+INCONCLUSIVE	https://intranet/	URL_SINGLE_LABEL_HOST,quiet	nom sans extension
+INCONCLUSIVE	https:\\example.com\page	URL_UNUSUAL_SLASHES,quiet	barres inversées
+INCONCLUSIVE	https:/example.com/	URL_UNUSUAL_SLASHES,quiet	une seule barre
+INCONCLUSIVE	https://www.paypal.com/signin?returnUri=https://www.paypal.com/myaccount	!URL_REDIRECT_PARAMETER,quiet	redirection vers le même domaine
+INCONCLUSIVE	https://faux-colis.netlify.app/	URL_BAIT_WORDS,URL_SHARED_HOSTING	mot d’appât seul
+SUSPICIOUS	https://www.paypal.com@evil-site.com/login	URL_CREDENTIALS_DECEPTIVE	le vrai site est après @
+SUSPICIOUS	https://orange.bf@203.0.113.5/	URL_CREDENTIALS_DECEPTIVE,URL_IP_LITERAL	faux Orange vers une IP
+SUSPICIOUS	https://moov-africa.bf:bonus@phish-site.net/	URL_CREDENTIALS_DECEPTIVE	mot de passe factice
+SUSPICIOUS	https://facebook.com@bit.ly/abc	URL_CREDENTIALS_DECEPTIVE,URL_SHORTENER	raccourcisseur caché
+SUSPICIOUS	https://orange@site-recharge.com/	URL_CREDENTIALS_DECEPTIVE	nom de marque avant @
+INCONCLUSIVE	https://admin:1234@site-perso.com/	URL_CREDENTIALS	identifiants sans imitation
+SUSPICIOUS	https://p\u0430ypal.com/	URL_BRAND_LOOKALIKE	« а » cyrillique
+SUSPICIOUS	https://xn--pypal-4ve.com/	URL_BRAND_LOOKALIKE	même nom en Punycode
+SUSPICIOUS	https://paypa1.com/	URL_BRAND_LOOKALIKE	chiffre 1 pour l
+SUSPICIOUS	https://faceb00k.com/login	URL_BRAND_LOOKALIKE	zéros pour o
+SUSPICIOUS	https://rnicrosoft.com/	URL_BRAND_LOOKALIKE	rn pour m
+SUSPICIOUS	https://g\u043E\u043Egle.com/	URL_BRAND_LOOKALIKE	« о » cyrilliques
+SUSPICIOUS	https://whats\u0430pp.com/	URL_BRAND_LOOKALIKE	« а » cyrillique
+SUSPICIOUS	https://\u043Erange.bf/	URL_BRAND_LOOKALIKE	« о » cyrillique sur .bf
+SUSPICIOUS	https://\u0430\u0440\u0440l\u0435.com/	URL_BRAND_LOOKALIKE	Apple en cyrillique
+SUSPICIOUS	https://g00gle-login.com/	URL_BRAND_LOOKALIKE	zéros et mot d’appât
+SUSPICIOUS	https://micros0ft-support.com/	URL_BRAND_LOOKALIKE	zéro pour o
+SUSPICIOUS	https://amaz0n.fr/	URL_BRAND_LOOKALIKE	zéro pour o
+SUSPICIOUS	https://mon-compte-0range.com/	URL_BRAND_LOOKALIKE	zéro dans Orange
+SUSPICIOUS	https://paypa1-login.com/	URL_BRAND_LOOKALIKE	chiffre et mot d’appât
+SUSPICIOUS	https://instagrarn.com/	URL_BRAND_LOOKALIKE	rn pour m
+SUSPICIOUS	https://pàypal.com/	URL_BRAND_LOOKALIKE	accent ajouté
+SUSPICIOUS	https://coris\u0431ank.com/	URL_MIXED_SCRIPTS	lettre cyrillique isolée
+SUSPICIOUS	https://paypall.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://facebok.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://gooogle.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://whatsap.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://westernunoin.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://binnance.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://telegarm.org/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://linkedln.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://netfliix.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://youtub.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://coinbse.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://orabnak.net/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://netfiix.com/	URL_BRAND_TYPO	une lettre de différence
+SUSPICIOUS	https://paypal.com.account-verify.com/	URL_BRAND_DOMAIN_IN_SUBDOMAIN	domaine officiel en préfixe
+SUSPICIOUS	https://www.orange.bf.bonus-orange.xyz/	URL_BRAND_DOMAIN_IN_SUBDOMAIN	domaine officiel en préfixe
+SUSPICIOUS	https://moov-africa.bf.recharge-gratuite.net/	URL_BRAND_DOMAIN_IN_SUBDOMAIN	domaine officiel en préfixe
+SUSPICIOUS	https://www.facebook.com.security-check.info/	URL_BRAND_DOMAIN_IN_SUBDOMAIN	domaine officiel en préfixe
+SUSPICIOUS	https://accounts.google.com.signin-verify.net/	URL_BRAND_DOMAIN_IN_SUBDOMAIN	domaine officiel en préfixe
+SUSPICIOUS	https://www.ecobank.com.client.example-bank.com/	URL_BRAND_DOMAIN_IN_SUBDOMAIN	domaine officiel en préfixe
+SUSPICIOUS	https://orange-money-bonus.top/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://orangemoney-gagnant.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://moov-money-recompense.net/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://coris-bank-securite.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://paypal-securite.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://whatsapp-gratuit.top/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://dhl-livraison-colis.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://fedex-tracking-parcel.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://western-union-reward.net/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://binance-wallet-verify.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://netflix-account-update.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://apple-id-unlock.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://microsoft-support-alerte.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://ecobank-verification.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://uba-compte-suspendu.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://sonabel-remboursement.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://bceao-tirage.org/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://mtn-momo-bonus.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://jumia-cadeau.shop/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+SUSPICIOUS	https://telecel-bonus-gratuit.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + mot d’appât
+INCONCLUSIVE	https://orange-business.com/	URL_BRAND_IN_DOMAIN	marque citée seule : prudence
+INCONCLUSIVE	https://amazon-deals.com/	URL_BRAND_IN_DOMAIN	marque citée seule : prudence
+INCONCLUSIVE	https://login.microsoftonline.com/	URL_BRAND_IN_DOMAIN,!URL_BAIT_WORDS	domaine réel de Microsoft, absent des sources
+SUSPICIOUS	https://secure-paypal.verify-account.xyz/	URL_BRAND_IN_SUBDOMAIN,URL_BAIT_WORDS	marque en sous-domaine
+SUSPICIOUS	https://orange.cadeau-gratuit.top/	URL_BRAND_IN_SUBDOMAIN,URL_BAIT_WORDS	marque en sous-domaine
+SUSPICIOUS	https://whatsapp.free-gift.site/	URL_BRAND_IN_SUBDOMAIN,URL_BAIT_WORDS	marque en sous-domaine
+SUSPICIOUS	https://paypal.connexion-site.example/	URL_BRAND_IN_SUBDOMAIN,URL_BAIT_WORDS	marque en sous-domaine + mot d’appât
+SUSPICIOUS	https://paypal-login.web.app/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS,URL_SHARED_HOSTING	page gratuite
+SUSPICIOUS	https://orange-bonus.blogspot.com/	URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS,URL_SHARED_HOSTING	blog gratuit
+INCONCLUSIVE	http://192.168.1.1/	URL_IP_LITERAL,URL_UNENCRYPTED	IP locale
+INCONCLUSIVE	https://198.51.100.7/	URL_IP_LITERAL	IP publique
+SUSPICIOUS	http://3232235777/	URL_IP_LITERAL,URL_IP_UNUSUAL_NOTATION	IP décimale
+SUSPICIOUS	http://0xC0.0xA8.0x01.0x01/login	URL_IP_LITERAL,URL_IP_UNUSUAL_NOTATION	IP hexadécimale
+SUSPICIOUS	http://0300.0250.1.1/	URL_IP_LITERAL,URL_IP_UNUSUAL_NOTATION	IP octale
+SUSPICIOUS	http://192.168.257/	URL_IP_LITERAL,URL_IP_UNUSUAL_NOTATION	IP abrégée
+SUSPICIOUS	http://127.1:8080/	URL_IP_LITERAL,URL_IP_UNUSUAL_NOTATION,URL_UNUSUAL_PORT	boucle locale abrégée
+SUSPICIOUS	http://203.0.113.10/orange-money/	URL_IP_LITERAL,URL_BRAND_IN_PATH	marque dans le chemin d’une IP
+SUSPICIOUS	http://[2001:db8::1]/paypal/login	URL_IP_LITERAL,URL_BRAND_IN_PATH	IPv6 et marque
+INCONCLUSIVE	http://[::1]/	URL_IP_LITERAL	IPv6 locale
+INCONCLUSIVE	https://%70%61%79%70%61%6c.com/	URL_ENCODED_HOST	paypal.com encodé
+SUSPICIOUS	https://exa%6Dple-login.com/	URL_ENCODED_HOST,URL_BAIT_WORDS	encodé + appât
+SUSPICIOUS	https://pay\u00ADpal-login.com/	URL_INVISIBLE_CHARACTERS,URL_BRAND_IN_DOMAIN	trait d’union invisible
+SUSPICIOUS	https://orange\u200B-bonus.com/	URL_INVISIBLE_CHARACTERS,URL_BRAND_IN_DOMAIN	espace sans chasse
+INCONCLUSIVE	https://b\u0430nque-en-ligne.com/	URL_MIXED_SCRIPTS	alphabets mêlés, sans marque
+INCONCLUSIVE	https://\u0441\u043E\u0441\u043E.com/	URL_IMITATES_LATIN	cyrillique qui imite « coco »
+INCONCLUSIVE	https://www.google.com/url?q=https://evil-site.com/	URL_REDIRECT_PARAMETER	redirection via un domaine officiel
+INCONCLUSIVE	https://l.facebook.com/l.php?u=https%3A%2F%2Fphish-site.net%2F	URL_REDIRECT_PARAMETER	redirection encodée
+SUSPICIOUS	https://site-promo.com/r?next=https://paypal-login.net/	URL_REDIRECT_PARAMETER,URL_BAIT_WORDS	redirection + appât
+INCONCLUSIVE	https://example.com/redirect?url=www.autre-site.org	URL_REDIRECT_PARAMETER	redirection sans protocole
+INCONCLUSIVE	https://news-site.com/go?to=//gagner-bonus.com&ref=sms	URL_REDIRECT_PARAMETER,!URL_BAIT_WORDS	l’appât n’est que dans la cible, non analysée ici
+SUSPICIOUS	https://files-download.com/OrangeMoney.apk	URL_APK_DOWNLOAD,URL_BRAND_IN_PATH	fausse application
+SUSPICIOUS	https://bonus-gratuit.com/WhatsApp-Gold.apk	URL_APK_DOWNLOAD,URL_BRAND_IN_PATH,URL_BAIT_WORDS	fausse application
+INCONCLUSIVE	https://example.com/app.apk	URL_APK_DOWNLOAD	APK seul
+INCONCLUSIVE	https://example.com/APP.APK	URL_APK_DOWNLOAD	extension en majuscules
+INCONCLUSIVE	https://example.com/jeu.xapk	URL_APK_DOWNLOAD	paquet xapk
+INCONCLUSIVE	http://site.com:2087/login?redirect=https://autre.net	URL_UNUSUAL_PORT,URL_REDIRECT_PARAMETER,URL_UNENCRYPTED	un indice moyen et un faible : prudence
+SUSPICIOUS	https://login.secure.account.verify.paypal-check.com/	URL_MANY_SUBDOMAINS,URL_BRAND_IN_DOMAIN,URL_BAIT_WORDS	marque + sous-domaines d’appât
+INVALID	javascript:alert(document.cookie)	-	script
+INVALID	data:text/html;base64,PHNjcmlwdD4=	-	données intégrées
+INVALID	file:///sdcard/Download/app.apk	-	fichier local
+INVALID	content://com.android.contacts/contacts	-	contenu Android
+INVALID	intent://scan/#Intent;scheme=zxing;end	-	intention Android
+INVALID	mailto:support@orange.bf	-	courriel
+INVALID	tel:*144#	-	code USSD
+INVALID	sms:+22670000000?body=CODE	-	SMS
+INVALID	ftp://ftp.example.com/	-	FTP
+INVALID	market://details?id=com.example	-	Play Store
+INVALID	whatsapp://send?text=bonjour	-	application
+INVALID	tg://resolve?domain=canal	-	application
+INVALID	bonjour	-	texte
+INVALID	Merci pour votre aide	-	texte
+INVALID	fichier.txt	-	nom de fichier
+INVALID	jean.dupont@example.com	-	adresse e-mail
+INVALID	12345	-	nombre
+INVALID	https://exa mple.com/	-	espace dans le nom
+INVALID	https://256.256.256.256/	-	IP impossible
+INVALID	https://[::1/	-	IPv6 non fermée
+INVALID	https://example.com:99999/	-	port impossible
+INVALID	https://xn--zz.com/	-	Punycode invalide
+INVALID	https://evil.com\uFF0Fpaypal.com/	-	barre pleine chasse
+INVALID	https://pay\u202Epal.com/	-	inversion du sens du texte
+INVALID	<vide>	-	texte vide
+INVALID	<long:2100>	-	plus de 2 048 caractères

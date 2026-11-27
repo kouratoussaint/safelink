@@ -18,4 +18,7 @@ export 'src/url/parsed_url.dart';
 export 'src/url/public_suffix_list.dart';
 export 'src/url/punycode.dart';
 export 'src/url/unicode_security.dart';
+export 'src/url/url_analyzer.dart';
+export 'src/url/url_masking.dart';
 export 'src/url/url_parser.dart';
+export 'src/url/url_rules.dart';

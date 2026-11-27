@@ -104,19 +104,22 @@ void main() {
 
     test('caractères trompeurs', () {
       for (final (url, brand) in [
-        ('https://pаypаl.com', 'paypal'),
+        ('https://p\u0430yp\u0430l.com', 'paypal'),
         ('https://paypa1.com', 'paypal'),
         ('https://faceb00k.com/login', 'facebook'),
         ('https://rnicrosoft.com', 'microsoft'),
-        ('https://х.com', 'x'),
-        ('https://orаnge.bf', 'orange'),
+        ('https://\u0445.com', 'x'),
+        ('https://or\u0430nge.bf', 'orange'),
         ('https://pàypal.com', 'paypal'),
       ]) {
         final match = strongest(url);
         expect(match?.kind, BrandMatchKind.lookalike, reason: url);
         expect(match?.brand.id, brand, reason: url);
       }
-      expect(strongest('https://pаypаl.com')!.matched, 'pаypаl');
+      expect(
+        strongest('https://p\u0430yp\u0430l.com')!.matched,
+        'p\u0430yp\u0430l',
+      );
     });
 
     test('fautes de frappe', () {

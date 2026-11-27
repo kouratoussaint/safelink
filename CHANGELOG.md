@@ -37,7 +37,7 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   taille de chaque APK indiquée dans les notes de pré-version. Sans la clé,
   la publication continue avec une signature temporaire signalée.
 
-### Ajouté — lot B (analyse des liens, en cours)
+### Ajouté — lot B (analyse locale des liens)
 
 - Moteur : Punycode (RFC 3492) et conversion des noms de domaine
   internationaux, sans dépendance réseau.
@@ -56,6 +56,16 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
   sourcé (Wikidata, BRVM) et daté ; détection des imitations : caractères
   trompeurs, fautes de frappe, nom de marque dans un domaine tiers ou un
   sous-domaine. La liste ne certifie jamais un lien.
+- Moteur : analyseur de liens complet (`UrlAnalyzer`) — 28 indices
+  expliqués avec gravité et confiance (identifiants trompeurs, imitations de
+  marques, IP, encodage, redirections, fichiers `.apk`, raccourcisseurs…),
+  verdict prudent sans réputation (`KNOWN_THREAT` impossible sans source,
+  `INCONCLUSIVE` par défaut), limites et gestes recommandés, détails
+  techniques, masquage des jetons et données personnelles à l'affichage.
+- Corpus CC0 de plus de 200 liens annotés évalué en CI avec seuils
+  bloquants, entrées aléatoires, budget de temps et contrôle d'absence
+  d'entrée-sortie. Référence publique des règles : `docs/URL_RULES.md`
+  (ADR 0008).
 
 ### Modifié
 

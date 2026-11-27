@@ -19,7 +19,7 @@ abstract final class Idna {
   /// Préfixe des labels encodés en Punycode.
   static const acePrefix = 'xn--';
 
-  static final _separators = RegExp('[。．｡]');
+  static final _separators = RegExp('[\u3002\uFF0E\uFF61]');
 
   /// Normalise [domain] : séparateurs Unicode remplacés par « . »,
   /// normalisation NFKC et minuscules.

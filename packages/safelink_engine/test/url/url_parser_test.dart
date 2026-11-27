@@ -267,13 +267,13 @@ void main() {
     });
 
     test('lettres pleine chasse', () {
-      final url = parsed('https://ｐａｙｐａｌ.com/');
+      final url = parsed('https://\uFF50\uFF41\uFF59\uFF50\uFF41\uFF4C.com/');
       expect(url.host, 'paypal.com');
       expect(
         url.normalizations,
         contains(UrlNormalization.hostCharactersNormalized),
       );
-      expect(parsed('https://ＡＢＣ.com').host, 'abc.com');
+      expect(parsed('https://\uFF21\uFF22\uFF23.com').host, 'abc.com');
     });
 
     test('codes %XX dans le nom', () {
@@ -302,7 +302,7 @@ void main() {
     test('noms invalides refusés', () {
       for (final text in [
         'https://pay\u202Epal.com/',
-        'https://evil.com／paypal.com/',
+        'https://evil.com\uFF0Fpaypal.com/',
         'https://exa%ZZ.com/',
         'https://exa%FF.com/',
         'https://exa mple.com/',
