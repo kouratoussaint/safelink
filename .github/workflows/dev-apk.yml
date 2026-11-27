@@ -98,8 +98,11 @@ jobs:
             report="$("$apksigner" verify --print-certs "$apk" 2>&1)" || {
               echo "::warning::apksigner n'a pas pu vérifier $name."
             }
+            # Deux formats selon la version d'apksigner : « Signer #1
+            # certificate… » (jusqu'à 0.8) et « V2 Signer: certificate… » (0.9).
             actual="$(printf '%s\n' "$report" |
-              sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)"
+              sed -nE 's/^(Signer #1|V[0-9.]+ Signer:) certificate SHA-256 digest: //p' |
+              head -n 1)"
             echo "$name : ${actual:-empreinte illisible}"
             if [[ -z "$actual" ]]; then
               # Ne bloque pas la publication, mais le dit.
