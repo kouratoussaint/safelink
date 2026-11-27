@@ -6,6 +6,33 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — lot D2 (historique chiffré)
+
+- Historique facultatif, désactivé tant que l'utilisateur n'a pas choisi :
+  proposition sous le premier résultat et dans l'onglet, interrupteur dans
+  les paramètres. Rien n'est créé (ni base, ni clé) avant l'activation.
+- Enregistrement minimal : type, verdict, date, version des règles, codes
+  et explications des indices, domaine ; jamais d'extrait. Le texte d'un
+  message ou le lien complet n'est gardé que sur demande, après un
+  avertissement, et peut être retiré.
+- Base SQLite du système (`sqflite`) ; domaine, raisons et contenu chiffrés
+  en AES-256-GCM, clé aléatoire protégée par le Keystore d'Android
+  (`flutter_secure_storage`) ; lignes effacées écrasées ; 500 vérifications
+  au plus (ADR 0006 acceptée).
+- Onglet Historique : liste par jour, filtres Tous / Liens / Messages,
+  recherche par domaine, niveau et période ; fiche détaillée,
+  « Analyser à nouveau » si le contenu a été gardé, suppression unitaire et
+  « Tout effacer » avec confirmation ; vérifications devenues illisibles
+  signalées et supprimables.
+- Tests : chiffrement (altération, déplacement, clé perdue), contenu du
+  fichier sans donnée en clair, consentement, filtres, accessibilité et
+  mise en page des nouveaux écrans.
+
+### Modifié — lot D2
+
+- Détails techniques : valeurs copiables par appui long dans une zone de
+  sélection, au lieu de champs sélectionnables séparés.
+
 ### Ajouté — lot D1 (accueil, analyse et résultats)
 
 - Présentation de première ouverture en trois étapes (mission, limites,

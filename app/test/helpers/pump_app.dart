@@ -5,6 +5,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:safelink/app/app.dart';
 import 'package:safelink/core/settings/preferences.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/history/history_controller.dart';
+import 'package:safelink/features/history/history_store.dart';
 import 'package:safelink/features/onboarding/onboarding_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,7 +19,8 @@ const referenceSize = Size(393, 852);
 /// l'écran et [textScale] le grossissement du texte (accessibilité). Sauf
 /// si [onboarded] est faux, la présentation de première ouverture est
 /// considérée comme déjà vue. L'analyse se fait par défaut sans isolat, de
-/// façon synchrone : [analysisService] permet de la remplacer.
+/// façon synchrone : [analysisService] permet de la remplacer. L'historique
+/// est gardé en mémoire ([historyBackend]).
 Future<SharedPreferences> pumpSafeLinkApp(
   WidgetTester tester, {
   Map<String, Object> preferences = const {},
@@ -25,6 +28,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
   double textScale = 1,
   bool onboarded = true,
   AnalysisService analysisService = const SynchronousAnalysisService(),
+  HistoryBackend? historyBackend,
 }) async {
   SharedPreferences.setMockInitialValues({
     if (onboarded) OnboardingController.storageKey: true,
@@ -50,6 +54,9 @@ Future<SharedPreferences> pumpSafeLinkApp(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         analysisServiceProvider.overrideWithValue(analysisService),
+        historyBackendProvider.overrideWithValue(
+          historyBackend ?? MemoryHistoryBackend(),
+        ),
       ],
       child: const SafeLinkApp(),
     ),

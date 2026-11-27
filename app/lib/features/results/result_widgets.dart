@@ -217,7 +217,7 @@ class DetailRow extends StatelessWidget {
               color: SafeLinkColors.of(context).textSecondary,
             ),
           ),
-          SelectableText(value, style: theme.textTheme.bodyMedium),
+          Text(value, style: theme.textTheme.bodyMedium),
         ],
       ),
     );
@@ -240,7 +240,16 @@ class TechnicalDetailsSection extends StatelessWidget {
         leading: const ExcludeSemantics(child: Icon(Icons.code)),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: rows,
+        // Valeurs copiables par appui long, sans transformer chaque ligne
+        // en champ de texte pour TalkBack.
+        children: [
+          SelectionArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: rows,
+            ),
+          ),
+        ],
       ),
     );
   }

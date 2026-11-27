@@ -12,23 +12,28 @@ environment:
   flutter: 3.50.1
 
 dependencies:
+  cryptography: ^2.9.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.5.0
+  flutter_secure_storage: ^11.2.0
   flutter_svg: ^2.5.1
   go_router: ^18.1.4
   intl: any
   material_ui: ^1.11.1
   package_info_plus: ^10.2.2
+  path: ^1.9.1
   safelink_engine:
     path: ../packages/safelink_engine
   shared_preferences: ^2.5.6
+  sqflite: ^2.4.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  sqflite_common_ffi: ^2.4.7
   very_good_analysis: ^11.0.0
 
 flutter:

@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/routes.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
+import 'package:safelink/features/history/history_controller.dart';
+import 'package:safelink/features/history/history_dialogs.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 
 /// Paramètres de l'application.
@@ -42,6 +44,9 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             const Divider(),
+            _SectionHeader(l10n.settingsHistorySection),
+            const _HistorySettings(),
+            const Divider(),
             _SectionHeader(l10n.settingsAboutSection),
             ListTile(
               leading: const Icon(Icons.info_outline),
@@ -62,6 +67,44 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Activation et effacement de l'historique.
+class _HistorySettings extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final enabled = ref.watch(historyChoiceProvider) == HistoryChoice.enabled;
+    final count = ref.watch(historyProvider).value?.length ?? 0;
+    return Column(
+      children: [
+        SwitchListTile(
+          secondary: const Icon(Icons.history),
+          title: Text(l10n.settingsHistorySwitch),
+          subtitle: Text(l10n.settingsHistorySwitchBody),
+          value: enabled,
+          onChanged: (value) async {
+            if (value) {
+              await ref
+                  .read(historyChoiceProvider.notifier)
+                  .select(enabled: true);
+            } else {
+              await confirmStopHistory(context, ref);
+            }
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.delete_sweep_outlined),
+          title: Text(l10n.settingsHistoryClear),
+          subtitle: Text(l10n.settingsHistoryClearBody(count)),
+          enabled: count > 0,
+          onTap: () => confirmClearHistory(context, ref),
+        ),
+      ],
     );
   }
 }

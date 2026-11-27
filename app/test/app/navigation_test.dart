@@ -28,7 +28,7 @@ void main() {
 
     await tapDestination(tester, 'Historique');
     expect(appBarTitle('Historique'), findsOneWidget);
-    expect(find.text('Aucune vérification enregistrée'), findsOneWidget);
+    expect(find.text('Garder vos vérifications ?'), findsOneWidget);
 
     await tapDestination(tester, 'Conseils');
     expect(appBarTitle('Conseils'), findsOneWidget);

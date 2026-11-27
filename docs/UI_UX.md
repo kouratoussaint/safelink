@@ -83,6 +83,23 @@ Retour exactement comme Android l'envoie à Flutter.
   le texte du message ni les extraits ; les liens y sont masqués.
 - Textes : apostrophe typographique (’) et espaces avant « : ; ? ! ».
 
+## Historique
+
+- Désactivé tant que l'utilisateur n'a pas choisi. Le choix est proposé
+  sous le résultat (« Garder vos vérifications ? ») et dans l'onglet
+  Historique ; « Activer » enregistre aussi la vérification affichée.
+- Sous chaque résultat enregistré : « Enregistrée dans l'historique, sans
+  le texte du message », « Retirer », et « Garder aussi le texte du
+  message » (ou « le lien complet ») après un avertissement.
+- Liste groupée par jour ; filtres « Tous / Liens / Messages », recherche
+  par domaine, et volet « Niveau et période » replié par défaut pour que
+  les vérifications restent visibles sur petit écran.
+- Fiche : verdict, date, type, domaine, raisons enregistrées, liens d'un
+  message ; « Analyser à nouveau » seulement si le contenu a été conservé ;
+  suppression après confirmation.
+- « Tout effacer » dans l'onglet et dans les paramètres, toujours après
+  confirmation.
+
 ## Accessibilité
 
 - Zones tactiles d'au moins 48 × 48 dp, libellés pour TalkBack, contraste :
@@ -92,6 +109,9 @@ Retour exactement comme Android l'envoie à Flutter.
   les écrans étroits, pour que « Historique » ou « Paramètres » ne se coupent
   pas au milieu du mot. Les libellés restent lus en entier par TalkBack.
 - Les mises en page sont testées à 320 dp de large avec un texte à 200 %.
+- Les valeurs à copier (détails techniques, contenu conservé) sont du
+  texte ordinaire dans une zone de sélection (`SelectionArea`) : copiables
+  par appui long, sans devenir autant de champs de saisie pour TalkBack.
 - Les tests chargent les vraies polices de l'application, pour que les
   mesures de contraste et de débordement correspondent au rendu réel.
 - La mesure automatique du contraste se fait à la résolution logique : un
