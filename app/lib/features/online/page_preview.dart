@@ -36,7 +36,7 @@ final class PagePreviewClient {
     required this.apiKey,
     this.http = const IoHttpTransport(
       timeout: Duration(seconds: 70),
-      maxBytes: 4 * 1024 * 1024,
+      maxBytes: 8 * 1024 * 1024,
     ),
   });
 
@@ -48,11 +48,12 @@ final class PagePreviewClient {
 
   final _cache = <String, PagePreview>{};
 
-  /// Seuls l'adresse finale et la capture sont demandées, pour limiter la
-  /// taille de la réponse.
+  /// Champs demandés : adresse finale, erreur et audits (qui contiennent la
+  /// capture). Le filtre ne peut pas viser l'audit `final-screenshot`
+  /// lui-même (Google refuse le tiret, vérifié le 27/11/2026) ; compressée,
+  /// la réponse pèse de 30 à 200 Ko environ.
   static const fields =
-      'lighthouseResult(finalDisplayedUrl,runtimeError,'
-      'audits/final-screenshot/details/data)';
+      'lighthouseResult(finalDisplayedUrl,runtimeError,audits)';
 
   /// Photo de [url] ; lève [PagePreviewException] en cas d'échec.
   Future<PagePreview> capture(String url) async {
@@ -70,7 +71,10 @@ final class PagePreviewClient {
     );
     HttpReply reply;
     try {
-      reply = await http.get(uri, headers: {'X-Goog-Api-Key': apiKey});
+      reply = await http.get(
+        uri,
+        headers: {'X-Goog-Api-Key': apiKey, 'Accept-Encoding': 'gzip'},
+      );
     } on OnlineLookupException {
       throw const PagePreviewException('UNAVAILABLE');
     }
