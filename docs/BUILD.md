@@ -73,6 +73,16 @@ liste autorisée est vide. Les builds release des lots A à C sont signés avec
 la clé de débogage : ils ne servent qu'à ce contrôle et ne doivent jamais
 être distribués.
 
+### Licences des dépendances
+
+```bash
+python3 tools/check_licenses.py app/pubspec.lock packages/safelink_engine/pubspec.lock
+```
+
+Le script interroge pub.dev et échoue si une dépendance n'a pas de licence
+compatible avec la GPL-3.0-or-later. Il tourne à chaque pull request dans
+`dependency-review.yml`, à côté du contrôle des vulnérabilités de GitHub.
+
 ### Traductions
 
 Les textes sont dans `app/lib/l10n/app_fr.arb`. Le code Dart correspondant

@@ -34,3 +34,6 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 ### Modifié
 
 - Identifiant Android : `com.fasosoft.safelink`, avant toute publication.
+- Revue des dépendances : vulnérabilités contrôlées par GitHub, licences par
+  `tools/check_licenses.py` (pub.dev), car GitHub ne sait pas valider les
+  licences des paquets Dart.
