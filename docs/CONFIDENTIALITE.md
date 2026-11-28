@@ -47,10 +47,14 @@ sont jamais enregistrés.
   service au premier plan qui la garde affichée (notification « Bulle
   SafeLink active »). La bulle ne lit ni votre écran ni ce que vous
   copiez : la toucher ouvre le panneau rapide, qui lit alors le texte
-  copié, comme la tuile du volet. Jusqu'à Android 9, Android prévient la
-  bulle qu'un texte vient d'être copié, pour qu'elle réapparaisse ; elle
-  ne voit que le type du contenu (texte ou image), jamais le texte.
-  Indisponible sur Android Go.
+  copié, comme la tuile du volet. Elle disparaît après quelques secondes.
+  Jusqu'à Android 9, Android prévient la bulle qu'un texte vient d'être
+  copié, pour qu'elle réapparaisse ; elle ne voit que le type du contenu
+  (texte ou image), jamais le texte. À partir d'Android 10, Android ne
+  prévient plus d'une copie : la notification de la bulle la remplace,
+  et sur Android 13 et suivants SafeLink demande l'autorisation des
+  notifications pour qu'elle soit visible (refus possible : la tuile du
+  volet fait la même chose). Indisponible sur Android Go.
 - Recevoir un texte partagé ou sélectionné, et la tuile du volet, ne
   demandent aucune autorisation.
 

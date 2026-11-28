@@ -107,8 +107,8 @@ jobs:
         run: flutter build apk --release --dart-define=SAFELINK_GIT_SHA=${{ github.sha }}
 
       - name: Aucune permission hors liste autorisée
-        # INTERNET : vérification en ligne (ADR 0010) ; les trois suivantes :
-        # bulle flottante optionnelle (ADR 0014).
+        # INTERNET : vérification en ligne (ADR 0010) ; les quatre suivantes :
+        # bulle flottante optionnelle (ADR 0014 et 0015).
         run: >-
           ../tools/check_apk_permissions.sh
           build/app/outputs/flutter-apk/app-release.apk
@@ -116,6 +116,7 @@ jobs:
           android.permission.SYSTEM_ALERT_WINDOW
           android.permission.FOREGROUND_SERVICE
           android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+          android.permission.POST_NOTIFICATIONS
 
       - name: Compatibilité avec les pages mémoire de 16 Ko
         run: python3 ../tools/check_16kb_alignment.py build/app/outputs/flutter-apk/app-release.apk

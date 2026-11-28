@@ -76,14 +76,16 @@ flutter build apk --release
 
 Le script échoue si l'APK déclare une permission non listée. La CI
 autorise `android.permission.INTERNET` (vérification en ligne, ADR 0010) et
-les trois permissions de la bulle flottante optionnelle (ADR 0014) :
+les quatre permissions de la bulle flottante optionnelle (ADR 0014 et
+0015) :
 
 ```bash
 ../tools/check_apk_permissions.sh build/app/outputs/flutter-apk/app-release.apk \
   android.permission.INTERNET \
   android.permission.SYSTEM_ALERT_WINDOW \
   android.permission.FOREGROUND_SERVICE \
-  android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+  android.permission.FOREGROUND_SERVICE_SPECIAL_USE \
+  android.permission.POST_NOTIFICATIONS
 ```
  Les builds release des lots A à C sont signés avec
 la clé de débogage : ils ne servent qu'à ce contrôle et ne doivent jamais

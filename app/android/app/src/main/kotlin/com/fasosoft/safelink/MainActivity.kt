@@ -1,8 +1,10 @@
 package com.fasosoft.safelink
 
+import android.Manifest
 import android.app.StatusBarManager
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.net.Uri
@@ -87,6 +89,7 @@ class MainActivity : FlutterActivity() {
                     "openOverlaySettings" -> {
                         result.success(openOverlaySettings())
                     }
+                    "requestNotifications" -> requestNotifications(result)
                     "setBubble" -> {
                         val enabled = call.argument<Boolean>("enabled") == true
                         if (enabled && BubbleService.canDraw(this@MainActivity)) {
@@ -192,6 +195,47 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    /** Réponse en attente d'une demande d'autorisation des notifications. */
+    private var notificationsResult: MethodChannel.Result? = null
+
+    /**
+     * Demande l'autorisation des notifications (Android 13 et suivants),
+     * pour que la notification de la bulle soit visible. Répond `true` si
+     * elles sont permises.
+     */
+    private fun requestNotifications(result: MethodChannel.Result) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            result.success(BubbleService.notificationsAllowed(this))
+            return
+        }
+        if (notificationsResult != null) {
+            result.success(false)
+            return
+        }
+        notificationsResult = result
+        requestPermissions(
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+            REQUEST_NOTIFICATIONS,
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != REQUEST_NOTIFICATIONS) return
+        val granted = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
+        // Publiée avant l'autorisation, la notification n'a pas été montrée.
+        if (granted) BubbleService.refreshNotification()
+        notificationsResult?.success(granted)
+        notificationsResult = null
+    }
+
     /**
      * Propose d'ajouter la tuile au volet (Android 13 et suivants) ; répond
      * `added`, `already`, `refused` ou `unsupported`.
@@ -251,5 +295,7 @@ class MainActivity : FlutterActivity() {
          * vérification en entier.
          */
         const val OPEN_CHECK_ALIAS = "com.fasosoft.safelink.OpenCheck"
+
+        private const val REQUEST_NOTIFICATIONS = 42
     }
 }

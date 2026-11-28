@@ -15,10 +15,13 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 - Vérification enregistrée dans l'historique selon le même choix que dans
   l'application ; « Tout voir » la remplace, sans doublon ; l'historique
   est relu au retour dans SafeLink.
-- La bulle ne reste plus affichée : après 8 secondes, elle se cache et
-  revient quand un texte est copié (Android 9 et avant), ou se range à
-  moitié dans le bord de l'écran (Android 10 et suivants, qui ne
-  préviennent plus les applications d'une copie).
+- La bulle ne reste plus affichée : après 8 secondes, elle disparaît
+  complètement. Elle revient quand un lien ou un texte est copié
+  (Android 9 et avant). Android 10 et suivants ne préviennent plus les
+  applications d'une copie : sa notification la remplace (« Un lien
+  copié ? Touchez ici pour le vérifier. »), et SafeLink demande
+  l'autorisation des notifications à l'activation de la bulle (Android 13
+  et suivants ; refus possible, la tuile du volet fait la même chose).
 - Paramètres explique ce comportement selon la version d'Android.
 
 ### Ajouté — Bulle flottante (optionnelle)
