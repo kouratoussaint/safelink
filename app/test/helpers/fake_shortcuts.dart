@@ -2,7 +2,8 @@ import 'package:safelink/features/share/shortcuts.dart';
 
 /// Raccourcis simulés : tuile ([canRequest], réponse [answer]) et bulle
 /// ([bubbleSupported], [bubblePermitted], [bubbleEnabled],
-/// [bubbleDetectsCopies]).
+/// [bubbleDetectsCopies]) ; notifications ([notificationsAllowed], réponse
+/// [notificationsAnswer]).
 class FakeShortcuts implements ShortcutsPlatform {
   new({
     this.canRequest = false,
@@ -11,6 +12,8 @@ class FakeShortcuts implements ShortcutsPlatform {
     this.bubblePermitted = false,
     this.bubbleEnabled = false,
     this.bubbleDetectsCopies = false,
+    this.notificationsAllowed = false,
+    this.notificationsAnswer = true,
   });
 
   final bool canRequest;
@@ -19,6 +22,11 @@ class FakeShortcuts implements ShortcutsPlatform {
   bool bubblePermitted;
   bool bubbleEnabled;
   final bool bubbleDetectsCopies;
+  bool notificationsAllowed;
+  final bool notificationsAnswer;
+
+  /// Nombre de demandes d'autorisation des notifications.
+  int notificationRequests = 0;
 
   /// Nombre de demandes d'ajout de la tuile.
   int requests = 0;
@@ -40,6 +48,7 @@ class FakeShortcuts implements ShortcutsPlatform {
     permitted: bubblePermitted,
     enabled: bubbleEnabled && bubblePermitted,
     detectsCopies: bubbleDetectsCopies,
+    notificationsAllowed: notificationsAllowed,
   );
 
   @override
@@ -49,6 +58,12 @@ class FakeShortcuts implements ShortcutsPlatform {
   Future<bool> openOverlaySettings() async {
     overlaySettingsOpened++;
     return bubbleSupported;
+  }
+
+  @override
+  Future<bool> requestNotifications() async {
+    notificationRequests++;
+    return notificationsAllowed = notificationsAllowed || notificationsAnswer;
   }
 
   @override

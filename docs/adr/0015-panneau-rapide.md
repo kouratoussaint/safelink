@@ -1,6 +1,8 @@
 # 0015 — Panneau rapide et bulle qui se range
 
-- Statut : accepté (28/11/2026), demande du porteur ; précise l'ADR 0014
+- Statut : accepté (28/11/2026), demande du porteur ; précise l'ADR 0014.
+  Révisé le même jour à sa demande : la bulle disparaît complètement sur
+  toutes les versions (point 2).
 
 ## Contexte
 
@@ -46,25 +48,34 @@ contraires à la confidentialité ou cassent l'application du dessous.
    - L'historique est enregistré par le panneau selon le même choix que
      dans l'application. Au retour dans SafeLink, l'historique est relu
      s'il a changé (empreinte : nombre et date de la plus récente).
-2. **Bulle qui se range** : entière pendant 8 secondes, puis au repos.
-   Elle est montrée entière au premier départ de SafeLink après son
-   activation, après un déplacement, et :
-   - **jusqu'à Android 9** : cachée au repos ; elle revient quand un texte
-     est copié. Android prévient de la copie (`OnPrimaryClipChangedListener`)
+2. **Bulle qui disparaît** : entière pendant 8 secondes, puis cachée
+   complètement. Elle est montrée entière au premier départ de SafeLink
+   après son activation, après un déplacement, et :
+   - **jusqu'à Android 9** : elle revient quand un lien ou un texte est
+     copié. Android prévient de la copie (`OnPrimaryClipChangedListener`)
      sans montrer le texte : seul le type (`text/*`) est regardé, pour
      ignorer une image. Le texte n'est lu que si l'on touche la bulle.
-   - **à partir d'Android 10** : rangée à moitié dans le bord de l'écran,
-     pâlie ; la toucher ouvre le panneau directement.
+   - **à partir d'Android 10** : rien ne peut la faire revenir à la copie
+     (voir le contexte). Sa notification la remplace : « Un lien copié ?
+     Touchez ici pour le vérifier. » ouvre le panneau. Sur Android 13 et
+     suivants, la notification d'un service au premier plan n'est visible
+     qu'avec l'autorisation des notifications : Paramètres la demande à
+     l'activation de la bulle ; en cas de refus, il propose la tuile du
+     volet.
    Elle reste cachée tant que SafeLink (application ou panneau) est à
    l'écran. Paramètres dit, selon la version, comment elle se comporte.
 
-Aucune nouvelle permission.
+   Première version du même jour : sur Android 10+, la bulle se rangeait à
+   moitié dans le bord, pâlie ; le porteur a préféré qu'elle disparaisse.
+
+Nouvelle permission : `POST_NOTIFICATIONS` (Android 13+), demandée
+seulement à l'activation de la bulle sur Android 10 ou plus.
 
 Écartés : un service d'accessibilité ou la lecture des journaux pour
 détecter les copies (voir le contexte) ; une fenêtre superposée en Flutter
 dans le service (moins fiable : focus, clavier, TalkBack, Retour) ; une
-bulle entièrement cachée sur Android 10+, qu'on ne pourrait rouvrir que par
-la notification (proposé au porteur, en option si elle est préférée).
+bulle rangée au bord sur Android 10+ (première version, remplacée à la
+demande du porteur).
 
 ## Conséquences
 

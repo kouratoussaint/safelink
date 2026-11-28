@@ -183,7 +183,8 @@ jobs:
             tools/check_apk_permissions.sh "$apk" android.permission.INTERNET \
               android.permission.SYSTEM_ALERT_WINDOW \
               android.permission.FOREGROUND_SERVICE \
-              android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+              android.permission.FOREGROUND_SERVICE_SPECIAL_USE \
+              android.permission.POST_NOTIFICATIONS
           done
           python3 tools/check_16kb_alignment.py "$out/app-arm64-v8a-release.apk"
 

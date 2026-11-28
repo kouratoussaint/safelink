@@ -98,7 +98,8 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) et
 
 La permission Android utilisée par défaut est l'accès à Internet (la bulle
 flottante, optionnelle, demande en plus « Afficher par-dessus d'autres
-applis », [ADR 0014](docs/adr/0014-raccourcis-systeme.md) et
+applis » et, sur Android 13 et suivants, les notifications,
+[ADR 0014](docs/adr/0014-raccourcis-systeme.md) et
 [0015](docs/adr/0015-panneau-rapide.md)). Internet sert
 uniquement à la vérification en ligne, activée par défaut et désactivable dans les
 paramètres ([ADR 0013](docs/adr/0013-en-ligne-par-defaut.md)) : le nom du site

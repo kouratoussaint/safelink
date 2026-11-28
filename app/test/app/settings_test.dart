@@ -199,18 +199,26 @@ void main() {
       // Explication avant d'ouvrir le réglage Android.
       expect(find.text('Autoriser la bulle'), findsOneWidget);
       expect(find.textContaining('ne lit ni votre écran'), findsOneWidget);
-      // Android 10 et suivants : rangée au bord, faute d'être prévenue des
-      // copies.
-      expect(find.textContaining('se range au bord'), findsOneWidget);
+      // Android 10 et suivants : cachée, la notification la remplace, faute
+      // d'être prévenue des copies.
+      expect(
+        find.textContaining('touchez la notification SafeLink'),
+        findsOneWidget,
+      );
       await tester.tap(find.text('Ouvrir le réglage'));
       await tester.pumpAndSettle();
       expect(shortcuts.overlaySettingsOpened, 1);
 
-      // L'utilisateur donne l'autorisation puis revient.
+      // L'utilisateur donne l'autorisation puis revient ; les notifications
+      // sont alors demandées (Android 13+), et accordées.
       shortcuts.bubblePermitted = true;
       await resume(tester);
+      expect(shortcuts.notificationRequests, 1);
       expect(
-        find.text('Bulle activée\u00a0: elle reste rangée au bord de l’écran.'),
+        find.text(
+          'Bulle activée\u00a0: elle disparaît après quelques secondes. Pour '
+          'vérifier un lien copié, touchez la notification SafeLink.',
+        ),
         findsOneWidget,
       );
       expect(bubbleSwitch(tester).value, isTrue);
@@ -266,8 +274,47 @@ void main() {
       await resume(tester);
       expect(
         find.text(
-          'Bulle activée\u00a0: elle apparaît quand vous copiez un texte.',
+          'Bulle activée\u00a0: elle apparaît quand vous copiez un lien ou un '
+          'texte.',
         ),
+        findsOneWidget,
+      );
+      // Elle revient d'elle-même : pas besoin des notifications.
+      expect(shortcuts.notificationRequests, 0);
+    });
+
+    testWidgets('notifications refusées : la tuile est proposée', (
+      tester,
+    ) async {
+      final shortcuts = FakeShortcuts(
+        bubbleSupported: true,
+        bubblePermitted: true,
+        notificationsAnswer: false,
+      );
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      expect(shortcuts.notificationRequests, 1);
+      expect(find.textContaining('Sans notifications'), findsOneWidget);
+      expect(bubbleSwitch(tester).value, isTrue);
+    });
+
+    testWidgets('notifications déjà permises : rien n’est redemandé', (
+      tester,
+    ) async {
+      final shortcuts = FakeShortcuts(
+        bubbleSupported: true,
+        bubblePermitted: true,
+        notificationsAllowed: true,
+      );
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      expect(shortcuts.notificationRequests, 0);
+      expect(
+        find.textContaining('touchez la notification SafeLink'),
         findsOneWidget,
       );
     });

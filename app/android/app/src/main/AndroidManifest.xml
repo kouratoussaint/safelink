@@ -4,11 +4,12 @@
 
   Principe : le minimum de permissions. INTERNET sert uniquement à la
   vérification en ligne, activée par défaut et désactivable (ADR 0010 à
-  0013), toujours en HTTPS. Les trois permissions de la bulle flottante ne
-  servent que si l'utilisateur l'active (ADR 0014 et 0015). CAMERA sera ajoutée avec le scanner
-  QR (lot E). Le partage entrant, l'action de sélection de texte et la
-  tuile du volet (texte seulement) ne demandent aucune permission. La CI échoue si l'APK release contient une permission hors de
-  la liste autorisée (tools/check_apk_permissions.sh).
+  0013), toujours en HTTPS. Les quatre permissions de la bulle flottante
+  ne servent que si l'utilisateur l'active (ADR 0014 et 0015). CAMERA
+  sera ajoutée avec le scanner QR (lot E). Le partage entrant, l'action de
+  sélection de texte et la tuile du volet (texte seulement) ne demandent
+  aucune permission. La CI échoue si l'APK release contient une permission
+  hors de la liste autorisée (tools/check_apk_permissions.sh).
 
   Les sauvegardes cloud et les transferts d'appareil sont désactivés :
   l'historique local ne doit jamais quitter le téléphone.
@@ -24,6 +25,12 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!--
+      Notifications (Android 13 et suivants), demandées seulement quand la
+      bulle est activée sur Android 10 ou plus : la bulle s'y cache après
+      quelques secondes et sa notification la remplace (ADR 0015).
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:label="SafeLink"
         android:name="${applicationName}"

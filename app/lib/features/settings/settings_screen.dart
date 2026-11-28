@@ -243,13 +243,33 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
       final platform = ref.read(shortcutsProvider);
       final state = await platform.bubbleState();
       if (state.permitted) {
-        await platform.setBubble(enabled: true);
-        _snack(_enabledText(l10n, state));
+        await _turnOn(l10n, state);
       } else {
         _snack(l10n.bubbleNotPermitted);
       }
     }
     ref.invalidate(bubbleStateProvider);
+  }
+
+  /// Active la bulle, autorisée. Là où elle ne peut pas revenir à la copie
+  /// (Android 10 et suivants), sa notification la remplace quand elle est
+  /// cachée : demander l'autorisation des notifications s'il le faut.
+  Future<void> _turnOn(AppLocalizations l10n, BubbleState state) async {
+    final platform = ref.read(shortcutsProvider);
+    await platform.setBubble(enabled: true);
+    ref.invalidate(bubbleStateProvider);
+    if (state.detectsCopies) {
+      _snack(l10n.bubbleEnabledCopies);
+      return;
+    }
+    final notifications =
+        state.notificationsAllowed || await platform.requestNotifications();
+    ref.invalidate(bubbleStateProvider);
+    _snack(
+      notifications
+          ? l10n.bubbleEnabledNotification
+          : l10n.bubbleEnabledNoNotification,
+    );
   }
 
   Future<void> _toggleBubble({required bool enabled}) async {
@@ -262,9 +282,7 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
     }
     final state = await platform.bubbleState();
     if (state.permitted) {
-      await platform.setBubble(enabled: true);
-      ref.invalidate(bubbleStateProvider);
-      _snack(_enabledText(l10n, state));
+      await _turnOn(l10n, state);
       return;
     }
     if (!mounted) return;
@@ -279,10 +297,6 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
       _snack(l10n.bubbleNotPermitted);
     }
   }
-
-  /// Où la bulle se tient une fois activée, selon la version d'Android.
-  static String _enabledText(AppLocalizations l10n, BubbleState state) =>
-      state.detectsCopies ? l10n.bubbleEnabledCopies : l10n.bubbleEnabledTucked;
 
   Future<void> _addTile() async {
     final l10n = AppLocalizations.of(context);
@@ -396,11 +410,11 @@ class _BubbleDialog extends StatelessWidget {
             PictoRow(
               icon: detectsCopies
                   ? Icons.content_copy_rounded
-                  : Icons.last_page_rounded,
+                  : Icons.notifications_outlined,
               color: primary,
               text: detectsCopies
                   ? l10n.bubbleDialogCopies
-                  : l10n.bubbleDialogTucked,
+                  : l10n.bubbleDialogNotification,
             ),
             const SizedBox(height: 8),
             Text(

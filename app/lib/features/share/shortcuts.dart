@@ -32,6 +32,7 @@ final class BubbleState {
     this.permitted = false,
     this.enabled = false,
     this.detectsCopies = false,
+    this.notificationsAllowed = false,
   });
 
   /// Lit l'état envoyé par Android.
@@ -41,6 +42,7 @@ final class BubbleState {
           permitted: raw['permitted'] == true,
           enabled: raw['enabled'] == true,
           detectsCopies: raw['detectsCopies'] == true,
+          notificationsAllowed: raw['notifications'] == true,
         )
       : const BubbleState();
 
@@ -53,10 +55,13 @@ final class BubbleState {
   /// La bulle est choisie et active.
   final bool enabled;
 
-  /// Android prévient d'une copie (Android 9 et avant) : la bulle se cache
-  /// et revient à la copie. Sinon, elle se range au bord de l'écran
-  /// (ADR 0015).
+  /// Android prévient d'une copie (Android 9 et avant) : la bulle cachée
+  /// revient à la copie. Sinon, sa notification la remplace (ADR 0015).
   final bool detectsCopies;
+
+  /// Les notifications de SafeLink sont visibles (sur Android 13 et
+  /// suivants, il faut l'autorisation).
+  final bool notificationsAllowed;
 
   @override
   bool operator ==(Object other) =>
@@ -64,10 +69,17 @@ final class BubbleState {
       other.supported == supported &&
       other.permitted == permitted &&
       other.enabled == enabled &&
-      other.detectsCopies == detectsCopies;
+      other.detectsCopies == detectsCopies &&
+      other.notificationsAllowed == notificationsAllowed;
 
   @override
-  int get hashCode => Object.hash(supported, permitted, enabled, detectsCopies);
+  int get hashCode => Object.hash(
+    supported,
+    permitted,
+    enabled,
+    detectsCopies,
+    notificationsAllowed,
+  );
 }
 
 /// Raccourcis du système : tuile du volet des réglages rapides et bulle
@@ -89,6 +101,10 @@ abstract interface class ShortcutsPlatform {
   /// Active ou désactive la bulle ; l'activation n'a lieu que si
   /// l'autorisation est donnée.
   Future<BubbleState> setBubble({required bool enabled});
+
+  /// Demande l'autorisation des notifications (Android 13 et suivants) ;
+  /// `true` si elles sont permises.
+  Future<bool> requestNotifications();
 }
 
 /// Raccourcis servis par `MainActivity` sur le canal
@@ -130,6 +146,17 @@ final class PlatformShortcuts implements ShortcutsPlatform {
   Future<bool> openOverlaySettings() async {
     try {
       return await _channel.invokeMethod<bool>('openOverlaySettings') ?? false;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> requestNotifications() async {
+    try {
+      return await _channel.invokeMethod<bool>('requestNotifications') ?? false;
     } on PlatformException {
       return false;
     } on MissingPluginException {

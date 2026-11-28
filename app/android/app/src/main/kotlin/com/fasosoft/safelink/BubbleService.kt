@@ -42,13 +42,16 @@ import kotlin.math.hypot
  * la désactive.
  *
  * Elle ne reste pas affichée : après quelques secondes sans être touchée,
- * - jusqu'à Android 9, elle disparaît, et revient quand un texte est
- *   copié : Android prévient SafeLink de la copie, sans lui montrer le
- *   texte (seul son type est regardé, pour ignorer une image) ;
- * - à partir d'Android 10, qui ne prévient plus aucune application d'une
- *   copie, elle se range à moitié dans le bord de l'écran, pâlie ; la
- *   toucher ouvre le panneau.
- * Elle se cache tant que SafeLink (application ou panneau) est à l'écran.
+ * elle disparaît complètement (demande du porteur).
+ * - Jusqu'à Android 9, elle revient quand un texte est copié : Android
+ *   prévient SafeLink de la copie, sans lui montrer le texte (seul son
+ *   type est regardé, pour ignorer une image).
+ * - À partir d'Android 10, Android ne prévient plus aucune application
+ *   d'une copie : la notification de la bulle la remplace, la toucher
+ *   ouvre le panneau. Sur Android 13 et suivants, elle n'est visible
+ *   qu'avec l'autorisation des notifications, demandée par Paramètres.
+ * Elle se cache aussi tant que SafeLink (application ou panneau) est à
+ * l'écran.
  *
  * Elle ne lit rien elle-même : ni l'écran, ni le texte copié. Elle demande
  * l'autorisation « Afficher par-dessus d'autres applis », indisponible sur
@@ -238,6 +241,8 @@ class BubbleService : Service() {
                         positionAnimator?.cancel()
                         view.animate().cancel()
                         view.alpha = 1f
+                        view.scaleX = 1f
+                        view.scaleY = 1f
                         showCloseTarget()
                     }
                     if (dragging) {
@@ -324,9 +329,8 @@ class BubbleService : Service() {
     }
 
     /**
-     * Affiche la bulle selon l'état : cachée si SafeLink est à l'écran,
-     * entière si elle est réveillée, sinon au repos (cachée jusqu'à
-     * Android 9, rangée au bord ensuite).
+     * Affiche la bulle selon l'état : entière si elle est réveillée ou
+     * tenue, cachée sinon, et toujours cachée si SafeLink est à l'écran.
      */
     private fun render() {
         val view = bubble ?: return
@@ -339,37 +343,22 @@ class BubbleService : Service() {
             wake()
             return
         }
-        when {
-            awake || dragging -> {
-                view.visibility = View.VISIBLE
-                tuck(false)
-            }
-            detectsCopies() -> view.visibility = View.GONE
-            else -> {
-                view.visibility = View.VISIBLE
-                tuck(true)
-            }
+        if (awake || dragging) {
+            view.visibility = View.VISIBLE
+            snapToEdge()
+        } else {
+            view.visibility = View.GONE
         }
     }
 
-    /**
-     * Range la bulle à moitié dans le bord le plus proche, pâlie
-     * ([inside]), ou la ramène entière contre ce bord.
-     */
-    private fun tuck(inside: Boolean) {
+    /** Ramène la bulle contre le bord le plus proche. */
+    private fun snapToEdge() {
         val view = bubble ?: return
         val params = bubbleParams ?: return
         val width = resources.displayMetrics.widthPixels
         val frame = params.width
-        val left = params.x + frame / 2 < width / 2
-        val target = when {
-            inside && left -> -frame / 2
-            inside -> width - frame / 2
-            left -> 0
-            else -> width - frame
-        }
+        val target = if (params.x + frame / 2 < width / 2) 0 else width - frame
         val duration = if (animationsOff()) 0L else 220L
-        view.animate().alpha(if (inside) TUCKED_ALPHA else 1f).setDuration(duration).start()
         if (params.x == target) return
         positionAnimator?.cancel()
         positionAnimator = ValueAnimator.ofInt(params.x, target).apply {
@@ -450,9 +439,6 @@ class BubbleService : Service() {
         /** Temps pendant lequel la bulle reste entière sans être touchée. */
         private const val AWAKE_MS = 8_000L
 
-        /** Opacité de la bulle rangée au bord. */
-        private const val TUCKED_ALPHA = 0.55f
-
         private var instance: BubbleService? = null
 
         /** Écrans de SafeLink à l'écran (application, panneau rapide). */
@@ -469,8 +455,8 @@ class BubbleService : Service() {
         }
 
         /**
-         * Android prévient d'une copie (Android 9 et avant) : la bulle peut
-         * se cacher et revenir à la copie. Ensuite, elle se range au bord.
+         * Android prévient d'une copie (Android 9 et avant) : la bulle
+         * revient à la copie. Ensuite, la notification la remplace.
          */
         fun detectsCopies(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
 
@@ -483,7 +469,22 @@ class BubbleService : Service() {
             "permitted" to canDraw(context),
             "enabled" to (isEnabled(context) && canDraw(context)),
             "detectsCopies" to detectsCopies(),
+            "notifications" to notificationsAllowed(context),
         )
+
+        /**
+         * Les notifications de SafeLink sont visibles. Sur Android 13 et
+         * suivants, il faut l'autorisation ; sans elle, la notification de
+         * la bulle n'apparaît que dans le gestionnaire des applis actives.
+         */
+        fun notificationsAllowed(context: Context): Boolean =
+            context.getSystemService(NotificationManager::class.java)
+                ?.areNotificationsEnabled() == true
+
+        /** Republie la notification, par exemple une fois autorisée. */
+        fun refreshNotification() {
+            instance?.startInForeground()
+        }
 
         fun isEnabled(context: Context): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_ENABLED, false)

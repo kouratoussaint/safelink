@@ -42,8 +42,11 @@ Règles :
   (tonal) et « Fermer ». Texte avec liens : même choix que le partage, sans
   grand pictogramme. Rien de copié ou texte secret : refus expliqué,
   « Fermer ». Toucher à côté, la croix ou Retour ferment.
-- Bulle : entière 8 s, puis cachée (Android 9 et avant, revient à la
-  copie) ou rangée à moitié dans le bord, opacité 55 % (Android 10+).
+- Bulle : entière 8 s, puis cachée complètement. Android 9 et avant :
+  revient à la copie d'un lien ou d'un texte. Android 10+ : la
+  notification de la bulle (« Un lien copié ? Touchez ici pour le
+  vérifier. ») ouvre le panneau ; notifications demandées à l'activation
+  sur Android 13+.
 - Paramètres › Raccourcis : « Ajouter » la tuile (Android 13+) ou la marche
   à suivre ; rappel de l'action de sélection.
 - Accueil : « Vérifier sans ouvrir SafeLink » mène à l'aide, qui montre

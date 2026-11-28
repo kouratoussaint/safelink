@@ -8,7 +8,7 @@
     <!-- Bulle flottante. -->
     <string name="bubble_channel">Bulle SafeLink</string>
     <string name="bubble_notification_title">Bulle SafeLink active</string>
-    <string name="bubble_notification_text">Touchez ici ou la bulle pour vérifier le lien copié.</string>
+    <string name="bubble_notification_text">Un lien copié\u00A0? Touchez ici pour le vérifier.</string>
     <string name="bubble_notification_stop">Arrêter</string>
     <string name="bubble_description">SafeLink : vérifier le lien copié</string>
     <string name="bubble_close">Fermer la bulle</string>
