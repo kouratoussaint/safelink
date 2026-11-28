@@ -7,8 +7,10 @@ import '../features/analysis_flow_test.dart' as flow;
 import '../features/help_flow_test.dart' as help;
 import '../features/history_flow_test.dart' as history;
 import '../features/online_flow_test.dart' as online;
+import '../features/quick_panel_test.dart' as quick;
 import '../features/share_flow_test.dart' as share;
 import '../helpers/pump_app.dart';
+import '../helpers/pump_quick.dart';
 import '../history/history_store_test.dart' show entryOf, secretUrl;
 
 /// Parcourt tous les écrans ; tout débordement de mise en page fait échouer
@@ -214,6 +216,36 @@ void main() {
       );
       await share.visitShareScreens(tester);
     });
+  }
+
+  for (final (size, scale) in [
+    (const Size(320, 640), 2.0),
+    (const Size(320, 480), 1.0),
+    (referenceSize, 1.0),
+  ]) {
+    for (final expert in [false, true]) {
+      testWidgets('panneau rapide : ${size.width}×${size.height} dp, '
+          'texte × $scale, ${expert ? 'expert' : 'simple'}', (tester) async {
+        for (final MapEntry(key: name, value: copied)
+            in quick.quickScreens.entries) {
+          // Un nouveau panneau pour chaque écran.
+          await tester.pumpWidget(const SizedBox());
+          await pumpQuickPanel(
+            tester,
+            copied: copied,
+            size: size,
+            textScale: scale,
+            expert: expert,
+            settle: copied != null,
+          );
+          expect(tester.takeException(), isNull, reason: name);
+          if (copied == null) continue;
+          // Tout le contenu se fait défiler jusqu'au bout, sans débordement.
+          await quick.scrollPanelToEnd(tester);
+          expect(tester.takeException(), isNull, reason: '$name, bas');
+        }
+      });
+    }
   }
 
   testWidgets('conseils, aide, confidentialité : 320 dp, texte à 200 %', (

@@ -17,6 +17,12 @@ abstract interface class HistoryStore {
   /// Toutes les vérifications, de la plus récente à la plus ancienne.
   Future<List<HistoryEntry>> entries();
 
+  /// Empreinte légère du contenu (nombre de vérifications, date de la plus
+  /// récente) : elle change quand une vérification est ajoutée ou
+  /// remplacée, par exemple depuis le panneau rapide, qui a son propre
+  /// moteur Flutter.
+  Future<String> stamp();
+
   /// Ajoute [entry].
   Future<void> add(HistoryEntry entry);
 
@@ -135,6 +141,15 @@ final class SqfliteHistoryStore implements HistoryStore {
     return [for (final row in rows) await _entry(row)];
   }
 
+  @override
+  Future<String> stamp() async {
+    final row = (await _db.rawQuery(
+      'SELECT COUNT(*) AS n, COALESCE(MAX(analyzed_at), 0) AS last '
+      'FROM entries',
+    )).single;
+    return '${row['n']}:${row['last']}';
+  }
+
   Future<HistoryEntry> _entry(Map<String, Object?> row) async {
     final id = row['id']! as String;
     HistoryDetails? details;
@@ -237,6 +252,9 @@ final class MemoryHistoryBackend implements HistoryBackend, HistoryStore {
   /// Nombre d'ouvertures (une seule attendue).
   int openings = 0;
 
+  /// Nombre de lectures de toutes les vérifications.
+  int reads = 0;
+
   @override
   Future<bool> exists() async => _opened;
 
@@ -248,15 +266,27 @@ final class MemoryHistoryBackend implements HistoryBackend, HistoryStore {
   }
 
   @override
-  Future<List<HistoryEntry>> entries() async =>
+  Future<List<HistoryEntry>> entries() async {
+    reads++;
+    return _list();
+  }
+
+  List<HistoryEntry> _list() =>
       _entries.values.toList()
         ..sort((a, b) => b.analyzedAt.compareTo(a.analyzedAt));
 
   @override
+  Future<String> stamp() async {
+    final last = _entries.values
+        .map((e) => e.analyzedAt.millisecondsSinceEpoch)
+        .fold(0, (a, b) => a > b ? a : b);
+    return '${_entries.length}:$last';
+  }
+
+  @override
   Future<void> add(HistoryEntry entry) async {
     _entries[entry.id] = entry;
-    final sorted = await entries();
-    for (final old in sorted.skip(HistoryStore.maxEntries)) {
+    for (final old in _list().skip(HistoryStore.maxEntries)) {
       _entries.remove(old.id);
     }
   }

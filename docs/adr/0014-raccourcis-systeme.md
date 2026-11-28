@@ -1,6 +1,8 @@
 # 0014 — Raccourcis du système : sélection de texte, tuile, bulle
 
-- Statut : accepté (28/11/2026), demande du porteur
+- Statut : accepté (28/11/2026), demande du porteur ; la tuile et la
+  bulle ouvrent désormais le panneau rapide, et la bulle se range
+  ([ADR 0015](0015-panneau-rapide.md))
 
 ## Contexte
 

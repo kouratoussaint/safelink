@@ -27,13 +27,23 @@ Règles :
 - Toute nouvelle couleur passe par `AppTheme` ou `SafeLinkColors` et par le
   test de contraste.
 
-## Raccourcis du système (ADR 0014)
+## Raccourcis du système (ADR 0014 et 0015)
 
 - « Vérifier avec SafeLink » dans le menu de sélection de texte : même
   écran que le partage, titre « Texte sélectionné ».
-- Tuile « SafeLink — Vérifier le lien copié » dans le volet du haut : le
-  texte copié est vérifié comme un partage (titre « Texte copié ») ; rien
-  de copié ou texte secret : refus expliqué en pictogramme.
+- Tuile « SafeLink — Vérifier le lien copié » dans le volet du haut, bulle
+  flottante et notification de la bulle : ouvrent le **panneau rapide**.
+- Panneau rapide : carte qui monte du bas (82 % de la hauteur au plus),
+  fond « canevas », coins de 28 dp, application du dessous assombrie et
+  visible en haut. En-tête : symbole SafeLink, « Vérification rapide »,
+  croix. Contenu : verdict resserré (halo de 88 dp, mot d'alerte en
+  `headlineMedium`), vrai site, destination d'un lien raccourci, quatre
+  raisons au plus, trois gestes au plus, puis « Tout voir dans SafeLink »
+  (tonal) et « Fermer ». Texte avec liens : même choix que le partage, sans
+  grand pictogramme. Rien de copié ou texte secret : refus expliqué,
+  « Fermer ». Toucher à côté, la croix ou Retour ferment.
+- Bulle : entière 8 s, puis cachée (Android 9 et avant, revient à la
+  copie) ou rangée à moitié dans le bord, opacité 55 % (Android 10+).
 - Paramètres › Raccourcis : « Ajouter » la tuile (Android 13+) ou la marche
   à suivre ; rappel de l'action de sélection.
 - Accueil : « Vérifier sans ouvrir SafeLink » mène à l'aide, qui montre

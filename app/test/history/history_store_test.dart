@@ -72,6 +72,37 @@ void main() {
     expect(keys.key, hasLength(32));
   });
 
+  test(
+    'empreinte : change à l’ajout et au remplacement, pas à la relecture',
+    () async {
+      final first = await backend().open();
+      final empty = await first.stamp();
+      final entry = entryOf(
+        AnalysisKind.link,
+        secretUrl,
+        id: 'panneau',
+        at: DateTime.utc(2026, 11, 20),
+      );
+      await first.add(entry);
+      final added = await first.stamp();
+      expect(added, isNot(empty));
+      await first.entries();
+      expect(await first.stamp(), added);
+
+      // Même identifiant, analyse plus récente (« Tout voir dans SafeLink »).
+      await first.add(
+        entryOf(
+          AnalysisKind.link,
+          secretUrl,
+          id: 'panneau',
+          at: DateTime.utc(2026, 11, 21),
+        ),
+      );
+      expect(await first.stamp(), isNot(added));
+      expect(await first.entries(), hasLength(1));
+    },
+  );
+
   test('enregistre et relit, de la plus récente à la plus ancienne', () async {
     final store = await backend().open();
     final older = entryOf(

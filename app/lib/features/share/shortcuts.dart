@@ -31,6 +31,7 @@ final class BubbleState {
     this.supported = false,
     this.permitted = false,
     this.enabled = false,
+    this.detectsCopies = false,
   });
 
   /// Lit l'état envoyé par Android.
@@ -39,6 +40,7 @@ final class BubbleState {
           supported: raw['supported'] == true,
           permitted: raw['permitted'] == true,
           enabled: raw['enabled'] == true,
+          detectsCopies: raw['detectsCopies'] == true,
         )
       : const BubbleState();
 
@@ -51,15 +53,21 @@ final class BubbleState {
   /// La bulle est choisie et active.
   final bool enabled;
 
+  /// Android prévient d'une copie (Android 9 et avant) : la bulle se cache
+  /// et revient à la copie. Sinon, elle se range au bord de l'écran
+  /// (ADR 0015).
+  final bool detectsCopies;
+
   @override
   bool operator ==(Object other) =>
       other is BubbleState &&
       other.supported == supported &&
       other.permitted == permitted &&
-      other.enabled == enabled;
+      other.enabled == enabled &&
+      other.detectsCopies == detectsCopies;
 
   @override
-  int get hashCode => Object.hash(supported, permitted, enabled);
+  int get hashCode => Object.hash(supported, permitted, enabled, detectsCopies);
 }
 
 /// Raccourcis du système : tuile du volet des réglages rapides et bulle

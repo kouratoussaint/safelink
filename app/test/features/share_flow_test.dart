@@ -3,12 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/app/router.dart';
 import 'package:safelink/app/routes.dart';
+import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/history/history_controller.dart';
+import 'package:safelink/features/history/history_store.dart';
 import 'package:safelink/features/results/result_views.dart';
 import 'package:safelink/features/share/shared_content.dart';
 
 import '../helpers/fake_share.dart';
 import '../helpers/fake_speaker.dart';
 import '../helpers/pump_app.dart';
+import '../history/history_store_test.dart' show entryOf;
 import 'analysis_flow_test.dart' as flow;
 
 /// Message avec deux liens différents.
@@ -238,9 +242,7 @@ void main() {
       expect(find.text('Le texte et ses 2 liens'), findsOneWidget);
     });
 
-    testWidgets('lien copié depuis la tuile : analysé tout de suite', (
-      tester,
-    ) async {
+    testWidgets('lien copié : analysé tout de suite', (tester) async {
       await pumpSafeLinkApp(
         tester,
         shareSource: FakeShareSource([
@@ -273,6 +275,66 @@ void main() {
         ]),
       );
       expect(find.textContaining('marqué secret'), findsOneWidget);
+    });
+  });
+
+  group('depuis le panneau rapide', () {
+    testWidgets(
+      '« Tout voir dans SafeLink » : vérification refaite en entier',
+      (tester) async {
+        await pumpSafeLinkApp(
+          tester,
+          shareSource: FakeShareSource([
+            SharedRequest(
+              AnalysisRequest(
+                AnalysisKind.link,
+                'http://orange-gain.xyz/retrait',
+              ),
+            ),
+          ]),
+        );
+        expect(appBarTitle('Résultat de l’analyse'), findsOneWidget);
+        expect(find.text('Lien suspect'), findsOneWidget);
+        // Pas d'écran de choix : le panneau a déjà choisi.
+        expect(find.text(question), findsNothing);
+      },
+    );
+
+    testWidgets('déjà enregistrée par le panneau : remplacée, sans doublon', (
+      tester,
+    ) async {
+      final history = MemoryHistoryBackend();
+      await history.add(
+        entryOf(
+          AnalysisKind.link,
+          'http://orange-gain.xyz/retrait',
+          id: 'panneau',
+          at: DateTime.utc(2026, 11, 2),
+        ),
+      );
+      await pumpSafeLinkApp(
+        tester,
+        historyBackend: history,
+        preferences: {
+          HistoryChoiceController.storageKey: HistoryChoice.enabled.name,
+        },
+        shareSource: FakeShareSource([
+          SharedRequest(
+            AnalysisRequest(
+              AnalysisKind.link,
+              'http://orange-gain.xyz/retrait',
+              historyId: 'panneau',
+            ),
+          ),
+        ]),
+      );
+      final entries = await history.entries();
+      expect(entries, hasLength(1));
+      expect(entries.single.id, 'panneau');
+      expect(
+        entries.single.analyzedAt.isAfter(DateTime.utc(2026, 11, 3)),
+        isTrue,
+      );
     });
   });
 

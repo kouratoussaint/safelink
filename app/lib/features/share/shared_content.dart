@@ -10,7 +10,8 @@ enum ShareOrigin {
   /// « Vérifier avec SafeLink » dans le menu de sélection de texte.
   selection,
 
-  /// Texte copié, vérifié depuis la tuile du volet ou la bulle.
+  /// Texte copié, vérifié depuis la tuile du volet ou la bulle (panneau
+  /// rapide).
   clipboard;
 
   static ShareOrigin parse(Object? raw) => switch (raw) {
@@ -28,10 +29,11 @@ enum ShareOrigin {
 sealed class SharedContent {
   const new();
 
-  /// Lit la description envoyée par l'activité Android (`MainActivity`), ou
-  /// `null` si [raw] n'est pas un partage.
+  /// Lit la description envoyée par l'activité Android (`MainActivity` ou
+  /// `QuickCheckActivity`), ou `null` si [raw] n'est pas un partage.
   static SharedContent? fromPlatform(Object? raw) {
     if (raw is! Map) return null;
+    if (raw['source'] == 'quick') return SharedRequest.fromPlatform(raw);
     final origin = ShareOrigin.parse(raw['source']);
     if (raw['unreadable'] == true) return SharedNothing(origin: origin);
     if (raw['sensitive'] == true) {
@@ -95,6 +97,52 @@ final class SharedText extends SharedContent {
 
   @override
   String toString() => 'SharedText(${text.length})';
+}
+
+/// Vérification choisie dans le panneau rapide, à refaire en entier dans
+/// l'application (« Tout voir dans SafeLink ») : rien à choisir.
+final class SharedRequest extends SharedContent {
+  /// Crée la vérification transmise.
+  const new(this.request);
+
+  /// Lit la vérification transmise par `MainActivity` (`source` =
+  /// `quick`), ou `null` si elle est incomplète.
+  static SharedRequest? fromPlatform(Map<Object?, Object?> raw) {
+    final kind = switch (raw['kind']) {
+      'link' => AnalysisKind.link,
+      'message' => AnalysisKind.message,
+      _ => null,
+    };
+    final text = raw['text'];
+    final historyId = raw['historyId'];
+    if (kind == null || text is! String || text.trim().isEmpty) return null;
+    return SharedRequest(
+      AnalysisRequest(
+        kind,
+        text,
+        historyId: historyId is String && historyId.isNotEmpty
+            ? historyId
+            : null,
+      ),
+    );
+  }
+
+  /// Analyse à refaire.
+  final AnalysisRequest request;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SharedRequest &&
+      other.request.kind == request.kind &&
+      other.request.text == request.text &&
+      other.request.historyId == request.historyId;
+
+  @override
+  int get hashCode =>
+      Object.hash(request.kind, request.text, request.historyId);
+
+  @override
+  String toString() => 'SharedRequest(${request.kind.name})';
 }
 
 /// Nature d'un fichier partagé, pour le dire avec un pictogramme.
@@ -235,6 +283,8 @@ final class RefuseShared extends SharePlan {
 
 /// Décide quoi faire d'un partage.
 ///
+/// - Une vérification transmise par le panneau rapide : refaite telle
+///   quelle.
 /// - Un lien seul (le cas d'un navigateur ou de YouTube) : analysé tout de
 ///   suite comme un lien.
 /// - Un texte sans lien : analysé tout de suite comme un message.
@@ -246,6 +296,9 @@ SharePlan planShare(
   UrlParser? parser,
   int maxMessageLength = MessageAnalyzer.defaultMaxLength,
 }) {
+  if (content case SharedRequest(:final request)) {
+    return AnalyzeShared(request);
+  }
   if (content is! SharedText) return RefuseShared(content);
   final text = content.text;
   final urlParser = parser ?? UrlParser();
