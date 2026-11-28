@@ -202,31 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final scale = MediaQuery.textScalerOf(context).scale(1);
-                        if (!isLink || constraints.maxWidth < 300 * scale) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              field,
-                              const SizedBox(height: 10),
-                              paste,
-                            ],
-                          );
-                        }
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(child: field),
-                              const SizedBox(width: 10),
-                              paste,
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                    field,
                     if (preview != null) ...[
                       const SizedBox(height: 8),
                       Text(
@@ -236,6 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
+                    const SizedBox(height: 10),
+                    paste,
                     const SizedBox(height: 14),
                     AnimatedScale(
                       scale: _canAnalyze ? 1 : 0.98,
