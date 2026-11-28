@@ -6,6 +6,24 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Ce qu'est le lien, ce que contient le message
+
+- Sous « Le vrai site », une carte dit ce qu'ouvrirait le lien : « Fichier
+  Google Drive : ce lien ouvre un fichier déposé par une personne »,
+  discussion WhatsApp (numéro masqué au milieu), invitation à un groupe,
+  formulaire, application sur Google Play ou fichier `.apk` à installer,
+  vidéo, publication ou page d'un réseau social, offre d'emploi, lien
+  raccourci, site officiel d'une marque (avec sa limite) ou imitation
+  (« Ce site n'appartient pas à Orange, mais son nom y ressemble »). Avec
+  une mise en garde quand elle aide. Aussi dans le panneau rapide et lue
+  par « Écouter ». Reconnaissance dans le moteur (`LinkIdentity`).
+- Pour un message : « Dans ce message » (liens, numéros, codes à composer,
+  sommes d'argent).
+- Pastilles « Sur le téléphone ✓ » et « En ligne ✓ » sous le verdict, pour
+  voir que la vérification en ligne a eu lieu (ou « pas de réponse »,
+  « désactivée ») ; pendant l'analyse d'un lien, l'étape « En ligne » est
+  annoncée dès le début.
+
 ### Modifié — Bulle : panneau rapide, et elle se range
 
 - Toucher la bulle, la tuile du volet ou la notification de la bulle ouvre

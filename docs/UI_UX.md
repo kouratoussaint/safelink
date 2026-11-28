@@ -164,16 +164,26 @@ montrés qu'à qui le demande.
   Quand `https://` est ajouté d'office, l'adresse réellement analysée est
   affichée sous le champ.
 - Pendant l'analyse : radar animé, sans pourcentage inventé, et « Analyse
-  en cours… ». En
-  cas d'erreur : aucun résultat affiché, bouton « Réessayer ».
+  en cours… ». Étapes en pastilles : « Sur le téléphone », puis
+  « En ligne », annoncée dès le début pour un lien quand la vérification
+  en ligne est activée. En cas d'erreur : aucun résultat affiché, bouton
+  « Réessayer ».
 - Verdict : libellé, icône et couleur disent la même chose ; un libellé
   rassurant est toujours accompagné de sa limite (« Cela ne garantit pas
   que le lien soit sûr. »). La confiance est lue par TalkBack et affichée
   en mode expert.
-- Ordre des sections : verdict, adresse avec le domaine enregistré en
-  gras, aperçu de la page, « Pourquoi ce résultat ? », « Que faire ? »,
-  puis les explications (repliées en mode simple) et, en mode expert, les
-  « Détails techniques ».
+- Sous le verdict, toujours visibles : pastilles « Sur le téléphone ✓ »
+  et « En ligne ✓ » (ou « En ligne : pas de réponse », « En ligne :
+  désactivée » ; rien pour un texte sans lien ni pour un exemple).
+- Ordre des sections : verdict, pastilles des vérifications, adresse avec
+  le domaine enregistré en gras, **nature du lien** (pictogramme, titre
+  court « Fichier Google Drive », phrase, mise en garde ; orange pour une
+  imitation, une application à installer ou une adresse IP), aperçu de la
+  page, « Pourquoi ce résultat ? », « Que faire ? », puis les explications
+  (repliées en mode simple) et, en mode expert, les « Détails
+  techniques ». « Écouter » lit aussi la nature du lien.
+- Message : carte « Dans ce message » (liens, numéros, codes à composer,
+  sommes d'argent, chacun avec son pictogramme), sous le verdict.
 - Message : bandeau « Synthèse : <niveau> » au niveau le plus sévère entre
   le texte et ses liens, puis le verdict du texte, ses indices et chaque
   lien repéré avec son propre résultat, ouvrable en détail.

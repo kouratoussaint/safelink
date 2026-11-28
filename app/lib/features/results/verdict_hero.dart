@@ -373,6 +373,7 @@ String verdictSpeech(
   VerdictPresentation presentation, {
   required List<RiskSignal> signals,
   required List<RecommendedAction> actions,
+  String? about,
 }) {
   final parts = <String>[
     VerdictPresentation.heroWord(l10n, presentation.level),
@@ -381,6 +382,7 @@ String verdictSpeech(
       presentation.subtitle
     else
       presentation.simple,
+    ?about,
     for (final s
         in signals.where((s) => s.severity.rank >= Severity.low.rank).take(4))
       signalPictogram(s.code, l10n)?.label ?? s.reason,

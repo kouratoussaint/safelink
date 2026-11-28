@@ -241,6 +241,7 @@ void main() {
     await tapDestination(tester, 'Accueil');
     await history.analyzeLink(tester, lookalike);
     expect(find.text('Confiance : élevée'), findsOneWidget);
+    await flow.scrollTo(tester, find.text('Pourquoi ce résultat ?'));
     expect(find.text('Indice fort'), findsWidgets);
     await flow.scrollTo(tester, find.text('Détails techniques'));
   });
