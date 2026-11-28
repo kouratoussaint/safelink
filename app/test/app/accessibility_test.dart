@@ -10,8 +10,10 @@ import '../features/analysis_flow_test.dart' as flow;
 import '../features/help_flow_test.dart' as help;
 import '../features/history_flow_test.dart' as history;
 import '../features/online_flow_test.dart' as online;
+import '../features/quick_panel_test.dart' as quick;
 import '../features/share_flow_test.dart' as share;
 import '../helpers/pump_app.dart';
+import '../helpers/pump_quick.dart';
 import '../history/history_store_test.dart' show entryOf, secretUrl;
 
 /// Ouvre l'écran voulu à partir de l'accueil.
@@ -97,6 +99,38 @@ void main() {
               meetsGuideline(labeledTapTargetGuideline),
             );
             // Contraste du texte affiché.
+            await expectLater(tester, meetsGuideline(textContrastGuideline));
+            handle.dispose();
+          },
+        );
+      }
+    }
+  }
+
+  for (final theme in ['light', 'dark']) {
+    for (final expert in [false, true]) {
+      final mode = expert ? 'expert' : 'simple';
+      for (final MapEntry(key: name, value: copied)
+          in quick.quickScreens.entries) {
+        testWidgets(
+          '$name ($theme, $mode) respecte les règles d’accessibilité',
+          (tester) async {
+            final handle = tester.ensureSemantics();
+            await pumpQuickPanel(
+              tester,
+              copied: copied,
+              expert: expert,
+              settle: copied != null,
+              preferences: {ThemeModeController.storageKey: theme},
+            );
+            await expectLater(
+              tester,
+              meetsGuideline(androidTapTargetGuideline),
+            );
+            await expectLater(
+              tester,
+              meetsGuideline(labeledTapTargetGuideline),
+            );
             await expectLater(tester, meetsGuideline(textContrastGuideline));
             handle.dispose();
           },

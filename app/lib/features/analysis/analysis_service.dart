@@ -23,7 +23,7 @@ enum AnalysisKind {
 @immutable
 final class AnalysisRequest {
   /// Crée une demande.
-  new(this.kind, this.text, {int? id, this.example = false})
+  new(this.kind, this.text, {int? id, this.example = false, this.historyId})
     : id = id ?? DateTime.now().microsecondsSinceEpoch;
 
   /// Nature du contenu.
@@ -38,6 +38,11 @@ final class AnalysisRequest {
 
   /// Identifiant de la demande.
   final int id;
+
+  /// Identifiant d'historique à reprendre : la vérification a déjà été
+  /// enregistrée sous ce nom (par le panneau rapide) et ce nouvel
+  /// enregistrement la remplace, sans doublon.
+  final String? historyId;
 
   @override
   bool operator ==(Object other) => other is AnalysisRequest && other.id == id;

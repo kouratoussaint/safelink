@@ -5,7 +5,7 @@
   Principe : le minimum de permissions. INTERNET sert uniquement à la
   vérification en ligne, activée par défaut et désactivable (ADR 0010 à
   0013), toujours en HTTPS. Les trois permissions de la bulle flottante ne
-  servent que si l'utilisateur l'active (ADR 0014). CAMERA sera ajoutée avec le scanner
+  servent que si l'utilisateur l'active (ADR 0014 et 0015). CAMERA sera ajoutée avec le scanner
   QR (lot E). Le partage entrant, l'action de sélection de texte et la
   tuile du volet (texte seulement) ne demandent aucune permission. La CI échoue si l'APK release contient une permission hors de
   la liste autorisée (tools/check_apk_permissions.sh).
@@ -72,14 +72,31 @@
             </intent-filter>
         </activity>
         <!--
-          Entrée réservée à la tuile du volet (et plus tard à la bulle) :
-          ouvre SafeLink et lui demande de vérifier le texte copié. Non
-          exportée : aucune autre application ne peut la déclencher.
+          Entrée réservée au panneau rapide (« Tout voir dans SafeLink ») :
+          ouvre la vérification choisie dans le panneau, en entier. Non
+          exportée : aucune autre application ne peut l'emprunter.
         -->
         <activity-alias
-            android:name=".ClipboardCheck"
+            android:name=".OpenCheck"
             android:targetActivity=".MainActivity"
             android:exported="false" />
+        <!--
+          Panneau rapide (ADR 0015), ouvert par la bulle, la tuile et la
+          notification de la bulle : une carte par-dessus l'application en
+          cours, qui vérifie le texte copié. Non exporté, tâche à part,
+          absent des applications récentes, fermé dès qu'on le quitte.
+        -->
+        <activity
+            android:name=".QuickCheckActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.fasosoft.safelink.quick"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/QuickCheckTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize" />
         <!--
           Tuile « SafeLink » des réglages rapides (ADR 0014) : aucune
           permission demandée ; BIND_QUICK_SETTINGS_TILE protège le service
@@ -102,7 +119,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Bulle flottante choisie par l'utilisateur : la toucher vérifie le lien copié." />
+                android:value="Bulle flottante choisie par l'utilisateur : la toucher ouvre le panneau qui vérifie le lien copié." />
         </service>
         <!-- Requis par l'outillage Flutter (GeneratedPluginRegistrant). -->
         <meta-data

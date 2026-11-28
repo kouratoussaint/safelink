@@ -199,6 +199,9 @@ void main() {
       // Explication avant d'ouvrir le réglage Android.
       expect(find.text('Autoriser la bulle'), findsOneWidget);
       expect(find.textContaining('ne lit ni votre écran'), findsOneWidget);
+      // Android 10 et suivants : rangée au bord, faute d'être prévenue des
+      // copies.
+      expect(find.textContaining('se range au bord'), findsOneWidget);
       await tester.tap(find.text('Ouvrir le réglage'));
       await tester.pumpAndSettle();
       expect(shortcuts.overlaySettingsOpened, 1);
@@ -206,7 +209,10 @@ void main() {
       // L'utilisateur donne l'autorisation puis revient.
       shortcuts.bubblePermitted = true;
       await resume(tester);
-      expect(find.textContaining('Bulle activée'), findsOneWidget);
+      expect(
+        find.text('Bulle activée\u00a0: elle reste rangée au bord de l’écran.'),
+        findsOneWidget,
+      );
       expect(bubbleSwitch(tester).value, isTrue);
       expect(shortcuts.bubbleEnabled, isTrue);
 
@@ -240,6 +246,30 @@ void main() {
       await tester.pumpAndSettle();
       expect(shortcuts.overlaySettingsOpened, 0);
       expect(bubbleSwitch(tester).value, isFalse);
+    });
+
+    testWidgets('Android 9 et avant : elle revient à chaque copie', (
+      tester,
+    ) async {
+      final shortcuts = FakeShortcuts(
+        bubbleSupported: true,
+        bubbleDetectsCopies: true,
+      );
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('revient quand vous copiez'), findsOneWidget);
+      await tester.tap(find.text('Ouvrir le réglage'));
+      await tester.pumpAndSettle();
+      shortcuts.bubblePermitted = true;
+      await resume(tester);
+      expect(
+        find.text(
+          'Bulle activée\u00a0: elle apparaît quand vous copiez un texte.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('déjà autorisée : activée tout de suite', (tester) async {

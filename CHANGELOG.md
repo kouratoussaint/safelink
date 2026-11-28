@@ -6,6 +6,21 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Bulle : panneau rapide, et elle se range
+
+- Toucher la bulle, la tuile du volet ou la notification de la bulle ouvre
+  un **panneau rapide** par-dessus l'application en cours, au lieu de tout
+  SafeLink : verdict, vrai site, raisons et gestes principaux,
+  « Écouter », « Tout voir dans SafeLink » et « Fermer » (ADR 0015).
+- Vérification enregistrée dans l'historique selon le même choix que dans
+  l'application ; « Tout voir » la remplace, sans doublon ; l'historique
+  est relu au retour dans SafeLink.
+- La bulle ne reste plus affichée : après 8 secondes, elle se cache et
+  revient quand un texte est copié (Android 9 et avant), ou se range à
+  moitié dans le bord de l'écran (Android 10 et suivants, qui ne
+  préviennent plus les applications d'une copie).
+- Paramètres explique ce comportement selon la version d'Android.
+
 ### Ajouté — Bulle flottante (optionnelle)
 
 - Paramètres › Raccourcis › « Bulle flottante », désactivée par défaut :

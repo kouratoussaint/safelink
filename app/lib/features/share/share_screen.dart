@@ -38,7 +38,10 @@ class ShareScreen extends StatelessWidget {
       appBar: AppBar(title: Text(shareTitle(l10n, origin))),
       body: SafeArea(
         child: switch (plan) {
-          final ChooseShared choose => _ChooseView(plan: choose),
+          final ChooseShared choose => ShareChooser(
+            plan: choose,
+            onAnalyze: (kind, text) => _analyze(context, kind, text),
+          ),
           RefuseShared(:final content) => _RefuseView(content: content),
           AnalyzeShared() ||
           null => const _RefuseView(content: SharedNothing()),
@@ -61,16 +64,30 @@ String shareTitle(AppLocalizations l10n, ShareOrigin origin) =>
 void _analyze(BuildContext context, AnalysisKind kind, String text) =>
     context.go(AppRoutes.analysis, extra: AnalysisRequest(kind, text));
 
-class _ChooseView extends StatefulWidget {
-  const new({required this.plan});
+/// Choix pour un texte reçu : « Tout le message » ou « Le lien
+/// seulement » (puis lequel, s'il y en a plusieurs).
+class ShareChooser extends StatefulWidget {
+  const new({
+    required this.plan,
+    required this.onAnalyze,
+    this.compact = false,
+    super.key,
+  });
 
   final ChooseShared plan;
 
+  /// Lance l'analyse choisie.
+  final void Function(AnalysisKind kind, String text) onAnalyze;
+
+  /// Dans le panneau rapide : sans grand pictogramme, en colonne (le
+  /// panneau fait lui-même défiler).
+  final bool compact;
+
   @override
-  State<_ChooseView> createState() => _ChooseViewState();
+  State<ShareChooser> createState() => _ShareChooserState();
 }
 
-class _ChooseViewState extends State<_ChooseView> {
+class _ShareChooserState extends State<ShareChooser> {
   /// Vrai quand l'utilisateur a choisi « Le lien seulement » parmi
   /// plusieurs liens.
   bool _picking = false;
@@ -79,7 +96,7 @@ class _ChooseViewState extends State<_ChooseView> {
 
   void _linkOnly() {
     if (plan.links.length == 1) {
-      _analyze(context, AnalysisKind.link, plan.links.single.url);
+      widget.onAnalyze(AnalysisKind.link, plan.links.single.url);
     } else {
       setState(() => _picking = true);
     }
@@ -101,55 +118,74 @@ class _ChooseViewState extends State<_ChooseView> {
       '${l10n.shareWholeMessage} : $wholeHint',
       if (links.isNotEmpty) l10n.shareSpeechLinkOnly,
     ].map(spokenSentence).join(' ');
-    return StaggeredList(
-      children: [
+    final children = [
+      if (widget.compact)
+        Semantics(
+          header: true,
+          child: Text(
+            l10n.shareQuestion,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        )
+      else
         _Hero(
           icon: Icons.share_rounded,
           color: theme.colorScheme.primary,
           title: l10n.shareQuestion,
         ),
-        Center(child: ListenButton(text: speech)),
-        _ReceivedText(text: plan.content.text),
-        if (plan.content.filesIgnored)
-          InfoCard(
-            icon: Icons.attach_file_rounded,
-            title: l10n.shareFileIgnoredTitle,
-            body: l10n.shareFileIgnored,
-            accent: colors.info,
-          ),
-        if (plan.long)
-          InfoCard(
-            icon: Icons.content_cut_rounded,
-            title: l10n.shareLongTitle,
-            body: l10n.shareLong,
-            accent: colors.info,
-          ),
-        _BigChoice(
-          icon: Icons.sms_outlined,
-          label: l10n.shareWholeMessage,
-          hint: wholeHint,
-          onTap: () =>
-              _analyze(context, AnalysisKind.message, plan.messageText),
+      Center(child: ListenButton(text: speech)),
+      _ReceivedText(text: plan.content.text, maxLines: widget.compact ? 3 : 6),
+      if (plan.content.filesIgnored)
+        InfoCard(
+          icon: Icons.attach_file_rounded,
+          title: l10n.shareFileIgnoredTitle,
+          body: l10n.shareFileIgnored,
+          accent: colors.info,
         ),
-        if (links.isNotEmpty)
-          _BigChoice(
-            icon: Icons.link_rounded,
-            label: l10n.shareLinkOnly,
-            hint: linkHint,
-            selected: _picking,
-            onTap: _linkOnly,
-          ),
-        if (_picking)
-          HelpSection(
-            title: l10n.sharePickLink,
-            children: [
-              for (final (i, link) in links.indexed)
-                _LinkChoice(
-                  number: i + 1,
-                  link: link,
-                  onTap: () => _analyze(context, AnalysisKind.link, link.url),
-                ),
-            ],
+      if (plan.long)
+        InfoCard(
+          icon: Icons.content_cut_rounded,
+          title: l10n.shareLongTitle,
+          body: l10n.shareLong,
+          accent: colors.info,
+        ),
+      _BigChoice(
+        icon: Icons.sms_outlined,
+        label: l10n.shareWholeMessage,
+        hint: wholeHint,
+        onTap: () => widget.onAnalyze(AnalysisKind.message, plan.messageText),
+      ),
+      if (links.isNotEmpty)
+        _BigChoice(
+          icon: Icons.link_rounded,
+          label: l10n.shareLinkOnly,
+          hint: linkHint,
+          selected: _picking,
+          onTap: _linkOnly,
+        ),
+      if (_picking)
+        HelpSection(
+          title: l10n.sharePickLink,
+          children: [
+            for (final (i, link) in links.indexed)
+              _LinkChoice(
+                number: i + 1,
+                link: link,
+                onTap: () => widget.onAnalyze(AnalysisKind.link, link.url),
+              ),
+          ],
+        ),
+    ];
+    if (!widget.compact) return StaggeredList(children: children);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (i, child) in children.indexed)
+          Padding(
+            padding: EdgeInsets.only(top: i == 0 ? 0 : 12),
+            child: Appear(index: i, child: child),
           ),
       ],
     );
@@ -192,7 +228,7 @@ class _RefuseView extends StatelessWidget {
         l10n.shareEmptyTitle,
         l10n.shareClipboardEmpty,
       ),
-      SharedText() || SharedNothing() => (
+      SharedText() || SharedRequest() || SharedNothing() => (
         Icons.inbox_outlined,
         l10n.shareEmptyTitle,
         l10n.shareEmpty,
@@ -281,9 +317,10 @@ class _Hero extends StatelessWidget {
 
 /// Texte reçu, en citation, limité à quelques lignes.
 class _ReceivedText extends StatelessWidget {
-  const new({required this.text});
+  const new({required this.text, this.maxLines = 6});
 
   final String text;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +344,7 @@ class _ReceivedText extends StatelessWidget {
             Expanded(
               child: Text(
                 text.trim(),
-                maxLines: 6,
+                maxLines: maxLines,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodyLarge,
               ),

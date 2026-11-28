@@ -33,9 +33,9 @@ sont jamais enregistrés.
 - Ni compte, ni publicité, ni pistage.
 - SafeLink ne lit ni vos SMS ni ce que vous copiez : vous choisissez ce
   que vous lui donnez (coller, partager, sélectionner, ou toucher la tuile
-  « SafeLink » pour vérifier le texte copié, lu à ce moment seulement). Un
-  texte copié marqué secret (mot de passe, code) n'est jamais lu. Un
-  fichier partagé n'est jamais ouvert.
+  « SafeLink » ou la bulle pour vérifier le texte copié, lu à ce moment
+  seulement, dans le panneau rapide). Un texte copié marqué secret (mot de
+  passe, code) n'est jamais lu. Un fichier partagé n'est jamais ouvert.
 - Aucune vente ni aucun partage de vos données.
 
 ## Autorisations Android
@@ -46,8 +46,11 @@ sont jamais enregistrés.
   applis », que vous accordez vous-même dans les réglages d'Android, et un
   service au premier plan qui la garde affichée (notification « Bulle
   SafeLink active »). La bulle ne lit ni votre écran ni ce que vous
-  copiez : la toucher ouvre SafeLink, qui lit alors le texte copié, comme
-  la tuile du volet. Indisponible sur Android Go.
+  copiez : la toucher ouvre le panneau rapide, qui lit alors le texte
+  copié, comme la tuile du volet. Jusqu'à Android 9, Android prévient la
+  bulle qu'un texte vient d'être copié, pour qu'elle réapparaisse ; elle
+  ne voit que le type du contenu (texte ou image), jamais le texte.
+  Indisponible sur Android Go.
 - Recevoir un texte partagé ou sélectionné, et la tuile du volet, ne
   demandent aucune autorisation.
 

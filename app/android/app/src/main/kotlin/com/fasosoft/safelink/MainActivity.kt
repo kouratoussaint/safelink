@@ -1,10 +1,7 @@
 package com.fasosoft.safelink
 
 import android.app.StatusBarManager
-import android.content.ClipDescription
-import android.content.ClipboardManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -16,19 +13,20 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 /**
- * Activité unique de SafeLink ; l'interface est entièrement en Flutter.
+ * Activité principale de SafeLink ; l'interface est entièrement en Flutter.
  *
- * Elle reçoit aussi du texte venu d'ailleurs, par trois chemins, sans
- * aucune permission (ADR 0004 et 0014) :
+ * Elle reçoit aussi du texte venu d'ailleurs, sans aucune permission
+ * (ADR 0004, 0014 et 0015) :
  * - « Partager → Vérifier avec SafeLink » (`ACTION_SEND`, `text/plain`) ;
  * - « Vérifier avec SafeLink » dans le menu de sélection de texte
  *   (`ACTION_PROCESS_TEXT`) ;
- * - la tuile du volet des réglages rapides, ou la bulle flottante
- *   optionnelle ([BubbleService]), qui ouvrent SafeLink par l'alias
- *   non exporté `.ClipboardCheck` : le texte copié est lu une fois la
- *   fenêtre au premier plan (Android 10 et suivants ne le permettent qu'à
- *   ce moment-là). Une autre application ne peut pas demander cette
- *   lecture.
+ * - « Tout voir dans SafeLink » depuis le panneau rapide
+ *   ([QuickCheckActivity]), par l'alias non exporté `.OpenCheck` : la
+ *   vérification choisie dans le panneau est refaite ici en entier. Une
+ *   autre application ne peut pas emprunter ce chemin.
+ *
+ * La tuile du volet et la bulle flottante ouvrent le panneau rapide, pas
+ * cette activité.
  *
  * Ce canal ne fait que transmettre : toutes les décisions (analyser,
  * proposer un choix, refuser) sont prises côté Dart, où elles sont
@@ -44,9 +42,6 @@ class MainActivity : FlutterActivity() {
     /** Dernier partage reçu, pas encore pris par l'interface. */
     private var pending: Map<String, Any?>? = null
 
-    /** La tuile a demandé de vérifier le texte copié. */
-    private var clipboardRequested = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // Une activité recréée (par exemple après l'arrêt de l'application
         // par le système) a déjà traité son intention : ne pas relancer
@@ -60,11 +55,11 @@ class MainActivity : FlutterActivity() {
 
     override fun onResume() {
         super.onResume()
-        BubbleService.setHiddenBySafeLink(true)
+        BubbleService.screenShown()
     }
 
     override fun onPause() {
-        BubbleService.setHiddenBySafeLink(false)
+        BubbleService.screenHidden()
         super.onPause()
     }
 
@@ -121,40 +116,52 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         receive(intent)
-        if (clipboardRequested && hasWindowFocus()) {
-            window.decorView.post { readClipboard() }
-        } else if (pending != null) {
-            channel?.invokeMethod("available", null)
-        }
+        if (pending != null) channel?.invokeMethod("available", null)
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && clipboardRequested) readClipboard()
-    }
-
-    /** Range ce qu'apporte [intent] : un partage, ou la lecture à faire. */
+    /** Range ce qu'apporte [intent] : un partage, ou une vérification. */
     private fun receive(intent: Intent?) {
         if (intent == null) return
         // Rouverte depuis les applications récentes : Android redonne
         // l'intention d'origine, déjà traitée.
         if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return
-        if (intent.component?.className == CLIPBOARD_ALIAS) {
-            clipboardRequested = true
-            return
+        val handOver = if (intent.component?.className == OPEN_CHECK_ALIAS) {
+            handedOver(intent)
+        } else {
+            describe(intent)
         }
-        describe(intent)?.let { pending = it }
+        handOver?.let { pending = it }
+    }
+
+    /**
+     * Vérification transmise par le panneau rapide : `source` = `quick`,
+     * `kind` (`link` ou `message`), `text`, et `historyId`, l'identifiant
+     * sous lequel le panneau l'a peut-être enregistrée (la nouvelle analyse
+     * la remplace, sans doublon).
+     */
+    private fun handedOver(intent: Intent): Map<String, Any?>? = try {
+        val kind = intent.getStringExtra(QuickCheckActivity.EXTRA_KIND)
+        val text = intent.getStringExtra(QuickCheckActivity.EXTRA_TEXT)
+        if ((kind != "link" && kind != "message") || text.isNullOrEmpty()) {
+            null
+        } else {
+            mapOf(
+                "source" to "quick",
+                "kind" to kind,
+                "text" to text.take(SharedPayload.MAX_TEXT),
+                "historyId" to intent.getStringExtra(QuickCheckActivity.EXTRA_HISTORY_ID),
+            )
+        }
+    } catch (e: RuntimeException) {
+        null
     }
 
     /**
      * Décrit un partage ou une sélection reçus, ou `null` si [intent] n'en
      * est pas un.
      *
-     * Champs : `source` (`share` ou `selection`), `type` (type MIME
-     * annoncé), `text` (texte, borné à [MAX_TEXT] caractères), `truncated`
-     * (texte coupé), `files` (des fichiers accompagnaient le partage : ils
-     * ne sont jamais ouverts), `unreadable` (contenu illisible, par exemple
-     * mal formé par l'application d'origine).
+     * Champs : voir [SharedPayload] ; `source` vaut `share` ou
+     * `selection`.
      */
     private fun describe(intent: Intent): Map<String, Any?>? {
         val action = intent.action
@@ -177,69 +184,13 @@ class MainActivity : FlutterActivity() {
                     intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
                 else -> null
             }
-            textMap(source, intent.type, text, files = hasFiles)
+            SharedPayload.text(source, intent.type, text, files = hasFiles)
         } catch (e: RuntimeException) {
             // Extras mal formés (BadParcelableException…) envoyés par
             // l'application d'origine : refusés sans planter.
-            unreadable(source)
+            SharedPayload.unreadable(source)
         }
     }
-
-    /**
-     * Lit le texte copié, une seule fois, puis le transmet comme un partage
-     * (`source` = `clipboard`). Un contenu marqué secret par Android 13 et
-     * suivants (mot de passe, code) n'est pas lu.
-     */
-    private fun readClipboard() {
-        if (!clipboardRequested) return
-        clipboardRequested = false
-        pending = try {
-            val manager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = manager.primaryClip
-            val description = manager.primaryClipDescription
-            val sensitive = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                description?.extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true
-            if (sensitive) {
-                textMap("clipboard", null, null, sensitive = true)
-            } else {
-                val text = if (clip != null && clip.itemCount > 0) {
-                    clip.getItemAt(0).coerceToText(this)?.toString()
-                } else {
-                    null
-                }
-                textMap("clipboard", description?.getMimeType(0), text)
-            }
-        } catch (e: RuntimeException) {
-            unreadable("clipboard")
-        }
-        channel?.invokeMethod("available", null)
-    }
-
-    private fun textMap(
-        source: String,
-        type: String?,
-        text: String?,
-        files: Boolean = false,
-        sensitive: Boolean = false,
-    ): Map<String, Any?> = mapOf(
-        "source" to source,
-        "type" to type,
-        "text" to text?.take(MAX_TEXT),
-        "truncated" to (text != null && text.length > MAX_TEXT),
-        "files" to files,
-        "unreadable" to false,
-        "sensitive" to sensitive,
-    )
-
-    private fun unreadable(source: String): Map<String, Any?> = mapOf(
-        "source" to source,
-        "type" to null,
-        "text" to null,
-        "truncated" to false,
-        "files" to false,
-        "unreadable" to true,
-        "sensitive" to false,
-    )
 
     /**
      * Propose d'ajouter la tuile au volet (Android 13 et suivants) ; répond
@@ -295,14 +246,10 @@ class MainActivity : FlutterActivity() {
         private const val CHANNEL = "com.fasosoft.safelink/share"
         private const val SHORTCUTS_CHANNEL = "com.fasosoft.safelink/shortcuts"
 
-        /** Alias non exporté qui demande la lecture du texte copié. */
-        const val CLIPBOARD_ALIAS = "com.fasosoft.safelink.ClipboardCheck"
-
         /**
-         * Longueur maximale transmise à l'interface. Elle dépasse la taille
-         * d'un message analysable (10 000 caractères) pour que les liens
-         * d'un long texte restent repérables.
+         * Alias non exporté par lequel le panneau rapide ouvre une
+         * vérification en entier.
          */
-        private const val MAX_TEXT = 100_000
+        const val OPEN_CHECK_ALIAS = "com.fasosoft.safelink.OpenCheck"
     }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
+import 'package:safelink/features/quick/quick_platform.dart';
 import 'package:safelink/features/share/share_source.dart';
 import 'package:safelink/features/share/shared_content.dart';
 
@@ -100,6 +101,47 @@ void main() {
         SharedContent.fromPlatform({'unreadable': true, 'text': 'x'}),
         const SharedNothing(),
       );
+    });
+
+    test('vérification transmise par le panneau rapide', () {
+      final content = SharedContent.fromPlatform({
+        'source': 'quick',
+        'kind': 'message',
+        'text': 'Payez ici https://colis-bf.top/payer',
+        'historyId': 'abc123',
+      });
+      expect(
+        content,
+        SharedRequest(
+          AnalysisRequest(
+            AnalysisKind.message,
+            'Payez ici https://colis-bf.top/payer',
+            historyId: 'abc123',
+          ),
+        ),
+      );
+      final request = analyzed(planShare(content!));
+      // Refaite telle quelle : pas de nouveau choix.
+      expect(request.kind, AnalysisKind.message);
+      expect(request.historyId, 'abc123');
+      expect('$content', isNot(contains('colis')));
+    });
+
+    test('vérification transmise incomplète : ignorée', () {
+      for (final raw in [
+        {'source': 'quick', 'kind': 'link'},
+        {'source': 'quick', 'kind': 'image', 'text': 'x'},
+        {'source': 'quick', 'kind': 'link', 'text': '  '},
+      ]) {
+        expect(SharedContent.fromPlatform(raw), isNull, reason: '$raw');
+      }
+      final noId = SharedContent.fromPlatform({
+        'source': 'quick',
+        'kind': 'link',
+        'text': 'https://exemple.com',
+        'historyId': '',
+      });
+      expect((noId! as SharedRequest).request.historyId, isNull);
     });
 
     test('le texte n’apparaît jamais dans les journaux', () {
@@ -269,6 +311,56 @@ void main() {
       await pumpEventQueue();
       expect(received, isEmpty);
       await subscription.cancel();
+    });
+  });
+
+  group('canal du panneau rapide', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    const channel = MethodChannel(PlatformQuick.name);
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+
+    tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+    test('lit le texte copié, ferme, ouvre dans l’application', () async {
+      final calls = <MethodCall>[];
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        return switch (call.method) {
+          'take' => {'source': 'clipboard', 'text': 'https://exemple.com'},
+          'openInApp' => true,
+          _ => null,
+        };
+      });
+      final quick = PlatformQuick();
+      final received = <SharedContent>[];
+      final subscription = quick.contents().listen(received.add);
+      await pumpEventQueue();
+      expect(received, [
+        const SharedText('https://exemple.com', origin: ShareOrigin.clipboard),
+      ]);
+
+      final opened = await quick.openInApp(
+        AnalysisRequest(AnalysisKind.link, 'https://exemple.com'),
+        historyId: 'abc',
+      );
+      expect(opened, isTrue);
+      await quick.close();
+      expect(calls.map((c) => c.method), ['take', 'openInApp', 'close']);
+      expect(calls[1].arguments, {
+        'kind': 'link',
+        'text': 'https://exemple.com',
+        'historyId': 'abc',
+      });
+      await subscription.cancel();
+    });
+
+    test('sans activité Android : rien d’ouvert, aucune erreur', () async {
+      final quick = PlatformQuick();
+      expect(
+        await quick.openInApp(AnalysisRequest(AnalysisKind.link, 'x')),
+        isFalse,
+      );
     });
   });
 }

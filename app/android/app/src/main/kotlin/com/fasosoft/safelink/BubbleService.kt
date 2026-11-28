@@ -9,14 +9,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.ComponentName
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.provider.Settings
 import android.view.Gravity
 import android.view.MotionEvent
@@ -26,23 +28,33 @@ import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
+import io.flutter.FlutterInjector
 import kotlin.math.abs
 import kotlin.math.hypot
 
 /**
- * Bulle flottante de SafeLink (ADR 0014), en option, désactivée par défaut.
+ * Bulle flottante de SafeLink (ADR 0014 et 0015), en option, désactivée
+ * par défaut.
  *
- * Une petite pastille reste au bord de l'écran, par-dessus les autres
- * applications. La toucher ouvre SafeLink sur la vérification du texte
- * copié (même entrée que la tuile du volet). On la déplace en la faisant
- * glisser ; la lâcher sur la croix en bas de l'écran la ferme et la
- * désactive.
+ * La toucher ouvre le panneau rapide ([QuickCheckActivity]), qui vérifie
+ * le texte copié par-dessus l'application en cours. On la déplace en la
+ * faisant glisser ; la lâcher sur la croix en bas de l'écran la ferme et
+ * la désactive.
+ *
+ * Elle ne reste pas affichée : après quelques secondes sans être touchée,
+ * - jusqu'à Android 9, elle disparaît, et revient quand un texte est
+ *   copié : Android prévient SafeLink de la copie, sans lui montrer le
+ *   texte (seul son type est regardé, pour ignorer une image) ;
+ * - à partir d'Android 10, qui ne prévient plus aucune application d'une
+ *   copie, elle se range à moitié dans le bord de l'écran, pâlie ; la
+ *   toucher ouvre le panneau.
+ * Elle se cache tant que SafeLink (application ou panneau) est à l'écran.
  *
  * Elle ne lit rien elle-même : ni l'écran, ni le texte copié. Elle demande
  * l'autorisation « Afficher par-dessus d'autres applis », indisponible sur
  * Android Go (Android 10 et suivants) ; elle n'est donc proposée que si le
  * téléphone la permet. Un service au premier plan la garde en vie, avec une
- * notification discrète qui permet de l'arrêter.
+ * notification discrète qui ouvre le panneau et permet de l'arrêter.
  */
 @TargetApi(Build.VERSION_CODES.O)
 class BubbleService : Service() {
@@ -51,11 +63,40 @@ class BubbleService : Service() {
     private var bubbleParams: WindowManager.LayoutParams? = null
     private var closeTarget: View? = null
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val restLater = Runnable { rest() }
+    private var positionAnimator: ValueAnimator? = null
+
+    /** Bulle montrée en entier ; sinon au repos (cachée ou rangée). */
+    private var awake = false
+
+    /** Bulle en train d'être glissée. */
+    private var dragging = false
+
+    /** Montrer la bulle en entier au premier départ de SafeLink. */
+    private var introPending = false
+
+    private var clipboard: ClipboardManager? = null
+    private val copyListener = ClipboardManager.OnPrimaryClipChangedListener {
+        handler.post { onCopy() }
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        // Prépare Flutter pendant que la bulle attend : le panneau s'ouvre
+        // plus vite.
+        try {
+            FlutterInjector.instance().flutterLoader().startInitialization(applicationContext)
+        } catch (e: RuntimeException) {
+            // Le panneau s'initialisera lui-même.
+        }
+        if (detectsCopies()) {
+            clipboard = getSystemService(ClipboardManager::class.java)
+            clipboard?.addPrimaryClipChangedListener(copyListener)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -69,13 +110,19 @@ class BubbleService : Service() {
             return START_NOT_STICKY
         }
         startInForeground()
-        if (bubble == null) showBubble()
+        if (bubble == null) {
+            showBubble()
+            introPending = true
+        }
         instance = this
-        applyHidden()
+        render()
         return START_STICKY
     }
 
     override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        positionAnimator?.cancel()
+        clipboard?.removePrimaryClipChangedListener(copyListener)
         removeView(bubble)
         removeView(closeTarget)
         bubble = null
@@ -102,7 +149,7 @@ class BubbleService : Service() {
         val open = PendingIntent.getActivity(
             this,
             2,
-            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            QuickCheckActivity.intent(this),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val notification = Notification.Builder(this, NOTIFICATION_CHANNEL)
@@ -151,12 +198,14 @@ class BubbleService : Service() {
                 setColor(BRAND_TEAL)
             }
             elevation = dp(6).toFloat()
-            contentDescription = getString(R.string.bubble_description)
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
         // Un peu de marge autour du disque pour que l'ombre ne soit pas
-        // coupée.
+        // coupée. Le cadre porte la description et l'action, pour TalkBack.
         val view = FrameLayout(this).apply {
             addView(icon, FrameLayout.LayoutParams(size, size, Gravity.CENTER))
+            contentDescription = getString(R.string.bubble_description)
+            setOnClickListener { openCheck() }
         }
         val frame = size + dp(12)
         val metrics = resources.displayMetrics
@@ -169,10 +218,11 @@ class BubbleService : Service() {
         var startY = 0
         var touchX = 0f
         var touchY = 0f
-        var dragging = false
         view.setOnTouchListener { _, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
+                    // Touchée : elle ne se range pas pendant qu'on la tient.
+                    handler.removeCallbacks(restLater)
                     startX = params.x
                     startY = params.y
                     touchX = event.rawX
@@ -185,6 +235,9 @@ class BubbleService : Service() {
                     val dy = event.rawY - touchY
                     if (!dragging && hypot(dx, dy) > slop) {
                         dragging = true
+                        positionAnimator?.cancel()
+                        view.animate().cancel()
+                        view.alpha = 1f
                         showCloseTarget()
                     }
                     if (dragging) {
@@ -197,17 +250,22 @@ class BubbleService : Service() {
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     if (dragging) {
+                        dragging = false
                         val close = overClose(event.rawX, event.rawY)
                         hideCloseTarget()
                         if (close) {
                             setEnabled(this, false)
                             stopSelf()
                         } else {
-                            snapToEdge(view, params)
+                            val maxY = resources.displayMetrics.heightPixels - view.height
+                            params.y = params.y.coerceIn(0, maxY.coerceAtLeast(0))
+                            windowManager.updateViewLayout(view, params)
+                            wake()
                         }
                     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
                         view.performClick()
-                        openCheck()
+                    } else if (awake) {
+                        handler.postDelayed(restLater, AWAKE_MS)
                     }
                     true
                 }
@@ -219,22 +277,103 @@ class BubbleService : Service() {
         bubbleParams = params
     }
 
-    /** Ouvre SafeLink sur la vérification du texte copié. */
+    /** Ouvre le panneau rapide sur la vérification du texte copié. */
     private fun openCheck() {
-        startActivity(
-            Intent()
-                .setComponent(ComponentName(this, MainActivity.CLIPBOARD_ALIAS))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
+        // Après le panneau, la bulle retourne au repos.
+        awake = false
+        handler.removeCallbacks(restLater)
+        try {
+            startActivity(QuickCheckActivity.intent(this))
+        } catch (e: RuntimeException) {
+            render()
+        }
     }
 
-    private fun snapToEdge(view: View, params: WindowManager.LayoutParams) {
+    /** Montre la bulle en entier, puis la remet au repos après un temps. */
+    private fun wake() {
+        val view = bubble ?: return
+        val hidden = view.visibility != View.VISIBLE
+        awake = true
+        handler.removeCallbacks(restLater)
+        handler.postDelayed(restLater, AWAKE_MS)
+        render()
+        if (hidden && view.visibility == View.VISIBLE && !animationsOff()) {
+            view.scaleX = 0.6f
+            view.scaleY = 0.6f
+            view.alpha = 0f
+            view.animate().scaleX(1f).scaleY(1f).alpha(1f)
+                .setDuration(220).setInterpolator(DecelerateInterpolator()).start()
+        }
+    }
+
+    private fun rest() {
+        awake = false
+        render()
+    }
+
+    /** Un texte vient d'être copié (Android 9 et avant) : se montrer. */
+    private fun onCopy() {
+        if (bubble == null || screens > 0) return
+        // Seul le type du contenu copié est regardé, jamais le texte.
+        val text = try {
+            clipboard?.primaryClipDescription?.hasMimeType("text/*") == true
+        } catch (e: RuntimeException) {
+            false
+        }
+        if (text) wake()
+    }
+
+    /**
+     * Affiche la bulle selon l'état : cachée si SafeLink est à l'écran,
+     * entière si elle est réveillée, sinon au repos (cachée jusqu'à
+     * Android 9, rangée au bord ensuite).
+     */
+    private fun render() {
+        val view = bubble ?: return
+        if (screens > 0) {
+            view.visibility = View.GONE
+            return
+        }
+        if (introPending) {
+            introPending = false
+            wake()
+            return
+        }
+        when {
+            awake || dragging -> {
+                view.visibility = View.VISIBLE
+                tuck(false)
+            }
+            detectsCopies() -> view.visibility = View.GONE
+            else -> {
+                view.visibility = View.VISIBLE
+                tuck(true)
+            }
+        }
+    }
+
+    /**
+     * Range la bulle à moitié dans le bord le plus proche, pâlie
+     * ([inside]), ou la ramène entière contre ce bord.
+     */
+    private fun tuck(inside: Boolean) {
+        val view = bubble ?: return
+        val params = bubbleParams ?: return
         val width = resources.displayMetrics.widthPixels
-        val target = if (params.x + view.width / 2 < width / 2) 0 else width - view.width
-        val maxY = resources.displayMetrics.heightPixels - view.height
-        params.y = params.y.coerceIn(0, maxY.coerceAtLeast(0))
-        ValueAnimator.ofInt(params.x, target).apply {
-            duration = if (animationsOff()) 0 else 220
+        val frame = params.width
+        val left = params.x + frame / 2 < width / 2
+        val target = when {
+            inside && left -> -frame / 2
+            inside -> width - frame / 2
+            left -> 0
+            else -> width - frame
+        }
+        val duration = if (animationsOff()) 0L else 220L
+        view.animate().alpha(if (inside) TUCKED_ALPHA else 1f).setDuration(duration).start()
+        if (params.x == target) return
+        positionAnimator?.cancel()
+        positionAnimator = ValueAnimator.ofInt(params.x, target).apply {
+            this.duration = duration
             interpolator = DecelerateInterpolator()
             addUpdateListener {
                 if (view.isAttachedToWindow) {
@@ -289,11 +428,6 @@ class BubbleService : Service() {
         return abs(x - centerX) < dp(64) && abs(y - centerY) < dp(64)
     }
 
-    /** Cache la bulle pendant que SafeLink est à l'écran. */
-    private fun applyHidden() {
-        bubble?.visibility = if (hiddenBySafeLink) View.GONE else View.VISIBLE
-    }
-
     private fun removeView(view: View?) {
         if (view?.isAttachedToWindow == true) windowManager.removeView(view)
     }
@@ -313,8 +447,16 @@ class BubbleService : Service() {
         private const val CLOSE_GREY = 0xCC33475B.toInt()
         private const val CLOSE_RED = 0xFFB91C1C.toInt()
 
+        /** Temps pendant lequel la bulle reste entière sans être touchée. */
+        private const val AWAKE_MS = 8_000L
+
+        /** Opacité de la bulle rangée au bord. */
+        private const val TUCKED_ALPHA = 0.55f
+
         private var instance: BubbleService? = null
-        private var hiddenBySafeLink = false
+
+        /** Écrans de SafeLink à l'écran (application, panneau rapide). */
+        private var screens = 0
 
         /**
          * Le téléphone permet la bulle : Android 8 ou plus, et pas un
@@ -326,6 +468,12 @@ class BubbleService : Service() {
             return !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && activity.isLowRamDevice)
         }
 
+        /**
+         * Android prévient d'une copie (Android 9 et avant) : la bulle peut
+         * se cacher et revenir à la copie. Ensuite, elle se range au bord.
+         */
+        fun detectsCopies(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+
         fun canDraw(context: Context): Boolean =
             supported(context) && Settings.canDrawOverlays(context)
 
@@ -334,6 +482,7 @@ class BubbleService : Service() {
             "supported" to supported(context),
             "permitted" to canDraw(context),
             "enabled" to (isEnabled(context) && canDraw(context)),
+            "detectsCopies" to detectsCopies(),
         )
 
         fun isEnabled(context: Context): Boolean =
@@ -359,10 +508,16 @@ class BubbleService : Service() {
             context.stopService(Intent(context, BubbleService::class.java))
         }
 
-        /** SafeLink passe au premier plan (cacher) ou le quitte (montrer). */
-        fun setHiddenBySafeLink(hidden: Boolean) {
-            hiddenBySafeLink = hidden
-            instance?.applyHidden()
+        /** Un écran de SafeLink passe au premier plan : cacher la bulle. */
+        fun screenShown() {
+            screens++
+            instance?.render()
+        }
+
+        /** Un écran de SafeLink quitte le premier plan. */
+        fun screenHidden() {
+            screens = (screens - 1).coerceAtLeast(0)
+            instance?.render()
         }
     }
 }

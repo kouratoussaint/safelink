@@ -1,8 +1,6 @@
 package com.fasosoft.safelink
 
 import android.app.PendingIntent
-import android.content.ComponentName
-import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
@@ -11,9 +9,9 @@ import android.service.quicksettings.TileService
  * Tuile « SafeLink » du volet des réglages rapides : vérifie le lien ou le
  * message copié (ADR 0014).
  *
- * Elle ouvre SafeLink par l'alias non exporté `.ClipboardCheck` ; c'est
- * l'activité, une fois au premier plan, qui lit le texte copié. La tuile
- * elle-même ne lit rien et ne garde rien.
+ * Elle ouvre le panneau rapide ([QuickCheckActivity], ADR 0015), non
+ * exporté ; c'est le panneau, une fois au premier plan, qui lit le texte
+ * copié. La tuile elle-même ne lit rien et ne garde rien.
  */
 class ClipboardTileService : TileService() {
     override fun onStartListening() {
@@ -33,9 +31,7 @@ class ClipboardTileService : TileService() {
     }
 
     private fun open() {
-        val intent = Intent()
-            .setComponent(ComponentName(this, MainActivity.CLIPBOARD_ALIAS))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val intent = QuickCheckActivity.intent(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startActivityAndCollapse(
                 PendingIntent.getActivity(

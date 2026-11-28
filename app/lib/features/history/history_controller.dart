@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safelink/core/settings/preferences.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
@@ -61,21 +62,43 @@ final historyProvider =
     );
 
 /// Lit et modifie l'historique.
+///
+/// Le panneau rapide (bulle, tuile) a son propre moteur Flutter et peut
+/// enregistrer une vérification pendant que l'application reste ouverte en
+/// arrière-plan : au retour dans SafeLink, l'historique est relu s'il a
+/// changé.
 class HistoryController extends AsyncNotifier<List<HistoryEntry>> {
   HistoryBackend get _backend => ref.read(historyBackendProvider);
 
+  /// Empreinte de l'historique lu ; `null` : aucun historique.
+  String? _stamp;
+
   @override
   Future<List<HistoryEntry>> build() async {
+    final listener = AppLifecycleListener(
+      onResume: () => unawaited(_reloadIfChanged()),
+    );
+    ref.onDispose(listener.dispose);
     final backend = ref.watch(historyBackendProvider);
+    _stamp = null;
     // Tant que rien n'a été enregistré, aucun fichier n'est créé.
     if (!await backend.exists()) return const [];
     final store = await backend.open();
+    _stamp = await store.stamp();
     return await store.entries();
+  }
+
+  Future<void> _reloadIfChanged() async {
+    final backend = _backend;
+    if (!await backend.exists()) return;
+    final stamp = await (await backend.open()).stamp();
+    if (ref.mounted && stamp != _stamp) ref.invalidateSelf();
   }
 
   Future<void> _change(Future<void> Function(HistoryStore store) action) async {
     final store = await _backend.open();
     await action(store);
+    _stamp = await store.stamp();
     state = AsyncData(await store.entries());
   }
 
@@ -130,7 +153,7 @@ class HistoryRecorder extends AsyncNotifier<HistoryEntry?> {
     // Une nouvelle analyse de la même demande (vérification en ligne
     // activée entre-temps) remplace l'enregistrement, contenu gardé compris.
     final entry = HistoryEntry.fromOutcome(
-      _id ??= newHistoryId(),
+      _id ??= request.historyId ?? newHistoryId(),
       outcome,
     ).withContent(state.value?.content);
     await ref.read(historyProvider.notifier).add(entry);

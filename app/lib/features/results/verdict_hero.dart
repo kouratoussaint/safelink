@@ -22,10 +22,15 @@ class VerdictHero extends StatefulWidget {
     required this.speech,
     this.confidence,
     this.expert = false,
+    this.compact = false,
     super.key,
   });
 
   final VerdictPresentation presentation;
+
+  /// Version resserrée, pour le panneau rapide : pictogramme et textes
+  /// plus petits.
+  final bool compact;
 
   /// Texte lu par « Écouter ».
   final String speech;
@@ -104,23 +109,29 @@ class _VerdictHeroState extends State<VerdictHero>
         ? null
         : VerdictPresentation.confidenceLabel(l10n, widget.confidence!);
     final index = VerdictHero.gaugeIndex(p.level);
+    final compact = widget.compact;
+    final badge = _HaloBadge(
+      animation: _controller,
+      level: p.level,
+      color: color,
+      icon: p.icon,
+    );
     return Container(
       decoration: BoxDecoration(
         color: VerdictPresentation.softColorOf(context, p.level),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(compact ? 24 : 28),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+      padding: compact
+          ? const EdgeInsets.fromLTRB(16, 14, 16, 14)
+          : const EdgeInsets.fromLTRB(20, 24, 20, 20),
       child: Column(
         children: [
           ExcludeSemantics(
-            child: _HaloBadge(
-              animation: _controller,
-              level: p.level,
-              color: color,
-              icon: p.icon,
-            ),
+            child: compact
+                ? SizedBox.square(dimension: 88, child: FittedBox(child: badge))
+                : badge,
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: compact ? 8 : 14),
           Semantics(
             container: true,
             header: true,
@@ -141,11 +152,15 @@ class _VerdictHeroState extends State<VerdictHero>
                     child: Text(
                       word,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineLarge?.copyWith(
-                        color: color,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
-                      ),
+                      style:
+                          (compact
+                                  ? theme.textTheme.headlineMedium
+                                  : theme.textTheme.headlineLarge)
+                              ?.copyWith(
+                                color: color,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.5,
+                              ),
                     ),
                   ),
                   if (widget.expert) ...[
@@ -161,10 +176,14 @@ class _VerdictHeroState extends State<VerdictHero>
                     Text(
                       sentence,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        height: 1.4,
-                      ),
+                      style:
+                          (compact
+                                  ? theme.textTheme.bodyLarge
+                                  : theme.textTheme.titleMedium)
+                              ?.copyWith(
+                                fontWeight: FontWeight.w500,
+                                height: 1.4,
+                              ),
                     ),
                   ],
                   if (widget.expert && confidence != null) ...[
@@ -182,7 +201,7 @@ class _VerdictHeroState extends State<VerdictHero>
             ),
           ),
           if (index != null) ...[
-            const SizedBox(height: 14),
+            SizedBox(height: compact ? 10 : 14),
             Semantics(
               label: l10n.gaugeSemantics(
                 VerdictPresentation.levelLabel(l10n, p.level),
@@ -200,7 +219,7 @@ class _VerdictHeroState extends State<VerdictHero>
               ),
             ),
           ],
-          const SizedBox(height: 16),
+          SizedBox(height: compact ? 12 : 16),
           ListenButton(
             text: widget.speech,
             background: theme.colorScheme.surface,

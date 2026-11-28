@@ -181,6 +181,46 @@ void main() {
   });
 
   group('écran Historique', () {
+    testWidgets('vérification faite depuis le panneau rapide : relue au '
+        'retour dans SafeLink', (tester) async {
+      final backend = await filledBackend([
+        entryOf(AnalysisKind.message, flow.scamMessage),
+      ]);
+      await pumpSafeLinkApp(
+        tester,
+        preferences: enabled,
+        historyBackend: backend,
+      );
+      await tapDestination(tester, 'Historique');
+      expect(find.text('secure-login.xyz'), findsNothing);
+
+      Future<void> lifecycle(List<AppLifecycleState> states) async {
+        states.forEach(tester.binding.handleAppLifecycleStateChanged);
+        await tester.pumpAndSettle();
+      }
+
+      // L'utilisateur quitte SafeLink ; le panneau (autre moteur) enregistre
+      // une vérification ; il revient.
+      await lifecycle([
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]);
+      await (await backend.open()).add(entryOf(AnalysisKind.link, secretUrl));
+      await lifecycle([
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]);
+      expect(find.text('secure-login.xyz'), findsOneWidget);
+
+      // Rien de changé : l'historique n'est pas relu.
+      final reads = backend.reads;
+      await lifecycle([AppLifecycleState.inactive, AppLifecycleState.resumed]);
+      expect(find.text('secure-login.xyz'), findsOneWidget);
+      expect(backend.reads, reads);
+    });
+
     testWidgets('liste groupée par jour, fiche puis suppression', (
       tester,
     ) async {

@@ -8,4 +8,18 @@
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@color/launch_background</item>
     </style>
+    <!--
+      Panneau rapide (ADR 0015) : fenêtre transparente posée sur
+      l'application en cours, assombrie derrière. Pas d'animation
+      d'Android : Flutter fait monter la carte.
+    -->
+    <style name="QuickCheckTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.45</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
 </resources>

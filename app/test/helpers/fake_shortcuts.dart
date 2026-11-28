@@ -1,7 +1,8 @@
 import 'package:safelink/features/share/shortcuts.dart';
 
 /// Raccourcis simulés : tuile ([canRequest], réponse [answer]) et bulle
-/// ([bubbleSupported], [bubblePermitted], [bubbleEnabled]).
+/// ([bubbleSupported], [bubblePermitted], [bubbleEnabled],
+/// [bubbleDetectsCopies]).
 class FakeShortcuts implements ShortcutsPlatform {
   new({
     this.canRequest = false,
@@ -9,6 +10,7 @@ class FakeShortcuts implements ShortcutsPlatform {
     this.bubbleSupported = false,
     this.bubblePermitted = false,
     this.bubbleEnabled = false,
+    this.bubbleDetectsCopies = false,
   });
 
   final bool canRequest;
@@ -16,6 +18,7 @@ class FakeShortcuts implements ShortcutsPlatform {
   bool bubbleSupported;
   bool bubblePermitted;
   bool bubbleEnabled;
+  final bool bubbleDetectsCopies;
 
   /// Nombre de demandes d'ajout de la tuile.
   int requests = 0;
@@ -36,6 +39,7 @@ class FakeShortcuts implements ShortcutsPlatform {
     supported: bubbleSupported,
     permitted: bubblePermitted,
     enabled: bubbleEnabled && bubblePermitted,
+    detectsCopies: bubbleDetectsCopies,
   );
 
   @override

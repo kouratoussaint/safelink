@@ -244,7 +244,7 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
       final state = await platform.bubbleState();
       if (state.permitted) {
         await platform.setBubble(enabled: true);
-        _snack(l10n.bubbleEnabled);
+        _snack(_enabledText(l10n, state));
       } else {
         _snack(l10n.bubbleNotPermitted);
       }
@@ -264,13 +264,13 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
     if (state.permitted) {
       await platform.setBubble(enabled: true);
       ref.invalidate(bubbleStateProvider);
-      _snack(l10n.bubbleEnabled);
+      _snack(_enabledText(l10n, state));
       return;
     }
     if (!mounted) return;
     final go = await showDialog<bool>(
       context: context,
-      builder: (context) => const _BubbleDialog(),
+      builder: (context) => _BubbleDialog(detectsCopies: state.detectsCopies),
     );
     if (go != true) return;
     _awaitingPermission = true;
@@ -279,6 +279,10 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
       _snack(l10n.bubbleNotPermitted);
     }
   }
+
+  /// Où la bulle se tient une fois activée, selon la version d'Android.
+  static String _enabledText(AppLocalizations l10n, BubbleState state) =>
+      state.detectsCopies ? l10n.bubbleEnabledCopies : l10n.bubbleEnabledTucked;
 
   Future<void> _addTile() async {
     final l10n = AppLocalizations.of(context);
@@ -354,10 +358,13 @@ class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
   }
 }
 
-/// Explique, en trois pictogrammes, le réglage Android à activer pour la
-/// bulle, et ce qu'elle ne fait pas.
+/// Explique, en pictogrammes, le réglage Android à activer pour la bulle,
+/// où elle se tient ensuite, et ce qu'elle ne fait pas.
 class _BubbleDialog extends StatelessWidget {
-  const new();
+  const new({required this.detectsCopies});
+
+  /// Android 9 et avant : la bulle se cache et revient à la copie.
+  final bool detectsCopies;
 
   @override
   Widget build(BuildContext context) {
@@ -385,6 +392,15 @@ class _BubbleDialog extends StatelessWidget {
               icon: Icons.bubble_chart_outlined,
               color: primary,
               text: l10n.bubbleDialogStep3,
+            ),
+            PictoRow(
+              icon: detectsCopies
+                  ? Icons.content_copy_rounded
+                  : Icons.last_page_rounded,
+              color: primary,
+              text: detectsCopies
+                  ? l10n.bubbleDialogCopies
+                  : l10n.bubbleDialogTucked,
             ),
             const SizedBox(height: 8),
             Text(
