@@ -29,8 +29,13 @@ class ShareScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final origin = switch (plan) {
+      ChooseShared(:final content) => content.origin,
+      RefuseShared(content: SharedNothing(:final origin)) => origin,
+      _ => ShareOrigin.share,
+    };
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.shareTitle)),
+      appBar: AppBar(title: Text(shareTitle(l10n, origin))),
       body: SafeArea(
         child: switch (plan) {
           final ChooseShared choose => _ChooseView(plan: choose),
@@ -42,6 +47,14 @@ class ShareScreen extends StatelessWidget {
     );
   }
 }
+
+/// Titre de l'écran selon d'où vient le texte.
+String shareTitle(AppLocalizations l10n, ShareOrigin origin) =>
+    switch (origin) {
+      ShareOrigin.share => l10n.shareTitle,
+      ShareOrigin.selection => l10n.shareTitleSelection,
+      ShareOrigin.clipboard => l10n.shareTitleClipboard,
+    };
 
 /// Lance l'analyse : l'écran de partage est remplacé, Retour ramène donc à
 /// l'accueil.
@@ -83,7 +96,7 @@ class _ChooseViewState extends State<_ChooseView> {
         ? links.single.domain
         : l10n.shareLinkOnlyMany(links.length);
     final speech = [
-      l10n.shareTitle,
+      shareTitle(l10n, plan.content.origin),
       l10n.shareQuestion,
       '${l10n.shareWholeMessage} : $wholeHint',
       if (links.isNotEmpty) l10n.shareSpeechLinkOnly,
@@ -168,6 +181,16 @@ class _RefuseView extends StatelessWidget {
         Icons.insert_drive_file_outlined,
         l10n.shareNotYetTitle,
         l10n.shareFilesOther,
+      ),
+      SharedNothing(sensitive: true) => (
+        Icons.lock_outline,
+        l10n.shareEmptyTitle,
+        l10n.shareClipboardSecret,
+      ),
+      SharedNothing(origin: ShareOrigin.clipboard) => (
+        Icons.content_paste_off_outlined,
+        l10n.shareEmptyTitle,
+        l10n.shareClipboardEmpty,
       ),
       SharedText() || SharedNothing() => (
         Icons.inbox_outlined,

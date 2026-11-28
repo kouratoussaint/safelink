@@ -49,6 +49,47 @@ void main() {
       );
     });
 
+    test('origine : partage, sélection, texte copié', () {
+      expect(
+        SharedContent.fromPlatform({'source': 'selection', 'text': 'Bonjour'}),
+        const SharedText('Bonjour', origin: ShareOrigin.selection),
+      );
+      expect(
+        SharedContent.fromPlatform({'source': 'clipboard', 'text': 'Bonjour'}),
+        const SharedText('Bonjour', origin: ShareOrigin.clipboard),
+      );
+      expect(
+        SharedContent.fromPlatform({'source': 'inconnu', 'text': 'Bonjour'}),
+        const SharedText('Bonjour'),
+      );
+      // Rien de copié.
+      expect(
+        SharedContent.fromPlatform({'source': 'clipboard', 'text': null}),
+        const SharedNothing(origin: ShareOrigin.clipboard),
+      );
+      // Texte copié marqué secret : jamais lu, même s'il est présent.
+      expect(
+        SharedContent.fromPlatform({
+          'source': 'clipboard',
+          'sensitive': true,
+          'text': '1234',
+        }),
+        const SharedNothing(origin: ShareOrigin.clipboard, sensitive: true),
+      );
+    });
+
+    test('un lien copié seul est analysé tout de suite', () {
+      final request = analyzed(
+        planShare(
+          const SharedText(
+            'https://exemple.com/page',
+            origin: ShareOrigin.clipboard,
+          ),
+        ),
+      );
+      expect(request.kind, AnalysisKind.link);
+    });
+
     test('vide ou illisible', () {
       expect(
         SharedContent.fromPlatform({'text': '   '}),

@@ -10,6 +10,7 @@ import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_dialogs.dart';
 import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/results/reason_tiles.dart';
+import 'package:safelink/features/share/shortcuts.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
 
 /// Paramètres de l'application.
@@ -98,6 +99,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+            GroupLabel(l10n.settingsShortcutsSection),
+            const _ShortcutSettings(),
             const SizedBox(height: 20),
             GroupLabel(l10n.settingsAboutSection),
             GroupedCard(
@@ -192,6 +196,66 @@ class _HistorySettings extends ConsumerWidget {
           subtitle: Text(l10n.settingsHistoryClearBody(count)),
           enabled: count > 0,
           onTap: () => confirmClearHistory(context, ref),
+        ),
+      ],
+    );
+  }
+}
+
+/// Raccourcis du système : tuile du volet et action de sélection de texte
+/// (ADR 0014).
+class _ShortcutSettings extends ConsumerWidget {
+  const new();
+
+  Future<void> _addTile(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await ref.read(shortcutsProvider).requestTile();
+    final text = switch (result) {
+      TileRequest.added => l10n.settingsTileAdded,
+      TileRequest.already => l10n.settingsTileAlready,
+      TileRequest.refused => l10n.settingsTileRefused,
+      TileRequest.unsupported => l10n.settingsTileManual,
+    };
+    messenger.showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final colors = SafeLinkColors.of(context);
+    final canRequest = ref.watch(canRequestTileProvider).value ?? false;
+    return GroupedCard(
+      children: [
+        CardRow(
+          leading: PictoBadge(
+            icon: Icons.swipe_down_alt_rounded,
+            color: Theme.of(context).colorScheme.primary,
+            size: 40,
+          ),
+          title: l10n.settingsTileTitle,
+          subtitle: canRequest
+              ? l10n.settingsTileBody
+              : l10n.settingsTileManual,
+          trailing: canRequest
+              ? FilledButton.tonal(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 44),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                  ),
+                  onPressed: () => _addTile(context, ref),
+                  child: Text(l10n.settingsTileAdd),
+                )
+              : null,
+        ),
+        CardRow(
+          leading: PictoBadge(
+            icon: Icons.text_fields_rounded,
+            color: colors.info,
+            size: 40,
+          ),
+          title: l10n.settingsSelectionTitle,
+          subtitle: l10n.settingsSelectionBody,
         ),
       ],
     );
