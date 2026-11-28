@@ -6,6 +6,11 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Modifié — Accueil : « Coller » sous le champ
+
+- Pour un lien comme pour un message, « Coller » est juste sous le champ,
+  avant « Analyser » (demande du porteur).
+
 ### Modifié — Refonte « Clarté », étape 3 : paramètres, présentation
 
 - Paramètres en cartes groupées (vérification en ligne, historique,

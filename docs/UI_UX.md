@@ -50,7 +50,7 @@ clair, aéré, épuré.
 - **« Pourquoi ? »** en grille de deux vignettes (une seule colonne si le
   texte est grossi) ; **« Que faire ? »** en lignes d'une même carte.
 - **Accueil** : titre, phrase d'accroche, choix Lien / Message en segments,
-  carte de saisie (champ, « Coller », « Analyser »), puis « Plus rapide » :
+  carte de saisie (champ, puis « Coller » dessous, puis « Analyser »), puis « Plus rapide » :
   partager, exemples, QR code (bientôt).
 - Barre de navigation blanche, filet en haut, onglet actif en turquoise.
 - **Onglets** Historique, Conseils, Paramètres : grand titre à gauche
