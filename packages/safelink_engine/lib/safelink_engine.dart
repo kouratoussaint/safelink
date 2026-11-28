@@ -20,6 +20,7 @@ export 'src/message/message_text.dart';
 export 'src/url/brands.dart';
 export 'src/url/idna.dart';
 export 'src/url/ip_address.dart';
+export 'src/url/link_identity.dart';
 export 'src/url/online_evidence.dart';
 export 'src/url/online_rules.dart';
 export 'src/url/parsed_url.dart';

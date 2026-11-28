@@ -15,7 +15,10 @@ import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink/features/quick/quick_platform.dart';
+import 'package:safelink/features/results/checks_strip.dart';
+import 'package:safelink/features/results/link_identity_view.dart';
 import 'package:safelink/features/results/listen_button.dart';
+import 'package:safelink/features/results/message_contents.dart';
 import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/reason_tiles.dart';
 import 'package:safelink/features/results/result_views.dart';
@@ -551,6 +554,7 @@ class _QuickResult extends ConsumerWidget {
         final url = result.url;
         final looked =
             online == OnlineStatus.done || online == OnlineStatus.unreachable;
+        final identity = result.identity;
         top = [
           VerdictHero(
             compact: true,
@@ -564,8 +568,12 @@ class _QuickResult extends ConsumerWidget {
               presentation,
               signals: signals,
               actions: actions,
+              about: identity == null
+                  ? null
+                  : IdentityText.of(l10n, identity).spoken,
             ),
           ),
+          ChecksStrip(online: online),
           if (online == OnlineStatus.unreachable)
             OfflineBanner(onRetry: onRetry),
           if (details != null)
@@ -577,6 +585,7 @@ class _QuickResult extends ConsumerWidget {
                 VerdictPresentation.forUrl(result, l10n).level,
               ),
             ),
+          if (identity != null) LinkIdentityCard(identity: identity),
           if (url != null &&
               ShortLinkResolver.isShortener(url) &&
               (destination != null || looked))
@@ -593,6 +602,10 @@ class _QuickResult extends ConsumerWidget {
           for (final d in outcome.destinations.values) ...d.signals,
         ];
         actions = result.recommendedActions;
+        final extraction = result.message.extraction;
+        final contents = extraction == null
+            ? const <(IconData, String)>[]
+            : messageContents(l10n, extraction);
         top = [
           VerdictHero(
             compact: true,
@@ -603,10 +616,19 @@ class _QuickResult extends ConsumerWidget {
               presentation,
               signals: signals,
               actions: actions,
+              about: contents.isEmpty
+                  ? null
+                  : l10n.contentsSemantics(
+                      contents.map((c) => c.$2).join(', '),
+                    ),
             ),
           ),
+          ChecksStrip(online: outcome.online),
           if (outcome.online == OnlineStatus.unreachable)
             OfflineBanner(onRetry: onRetry),
+          if (extraction != null &&
+              result.message.verdict != MessageVerdict.invalidMessage)
+            MessageContentsCard(extraction: extraction),
         ];
     }
     return _Blocks(

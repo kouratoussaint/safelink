@@ -10,6 +10,7 @@ import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_panel.dart';
 import 'package:safelink/features/online/online_controller.dart';
+import 'package:safelink/features/results/checks_strip.dart';
 import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/result_views.dart';
 import 'package:safelink/l10n/generated/app_localizations.dart';
@@ -57,6 +58,7 @@ class AnalysisScreen extends ConsumerWidget {
               result: result,
               destination: value.destinationOf(result),
               online: linkOnlineStatus(result, value.online),
+              checks: request.example ? OnlineStatus.notApplicable : null,
               onRetry: () => ref.invalidate(analysisProvider(request)),
               header: [if (request.example) const ExampleBanner()],
               footer: [
@@ -68,6 +70,7 @@ class AnalysisScreen extends ConsumerWidget {
               result: result,
               destinations: value.destinations,
               online: value.online,
+              checks: request.example ? OnlineStatus.notApplicable : null,
               onRetry: () => ref.invalidate(analysisProvider(request)),
               onOpenLink: (link) => context.push(
                 AppRoutes.linkResult,
@@ -97,6 +100,12 @@ class AnalysisScreen extends ConsumerWidget {
           _ => _Running(
             stage: ref.watch(analysisStageProvider(request)),
             google: ref.watch(googleEnabledProvider),
+            // Un lien est aussi vérifié en ligne, si c'est permis : l'étape
+            // est montrée dès le début.
+            onlinePlanned:
+                request.kind == AnalysisKind.link &&
+                !request.example &&
+                ref.watch(onlineChoiceProvider) == OnlineChoice.enabled,
           ),
         },
       ),
@@ -160,12 +169,19 @@ class LinkResultScreen extends StatelessWidget {
 }
 
 class _Running extends StatelessWidget {
-  const new({required this.stage, required this.google});
+  const new({
+    required this.stage,
+    required this.google,
+    this.onlinePlanned = false,
+  });
 
   final AnalysisStage stage;
 
   /// Vrai si Google reçoit aussi le lien.
   final bool google;
+
+  /// La vérification en ligne suivra celle du téléphone.
+  final bool onlinePlanned;
 
   @override
   Widget build(BuildContext context) {
@@ -206,16 +222,18 @@ class _Running extends StatelessWidget {
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: [
-                    _Step(
+                    CheckChip(
                       icon: Icons.phone_android_rounded,
                       label: l10n.analysisStepPhone,
                       done: online,
+                      working: !online,
                     ),
-                    if (online)
-                      _Step(
+                    if (online || onlinePlanned)
+                      CheckChip(
                         icon: Icons.public_rounded,
                         label: l10n.analysisStepOnline,
                         done: false,
+                        working: online,
                       ),
                   ],
                 ),
@@ -223,57 +241,6 @@ class _Running extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Étape de l'analyse : coche verte une fois faite.
-class _Step extends StatelessWidget {
-  const new({required this.icon, required this.label, required this.done});
-
-  final IconData icon;
-  final String label;
-  final bool done;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = SafeLinkColors.of(context);
-    final success = colors.success;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: done ? colors.successSoft : theme.colorScheme.surface,
-        boxShadow: done ? const [] : colors.cardShadow,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 6),
-          Text(label, style: theme.textTheme.bodyMedium),
-          const SizedBox(width: 6),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            transitionBuilder: (child, animation) =>
-                ScaleTransition(scale: animation, child: child),
-            child: done
-                ? Icon(
-                    Icons.check_circle_rounded,
-                    key: const ValueKey('done'),
-                    size: 20,
-                    color: success,
-                  )
-                : const Icon(
-                    Icons.more_horiz_rounded,
-                    key: ValueKey('working'),
-                    size: 20,
-                  ),
-          ),
-        ],
       ),
     );
   }

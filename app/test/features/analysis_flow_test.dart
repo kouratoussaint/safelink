@@ -247,6 +247,7 @@ void main() {
       expect(find.textContaining('sûr à'), findsNothing);
       // SafeLink n'ouvre jamais un lien analysé.
       expect(find.widgetWithText(ButtonStyleButton, 'Ouvrir'), findsNothing);
+      await scrollTo(tester, find.text('Pourquoi ce résultat ?'));
       expect(find.text('Pourquoi ce résultat ?'), findsOneWidget);
       await scrollTo(tester, find.text('Ce qui n’a pas été vérifié'));
       expect(find.text('Ce qui n’a pas été vérifié'), findsOneWidget);
@@ -265,6 +266,7 @@ void main() {
 
       expect(find.text('Lien suspect'), findsOneWidget);
       expect(find.text('Confiance : moyenne'), findsOneWidget);
+      await scrollTo(tester, find.text('Pourquoi ce résultat ?'));
       expect(find.text('Indice moyen'), findsWidgets);
       // Le jeton est masqué partout.
       expect(find.textContaining('abcdefghijklmnop'), findsNothing);
@@ -317,6 +319,7 @@ void main() {
       await analyze(tester, 'Analyser le message');
 
       expect(find.text('Synthèse : Danger'), findsOneWidget);
+      await scrollTo(tester, find.text('Forts indices d’arnaque'));
       expect(find.text('Forts indices d’arnaque'), findsOneWidget);
       expect(find.text('Indices dans le texte'), findsOneWidget);
       // Extrait sans mot ni somme coupés, numéro masqué.
@@ -357,6 +360,7 @@ void main() {
         find.text('Cela ne prouve pas que le message soit honnête.'),
         findsOneWidget,
       );
+      await scrollTo(tester, find.text('Aucun lien dans ce message.'));
       expect(find.text('Aucun lien dans ce message.'), findsOneWidget);
     });
 

@@ -98,6 +98,36 @@ chiffres, adresses e-mail, numéros de téléphone et mots de passe avant
 extraits cités par les indices sont masqués de la même façon et limités à
 120 caractères.
 
+## Nature du lien
+
+`LinkIdentity.of` (exposé par `UrlAnalysisResult.identity`) dit ce
+qu'ouvrirait le lien, d'après son adresse seulement. Ce n'est pas un
+indice et cela n'entre pas dans le verdict. Ordre des règles :
+
+1. adresse IP : site sans nom ;
+2. fichier d'après l'extension du dernier segment : application Android
+   (`.apk`, `.apks`, `.xapk`) ou fichier connu (`pdf`, `zip`, `exe`…),
+   avec le service s'il est reconnu ;
+3. services reconnus par l'hôte (ou un de ses sous-domaines) et le chemin :
+   Google Drive (fichier, dossier), Docs, Sheets, Slides, Forms, Sites,
+   Maps, Play (avec l'identifiant de l'application) ; App Store ;
+   WhatsApp (discussion avec le numéro, message déjà écrit, groupe,
+   chaîne) ; Telegram (invitation, compte ou chaîne) ; Messenger ;
+   Facebook (groupe, publication, vidéo, Marketplace, page) ; Instagram ;
+   TikTok ; X ; LinkedIn (emploi, profil, publication) ; Snapchat ;
+   YouTube ; Dropbox, OneDrive, SharePoint, WeTransfer, MEGA, MediaFire,
+   Google Cloud ; Microsoft Forms, Jotform, Typeform ; Linktree ;
+   Telegraph, Notion, Canva ;
+4. lien raccourci ;
+5. domaine officiel d'une marque de référence, ou nom qui l'imite ;
+6. page sur une plateforme ouverte à tous (suffixe privé de la liste des
+   suffixes publics, ou service de partage) ;
+7. site web ordinaire.
+
+L'application en fait une phrase (« Ce lien ouvre un fichier déposé par
+une personne sur Google Drive. »), avec au besoin une mise en garde. Un
+numéro de téléphone y est masqué au milieu (`+226 70 •• •• 56`).
+
 ## Évaluation
 
 `packages/safelink_engine/test/data/url_corpus.tsv` (CC0) contient plus de

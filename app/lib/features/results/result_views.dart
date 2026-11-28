@@ -10,7 +10,10 @@ import 'package:safelink/core/widgets/surfaces.dart';
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink/features/results/checklist.dart';
+import 'package:safelink/features/results/checks_strip.dart';
 import 'package:safelink/features/results/destination_card.dart';
+import 'package:safelink/features/results/link_identity_view.dart';
+import 'package:safelink/features/results/message_contents.dart';
 import 'package:safelink/features/results/online_section.dart';
 import 'package:safelink/features/results/page_preview_card.dart';
 import 'package:safelink/features/results/reason_tiles.dart';
@@ -30,6 +33,7 @@ class LinkResultView extends ConsumerWidget {
     required this.result,
     this.destination,
     this.online = OnlineStatus.notRequested,
+    this.checks,
     this.onRetry,
     this.header = const [],
     this.footer = const [],
@@ -37,6 +41,10 @@ class LinkResultView extends ConsumerWidget {
   });
 
   final UrlAnalysisResult result;
+
+  /// Pastilles des vérifications, si elles diffèrent de [online] (un
+  /// exemple n'est vérifié que sur le téléphone).
+  final OnlineStatus? checks;
 
   /// Éléments ajoutés en haut (bandeau « Exemple inventé »).
   final List<Widget> header;
@@ -94,6 +102,7 @@ class LinkResultView extends ConsumerWidget {
         ],
       ),
     ];
+    final identity = result.identity;
     final children = <Widget>[
       ...header,
       VerdictHero(
@@ -107,8 +116,12 @@ class LinkResultView extends ConsumerWidget {
           presentation,
           signals: signals,
           actions: actions,
+          about: identity == null
+              ? null
+              : IdentityText.of(l10n, identity).spoken,
         ),
       ),
+      ChecksStrip(online: checks ?? online),
       if (online == OnlineStatus.unreachable) OfflineBanner(onRetry: onRetry),
       if (details != null)
         AddressBar(
@@ -119,6 +132,7 @@ class LinkResultView extends ConsumerWidget {
             VerdictPresentation.forUrl(result, l10n).level,
           ),
         ),
+      if (identity != null) LinkIdentityCard(identity: identity),
       if (shortened && (destination != null || looked))
         DestinationCard(destination: destination),
       if (PagePreviewCard.applies(result, ref, target: destination?.url))
@@ -274,6 +288,7 @@ class MessageResultView extends ConsumerWidget {
     required this.onOpenLink,
     this.destinations = const {},
     this.online = OnlineStatus.notRequested,
+    this.checks,
     this.onRetry,
     this.header = const [],
     this.footer = const [],
@@ -293,6 +308,9 @@ class MessageResultView extends ConsumerWidget {
 
   /// État de la vérification en ligne des liens du message.
   final OnlineStatus online;
+
+  /// Pastilles des vérifications, si elles diffèrent de [online].
+  final OnlineStatus? checks;
 
   /// Ouvre le résultat détaillé d'un lien.
   final void Function(LinkAssessment link) onOpenLink;
@@ -325,6 +343,10 @@ class MessageResultView extends ConsumerWidget {
         ],
       ),
     ];
+    final extraction = message.extraction;
+    final contents = extraction == null
+        ? const <(IconData, String)>[]
+        : messageContents(l10n, extraction);
     final children = <Widget>[
       ...header,
       VerdictHero(
@@ -339,9 +361,16 @@ class MessageResultView extends ConsumerWidget {
             for (final d in destinations.values) ...d.signals,
           ],
           actions: result.recommendedActions,
+          about: contents.isEmpty
+              ? null
+              : l10n.contentsSemantics(contents.map((c) => c.$2).join(', ')),
         ),
       ),
+      ChecksStrip(online: checks ?? online),
       if (online == OnlineStatus.unreachable) OfflineBanner(onRetry: onRetry),
+      if (extraction != null &&
+          message.verdict != MessageVerdict.invalidMessage)
+        MessageContentsCard(extraction: extraction),
       SectionBlock(
         title: l10n.sectionTextSignals,
         children: [

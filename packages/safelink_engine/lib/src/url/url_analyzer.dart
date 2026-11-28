@@ -7,6 +7,7 @@ import 'package:safelink_engine/src/common/signal.dart';
 import 'package:safelink_engine/src/common/verdicts.dart';
 import 'package:safelink_engine/src/url/brands.dart';
 import 'package:safelink_engine/src/url/idna.dart';
+import 'package:safelink_engine/src/url/link_identity.dart';
 import 'package:safelink_engine/src/url/online_evidence.dart';
 import 'package:safelink_engine/src/url/online_rules.dart';
 import 'package:safelink_engine/src/url/parsed_url.dart';
@@ -142,6 +143,17 @@ final class UrlAnalysisResult extends AnalysisResult {
 
   /// Détails techniques, si la lecture a réussi.
   final UrlTechnicalDetails? technicalDetails;
+
+  /// Ce qu'est le lien (« fichier Google Drive », « lien WhatsApp »), si la
+  /// lecture a réussi. N'entre pas dans le verdict.
+  LinkIdentity? get identity {
+    final url = this.url;
+    if (url == null) return null;
+    return LinkIdentity.of(
+      url,
+      brandMatches: technicalDetails?.brandMatches ?? const [],
+    );
+  }
 
   @override
   RiskLevel get level => verdict.level;
