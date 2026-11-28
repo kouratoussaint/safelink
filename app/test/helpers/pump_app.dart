@@ -15,10 +15,12 @@ import 'package:safelink/features/online/online_controller.dart';
 import 'package:safelink/features/online/page_preview.dart';
 import 'package:safelink/features/online/short_links.dart';
 import 'package:safelink/features/share/share_source.dart';
+import 'package:safelink/features/share/shortcuts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_online.dart';
 import 'fake_share.dart';
+import 'fake_shortcuts.dart';
 import 'fake_speaker.dart';
 
 /// Taille de référence des maquettes (cahier des charges, §4).
@@ -56,6 +58,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
   ShortLinkResolver? shortLinks,
   HistoryBackend? historyBackend,
   ShareSource? shareSource,
+  ShortcutsPlatform? shortcuts,
 }) async {
   SharedPreferences.setMockInitialValues({
     if (onboarded) OnboardingController.storageKey: true,
@@ -97,6 +100,7 @@ Future<SharedPreferences> pumpSafeLinkApp(
           historyBackend ?? MemoryHistoryBackend(),
         ),
         shareSourceProvider.overrideWithValue(shareSource ?? FakeShareSource()),
+        shortcutsProvider.overrideWithValue(shortcuts ?? FakeShortcuts()),
       ],
       child: const SafeLinkApp(),
     ),

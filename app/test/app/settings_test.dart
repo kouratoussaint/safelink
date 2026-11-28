@@ -2,7 +2,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
+import 'package:safelink/features/share/shortcuts.dart';
 
+import '../helpers/fake_shortcuts.dart';
 import '../helpers/pump_app.dart';
 
 Brightness currentBrightness(WidgetTester tester) =>
@@ -105,5 +107,49 @@ void main() {
     await tester.tap(find.text('Licences des composants'));
     await tester.pumpAndSettle();
     expect(find.byType(LicensePage), findsOneWidget);
+  });
+
+  group('raccourcis', () {
+    Future<void> openShortcuts(WidgetTester tester) async {
+      await tapDestination(tester, 'Paramètres');
+      await tester.scrollUntilVisible(find.text('Tuile du volet'), 200);
+      await tester.ensureVisible(find.text('Tuile du volet'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('Android 13 et plus : « Ajouter » propose la tuile', (
+      tester,
+    ) async {
+      final shortcuts = FakeShortcuts(canRequest: true);
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Ajouter'));
+      await tester.pumpAndSettle();
+      expect(shortcuts.requests, 1);
+      expect(find.text('Tuile ajoutée au volet.'), findsOneWidget);
+    });
+
+    testWidgets('tuile refusée : dit qu’elle n’est pas ajoutée', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(
+        tester,
+        shortcuts: FakeShortcuts(canRequest: true, answer: TileRequest.refused),
+      );
+      await openShortcuts(tester);
+      await tester.tap(find.text('Ajouter'));
+      await tester.pumpAndSettle();
+      expect(find.text('Tuile non ajoutée.'), findsOneWidget);
+    });
+
+    testWidgets('avant Android 13 : la marche à suivre, sans bouton', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(tester);
+      await openShortcuts(tester);
+      expect(find.text('Ajouter'), findsNothing);
+      expect(find.textContaining('touchez le crayon'), findsOneWidget);
+      expect(find.text('Sélection de texte'), findsOneWidget);
+    });
   });
 }

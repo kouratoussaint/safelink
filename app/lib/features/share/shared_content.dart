@@ -2,7 +2,25 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:safelink/features/analysis/analysis_service.dart';
 import 'package:safelink_engine/safelink_engine.dart';
 
-/// Contenu reçu d'une autre application par « Partager → SafeLink ».
+/// D'où vient le texte reçu.
+enum ShareOrigin {
+  /// « Partager → Vérifier avec SafeLink ».
+  share,
+
+  /// « Vérifier avec SafeLink » dans le menu de sélection de texte.
+  selection,
+
+  /// Texte copié, vérifié depuis la tuile du volet ou la bulle.
+  clipboard;
+
+  static ShareOrigin parse(Object? raw) => switch (raw) {
+    'selection' => selection,
+    'clipboard' => clipboard,
+    _ => share,
+  };
+}
+
+/// Contenu reçu d'une autre application : partagé, sélectionné ou copié.
 ///
 /// Le texte n'est jamais affiché dans les journaux : il peut contenir des
 /// données privées.
@@ -14,7 +32,11 @@ sealed class SharedContent {
   /// `null` si [raw] n'est pas un partage.
   static SharedContent? fromPlatform(Object? raw) {
     if (raw is! Map) return null;
-    if (raw['unreadable'] == true) return const SharedNothing();
+    final origin = ShareOrigin.parse(raw['source']);
+    if (raw['unreadable'] == true) return SharedNothing(origin: origin);
+    if (raw['sensitive'] == true) {
+      return SharedNothing(origin: origin, sensitive: true);
+    }
     final text = raw['text'];
     final files = raw['files'] == true;
     final hasText = text is String && text.trim().isNotEmpty;
@@ -23,6 +45,7 @@ sealed class SharedContent {
         text,
         truncated: raw['truncated'] == true,
         filesIgnored: files,
+        origin: origin,
       );
     }
     if (files) {
@@ -33,14 +56,19 @@ sealed class SharedContent {
             : SharedFileKind.other,
       );
     }
-    return const SharedNothing();
+    return SharedNothing(origin: origin);
   }
 }
 
 /// Texte partagé : un lien, un message, ou les deux.
 final class SharedText extends SharedContent {
   /// Crée un texte partagé.
-  const new(this.text, {this.truncated = false, this.filesIgnored = false});
+  const new(
+    this.text, {
+    this.truncated = false,
+    this.filesIgnored = false,
+    this.origin = ShareOrigin.share,
+  });
 
   /// Texte reçu, borné par l'activité Android.
   final String text;
@@ -51,15 +79,19 @@ final class SharedText extends SharedContent {
   /// Un fichier accompagnait le texte : il n'a pas été ouvert.
   final bool filesIgnored;
 
+  /// D'où vient le texte.
+  final ShareOrigin origin;
+
   @override
   bool operator ==(Object other) =>
       other is SharedText &&
       other.text == text &&
       other.truncated == truncated &&
-      other.filesIgnored == filesIgnored;
+      other.filesIgnored == filesIgnored &&
+      other.origin == origin;
 
   @override
-  int get hashCode => Object.hash(text, truncated, filesIgnored);
+  int get hashCode => Object.hash(text, truncated, filesIgnored, origin);
 
   @override
   String toString() => 'SharedText(${text.length})';
@@ -103,19 +135,29 @@ final class SharedFiles extends SharedContent {
   String toString() => 'SharedFiles(${kind.name})';
 }
 
-/// Partage vide ou illisible.
+/// Partage vide ou illisible, rien de copié, ou texte copié marqué secret.
 final class SharedNothing extends SharedContent {
   /// Crée un partage vide.
-  const new();
+  const new({this.origin = ShareOrigin.share, this.sensitive = false});
+
+  /// D'où venait la demande.
+  final ShareOrigin origin;
+
+  /// Le texte copié est marqué secret par Android (mot de passe, code) :
+  /// il n'a pas été lu.
+  final bool sensitive;
 
   @override
-  bool operator ==(Object other) => other is SharedNothing;
+  bool operator ==(Object other) =>
+      other is SharedNothing &&
+      other.origin == origin &&
+      other.sensitive == sensitive;
 
   @override
-  int get hashCode => 0;
+  int get hashCode => Object.hash(origin, sensitive);
 
   @override
-  String toString() => 'SharedNothing()';
+  String toString() => 'SharedNothing(${origin.name}, sensitive: $sensitive)';
 }
 
 /// Lien repéré dans un texte partagé, prêt à être proposé.

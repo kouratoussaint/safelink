@@ -5,8 +5,8 @@
   Principe : le minimum de permissions. INTERNET sert uniquement à la
   vérification en ligne, activée par défaut et désactivable (ADR 0010 à
   0013), toujours en HTTPS. CAMERA sera ajoutée avec le scanner
-  QR (lot E). Le partage entrant (texte seulement) ne demande aucune
-  permission. La CI échoue si l'APK release contient une permission hors de
+  QR (lot E). Le partage entrant, l'action de sélection de texte et la
+  tuile du volet (texte seulement) ne demandent aucune permission. La CI échoue si l'APK release contient une permission hors de
   la liste autorisée (tools/check_apk_permissions.sh).
 
   Les sauvegardes cloud et les transferts d'appareil sont désactivés :
@@ -50,7 +50,41 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <!--
+              « Vérifier avec SafeLink » dans le menu de sélection de texte
+              des autres applications (ADR 0014). Le texte sélectionné n'est
+              jamais modifié en retour.
+            -->
+            <intent-filter android:label="@string/share_label">
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
+        <!--
+          Entrée réservée à la tuile du volet (et plus tard à la bulle) :
+          ouvre SafeLink et lui demande de vérifier le texte copié. Non
+          exportée : aucune autre application ne peut la déclencher.
+        -->
+        <activity-alias
+            android:name=".ClipboardCheck"
+            android:targetActivity=".MainActivity"
+            android:exported="false" />
+        <!--
+          Tuile « SafeLink » des réglages rapides (ADR 0014) : aucune
+          permission demandée ; BIND_QUICK_SETTINGS_TILE protège le service
+          (seul le système peut s'y lier).
+        -->
+        <service
+            android:name=".ClipboardTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
         <!-- Requis par l'outillage Flutter (GeneratedPluginRegistrant). -->
         <meta-data
             android:name="flutterEmbedding"

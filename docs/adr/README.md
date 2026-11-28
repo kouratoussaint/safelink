@@ -19,3 +19,4 @@ charges, §14). Format : contexte, décision, conséquences.
 | [0011](0011-services-google.md) | Google Safe Browsing et photo des pages (clé d'API) | Accepté |
 | [0012](0012-liens-raccourcis.md) | Vraie destination des liens raccourcis | Accepté |
 | [0013](0013-en-ligne-par-defaut.md) | Vérification en ligne activée par défaut | Accepté |
+| [0014](0014-raccourcis-systeme.md) | Raccourcis du système : sélection de texte, tuile, bulle | Accepté |

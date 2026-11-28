@@ -27,6 +27,18 @@ Règles :
 - Toute nouvelle couleur passe par `AppTheme` ou `SafeLinkColors` et par le
   test de contraste.
 
+## Raccourcis du système (ADR 0014)
+
+- « Vérifier avec SafeLink » dans le menu de sélection de texte : même
+  écran que le partage, titre « Texte sélectionné ».
+- Tuile « SafeLink — Vérifier le lien copié » dans le volet du haut : le
+  texte copié est vérifié comme un partage (titre « Texte copié ») ; rien
+  de copié ou texte secret : refus expliqué en pictogramme.
+- Paramètres › Raccourcis : « Ajouter » la tuile (Android 13+) ou la marche
+  à suivre ; rappel de l'action de sélection.
+- Accueil : « Vérifier sans ouvrir SafeLink » mène à l'aide, qui montre
+  les quatre façons (partager, sélectionner, tuile, copier-coller).
+
 ## Style « Clarté » (refonte, choisi le 27/11/2026)
 
 Piste A des maquettes (canevas « SafeLink — Refonte de l'interface ») :

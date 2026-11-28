@@ -6,6 +6,16 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Raccourcis : sélection de texte et tuile du volet
+
+- « Vérifier avec SafeLink » dans le menu de sélection de texte des autres
+  applications (aucune permission).
+- Tuile « SafeLink » du volet des réglages rapides : vérifie le lien ou le
+  message copié, lu seulement à ce moment ; texte secret jamais lu
+  (ADR 0014). « Ajouter » la tuile depuis Paramètres (Android 13+).
+- Accueil, aide et Paramètres › Raccourcis expliquent ces façons de vérifier
+  sans ouvrir SafeLink.
+
 ### Modifié — Accueil : « Coller » sous le champ
 
 - Pour un lien comme pour un message, « Coller » est juste sous le champ,

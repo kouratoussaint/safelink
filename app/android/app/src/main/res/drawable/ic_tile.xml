@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pictogramme de la tuile du volet : le bouclier-lien de SafeLink, en
+  traits blancs (le système le colore selon l'état de la tuile).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,24.5C62.2,29.6 70.4,32.9 79.2,34.4C80.2,34.6 80.9,35.4 80.9,36.4V52.2C80.9,67.4 70.4,78 54,84.6C37.6,78 27.1,67.4 27.1,52.2V36.4C27.1,35.4 27.8,34.6 28.8,34.4C37.6,32.9 45.8,29.6 54,24.5Z"
+        android:strokeWidth="7"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <group
+        android:pivotX="54"
+        android:pivotY="55"
+        android:rotation="-45">
+        <path
+            android:pathData="M41.5,49.5H51.5A5.5,5.5 0,0 1,51.5 60.5H41.5A5.5,5.5 0,0 1,41.5 49.5ZM56.5,49.5H66.5A5.5,5.5 0,0 1,66.5 60.5H56.5A5.5,5.5 0,0 1,56.5 49.5Z"
+            android:strokeWidth="6"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>

@@ -2,4 +2,7 @@
 <resources>
     <!-- Nom affiché dans le menu « Partager » des autres applications. -->
     <string name="share_label">Vérifier avec SafeLink</string>
+    <!-- Tuile du volet des réglages rapides. -->
+    <string name="tile_label">SafeLink</string>
+    <string name="tile_subtitle">Vérifier le lien copié</string>
 </resources>

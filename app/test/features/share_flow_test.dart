@@ -226,6 +226,56 @@ void main() {
     });
   });
 
+  group('sélection de texte et texte copié', () {
+    testWidgets('texte sélectionné : même choix, titre adapté', (tester) async {
+      await pumpSafeLinkApp(
+        tester,
+        shareSource: FakeShareSource([
+          const SharedText(twoLinks, origin: ShareOrigin.selection),
+        ]),
+      );
+      expect(appBarTitle('Texte sélectionné'), findsOneWidget);
+      expect(find.text('Le texte et ses 2 liens'), findsOneWidget);
+    });
+
+    testWidgets('lien copié depuis la tuile : analysé tout de suite', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(
+        tester,
+        shareSource: FakeShareSource([
+          const SharedText(
+            'https://example.com',
+            origin: ShareOrigin.clipboard,
+          ),
+        ]),
+      );
+      expect(appBarTitle('Résultat de l’analyse'), findsOneWidget);
+    });
+
+    testWidgets('rien de copié : explication', (tester) async {
+      await pumpSafeLinkApp(
+        tester,
+        shareSource: FakeShareSource([
+          const SharedNothing(origin: ShareOrigin.clipboard),
+        ]),
+      );
+      expect(appBarTitle('Texte copié'), findsOneWidget);
+      expect(find.text('Rien à vérifier'), findsOneWidget);
+      expect(find.textContaining('Copiez d’abord un lien'), findsOneWidget);
+    });
+
+    testWidgets('texte copié secret : pas lu', (tester) async {
+      await pumpSafeLinkApp(
+        tester,
+        shareSource: FakeShareSource([
+          const SharedNothing(origin: ShareOrigin.clipboard, sensitive: true),
+        ]),
+      );
+      expect(find.textContaining('marqué secret'), findsOneWidget);
+    });
+  });
+
   group('refus expliqués', () {
     testWidgets('photo : pas encore, avec quoi faire à la place', (
       tester,
@@ -305,14 +355,22 @@ void main() {
     tester,
   ) async {
     await pumpSafeLinkApp(tester);
-    await flow.scrollTo(tester, find.text('Partager vers SafeLink'));
-    expect(find.text('Depuis WhatsApp ou vos SMS'), findsOneWidget);
+    await flow.scrollTo(tester, find.text('Vérifier sans ouvrir SafeLink'));
+    expect(find.text('Partager, sélectionner ou copier'), findsOneWidget);
 
-    // La ligne ouvre l'aide, qui montre comment partager.
-    await tester.tap(find.text('Partager vers SafeLink'));
+    // La ligne ouvre l'aide, qui montre les raccourcis.
+    await tester.tap(find.text('Vérifier sans ouvrir SafeLink'));
     await tester.pumpAndSettle();
     expect(appBarTitle('Aide'), findsOneWidget);
-    await flow.scrollTo(tester, find.text('Plus rapide : partager'));
+    await flow.scrollTo(tester, find.text('Vérifier sans ouvrir SafeLink'));
+    expect(
+      find.text('Ou sélectionnez le lien, puis « Vérifier avec SafeLink »'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('tirez le volet du haut et touchez la tuile'),
+      findsOneWidget,
+    );
     expect(
       find.text('Appuyez longtemps sur le message ou le lien reçu'),
       findsOneWidget,
