@@ -45,6 +45,7 @@ class HelpScreen extends StatelessWidget {
       (Icons.share_rounded, l10n.helpShare2),
       (Icons.text_fields_rounded, l10n.helpShareSelect),
       (Icons.swipe_down_alt_rounded, l10n.helpShareTile),
+      (Icons.bubble_chart_outlined, l10n.helpShareBubble),
       (Icons.content_copy_rounded, l10n.helpShare3),
     ];
     final limits = [

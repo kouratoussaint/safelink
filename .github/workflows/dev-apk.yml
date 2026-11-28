@@ -130,7 +130,11 @@ jobs:
           out=app/build/app/outputs/flutter-apk
           for apk in "$out"/app-*-release.apk; do
             # INTERNET : vérification en ligne du nom des sites (ADR 0010).
-            tools/check_apk_permissions.sh "$apk" android.permission.INTERNET
+            # Les trois suivantes : bulle flottante optionnelle (ADR 0014).
+            tools/check_apk_permissions.sh "$apk" android.permission.INTERNET \
+              android.permission.SYSTEM_ALERT_WINDOW \
+              android.permission.FOREGROUND_SERVICE \
+              android.permission.FOREGROUND_SERVICE_SPECIAL_USE
           done
           # Les pages de 16 Ko ne concernent que les bibliothèques 64 bits.
           python3 tools/check_16kb_alignment.py "$out/app-arm64-v8a-release.apk"
@@ -183,7 +187,7 @@ jobs:
             else
               echo "- Signature temporaire (certificat SHA-256 \`$CERT_SHA256\`)."
             fi
-            echo "- Version optimisée (build release). Seule permission Android : Internet, pour la vérification en ligne (activée par défaut, désactivable)."
+            echo "- Version optimisée (build release). Permissions Android : Internet, pour la vérification en ligne (activée par défaut, désactivable) ; et, seulement si vous activez la bulle flottante, « Afficher par-dessus d'autres applis »."
             if [ -n "$GOOGLE_KEY_PRESENT" ]; then
               echo "- Services Google (Safe Browsing, photo des pages) : activés."
             else

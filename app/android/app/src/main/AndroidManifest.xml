@@ -4,7 +4,8 @@
 
   Principe : le minimum de permissions. INTERNET sert uniquement à la
   vérification en ligne, activée par défaut et désactivable (ADR 0010 à
-  0013), toujours en HTTPS. CAMERA sera ajoutée avec le scanner
+  0013), toujours en HTTPS. Les trois permissions de la bulle flottante ne
+  servent que si l'utilisateur l'active (ADR 0014). CAMERA sera ajoutée avec le scanner
   QR (lot E). Le partage entrant, l'action de sélection de texte et la
   tuile du volet (texte seulement) ne demandent aucune permission. La CI échoue si l'APK release contient une permission hors de
   la liste autorisée (tools/check_apk_permissions.sh).
@@ -14,6 +15,15 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--
+      Bulle flottante, en option et désactivée par défaut (ADR 0014) :
+      l'utilisateur doit lui-même autoriser « Afficher par-dessus d'autres
+      applis ». Le service au premier plan la garde en vie ; il n'est lancé
+      que si la bulle est choisie.
+    -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <application
         android:label="SafeLink"
         android:name="${applicationName}"
@@ -84,6 +94,15 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
+        </service>
+        <!-- Bulle flottante (ADR 0014). -->
+        <service
+            android:name=".BubbleService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Bulle flottante choisie par l'utilisateur : la toucher vérifie le lien copié." />
         </service>
         <!-- Requis par l'outillage Flutter (GeneratedPluginRegistrant). -->
         <meta-data

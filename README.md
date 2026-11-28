@@ -96,8 +96,10 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) et
 
 ## Confidentialité
 
-La seule permission Android est l'accès à Internet, utilisé uniquement par
-la vérification en ligne, activée par défaut et désactivable dans les
+La permission Android utilisée par défaut est l'accès à Internet (la bulle
+flottante, optionnelle, demande en plus « Afficher par-dessus d'autres
+applis », [ADR 0014](docs/adr/0014-raccourcis-systeme.md)). Internet sert
+uniquement à la vérification en ligne, activée par défaut et désactivable dans les
 paramètres ([ADR 0013](docs/adr/0013-en-ligne-par-defaut.md)) : le nom du site
 (`exemple.com`) est envoyé, en HTTPS, à Quad9 et Cloudflare et au registre
 du domaine ; Google Safe Browsing ne reçoit que des empreintes partielles ;

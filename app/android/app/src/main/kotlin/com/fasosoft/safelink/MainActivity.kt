@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -21,7 +23,8 @@ import io.flutter.plugin.common.MethodChannel
  * - « Partager → Vérifier avec SafeLink » (`ACTION_SEND`, `text/plain`) ;
  * - « Vérifier avec SafeLink » dans le menu de sélection de texte
  *   (`ACTION_PROCESS_TEXT`) ;
- * - la tuile du volet des réglages rapides, qui ouvre SafeLink par l'alias
+ * - la tuile du volet des réglages rapides, ou la bulle flottante
+ *   optionnelle ([BubbleService]), qui ouvrent SafeLink par l'alias
  *   non exporté `.ClipboardCheck` : le texte copié est lu une fois la
  *   fenêtre au premier plan (Android 10 et suivants ne le permettent qu'à
  *   ce moment-là). Une autre application ne peut pas demander cette
@@ -50,6 +53,19 @@ class MainActivity : FlutterActivity() {
         // l'analyse.
         if (savedInstanceState == null) receive(intent)
         super.onCreate(savedInstanceState)
+        // Bulle choisie et toujours permise : la relancer (par exemple après
+        // un redémarrage du téléphone).
+        BubbleService.startIfEnabled(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        BubbleService.setHiddenBySafeLink(true)
+    }
+
+    override fun onPause() {
+        BubbleService.setHiddenBySafeLink(false)
+        super.onPause()
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -72,6 +88,21 @@ class MainActivity : FlutterActivity() {
                     "canRequestTile" ->
                         result.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     "requestTile" -> requestTile(result)
+                    "bubbleState" -> result.success(BubbleService.state(this@MainActivity))
+                    "openOverlaySettings" -> {
+                        result.success(openOverlaySettings())
+                    }
+                    "setBubble" -> {
+                        val enabled = call.argument<Boolean>("enabled") == true
+                        if (enabled && BubbleService.canDraw(this@MainActivity)) {
+                            BubbleService.setEnabled(this@MainActivity, true)
+                            BubbleService.startIfEnabled(this@MainActivity)
+                        } else if (!enabled) {
+                            BubbleService.setEnabled(this@MainActivity, false)
+                            BubbleService.stop(this@MainActivity)
+                        }
+                        result.success(BubbleService.state(this@MainActivity))
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -241,6 +272,22 @@ class MainActivity : FlutterActivity() {
                     else -> "unsupported"
                 },
             )
+        }
+    }
+
+    /** Ouvre le réglage « Afficher par-dessus d'autres applis » de SafeLink. */
+    private fun openOverlaySettings(): Boolean {
+        if (!BubbleService.supported(this)) return false
+        return try {
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName"),
+                ),
+            )
+            true
+        } catch (e: RuntimeException) {
+            false
         }
     }
 

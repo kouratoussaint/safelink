@@ -152,4 +152,107 @@ void main() {
       expect(find.text('Sélection de texte'), findsOneWidget);
     });
   });
+
+  group('bulle flottante', () {
+    Future<void> openShortcuts(WidgetTester tester) async {
+      await tapDestination(tester, 'Paramètres');
+      await tester.scrollUntilVisible(find.text('Bulle flottante'), 200);
+      await tester.ensureVisible(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> resume(WidgetTester tester) async {
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+    }
+
+    SwitchListTile bubbleSwitch(WidgetTester tester) =>
+        tester.widget(find.widgetWithText(SwitchListTile, 'Bulle flottante'));
+
+    testWidgets('téléphone qui ne la permet pas : dit pourquoi', (
+      tester,
+    ) async {
+      await pumpSafeLinkApp(tester);
+      await openShortcuts(tester);
+      expect(find.text('Non disponible sur ce téléphone.'), findsOneWidget);
+      expect(
+        find.widgetWithText(SwitchListTile, 'Bulle flottante'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('désactivée par défaut ; activation après l’autorisation', (
+      tester,
+    ) async {
+      final shortcuts = FakeShortcuts(bubbleSupported: true);
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      expect(bubbleSwitch(tester).value, isFalse);
+
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      // Explication avant d'ouvrir le réglage Android.
+      expect(find.text('Autoriser la bulle'), findsOneWidget);
+      expect(find.textContaining('ne lit ni votre écran'), findsOneWidget);
+      await tester.tap(find.text('Ouvrir le réglage'));
+      await tester.pumpAndSettle();
+      expect(shortcuts.overlaySettingsOpened, 1);
+
+      // L'utilisateur donne l'autorisation puis revient.
+      shortcuts.bubblePermitted = true;
+      await resume(tester);
+      expect(find.textContaining('Bulle activée'), findsOneWidget);
+      expect(bubbleSwitch(tester).value, isTrue);
+      expect(shortcuts.bubbleEnabled, isTrue);
+
+      // Désactiver.
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      expect(bubbleSwitch(tester).value, isFalse);
+      expect(shortcuts.bubbleEnabled, isFalse);
+    });
+
+    testWidgets('autorisation non donnée : reste désactivée', (tester) async {
+      final shortcuts = FakeShortcuts(bubbleSupported: true);
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ouvrir le réglage'));
+      await tester.pumpAndSettle();
+      await resume(tester);
+      expect(find.textContaining('Autorisation non donnée'), findsOneWidget);
+      expect(bubbleSwitch(tester).value, isFalse);
+    });
+
+    testWidgets('« Annuler » : rien n’est ouvert', (tester) async {
+      final shortcuts = FakeShortcuts(bubbleSupported: true);
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Annuler'));
+      await tester.pumpAndSettle();
+      expect(shortcuts.overlaySettingsOpened, 0);
+      expect(bubbleSwitch(tester).value, isFalse);
+    });
+
+    testWidgets('déjà autorisée : activée tout de suite', (tester) async {
+      final shortcuts = FakeShortcuts(
+        bubbleSupported: true,
+        bubblePermitted: true,
+      );
+      await pumpSafeLinkApp(tester, shortcuts: shortcuts);
+      await openShortcuts(tester);
+      await tester.tap(find.text('Bulle flottante'));
+      await tester.pumpAndSettle();
+      expect(find.text('Autoriser la bulle'), findsNothing);
+      expect(bubbleSwitch(tester).value, isTrue);
+    });
+  });
 }
