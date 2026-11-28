@@ -5,4 +5,11 @@
     <!-- Tuile du volet des réglages rapides. -->
     <string name="tile_label">SafeLink</string>
     <string name="tile_subtitle">Vérifier le lien copié</string>
+    <!-- Bulle flottante. -->
+    <string name="bubble_channel">Bulle SafeLink</string>
+    <string name="bubble_notification_title">Bulle SafeLink active</string>
+    <string name="bubble_notification_text">Touchez la bulle pour vérifier le lien copié.</string>
+    <string name="bubble_notification_stop">Arrêter</string>
+    <string name="bubble_description">SafeLink : vérifier le lien copié</string>
+    <string name="bubble_close">Fermer la bulle</string>
 </resources>

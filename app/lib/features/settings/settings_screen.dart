@@ -6,6 +6,7 @@ import 'package:safelink/core/settings/expert_mode_controller.dart';
 import 'package:safelink/core/settings/theme_mode_controller.dart';
 import 'package:safelink/core/theme/safelink_colors.dart';
 import 'package:safelink/core/widgets/surfaces.dart';
+import 'package:safelink/features/help/help_widgets.dart';
 import 'package:safelink/features/history/history_controller.dart';
 import 'package:safelink/features/history/history_dialogs.dart';
 import 'package:safelink/features/online/online_controller.dart';
@@ -202,35 +203,126 @@ class _HistorySettings extends ConsumerWidget {
   }
 }
 
-/// Raccourcis du système : tuile du volet et action de sélection de texte
-/// (ADR 0014).
-class _ShortcutSettings extends ConsumerWidget {
+/// Raccourcis du système : bulle flottante, tuile du volet et action de
+/// sélection de texte (ADR 0014).
+class _ShortcutSettings extends ConsumerStatefulWidget {
   const new();
 
-  Future<void> _addTile(BuildContext context, WidgetRef ref) async {
+  @override
+  ConsumerState<_ShortcutSettings> createState() => _ShortcutSettingsState();
+}
+
+class _ShortcutSettingsState extends ConsumerState<_ShortcutSettings> {
+  late final AppLifecycleListener _lifecycle;
+
+  /// Le réglage Android a été ouvert pour autoriser la bulle : au retour,
+  /// l'activer si l'autorisation est donnée.
+  bool _awaitingPermission = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(onResume: _onResume);
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  void _snack(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  Future<void> _onResume() async {
+    if (_awaitingPermission) {
+      _awaitingPermission = false;
+      final l10n = AppLocalizations.of(context);
+      final platform = ref.read(shortcutsProvider);
+      final state = await platform.bubbleState();
+      if (state.permitted) {
+        await platform.setBubble(enabled: true);
+        _snack(l10n.bubbleEnabled);
+      } else {
+        _snack(l10n.bubbleNotPermitted);
+      }
+    }
+    ref.invalidate(bubbleStateProvider);
+  }
+
+  Future<void> _toggleBubble({required bool enabled}) async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
+    final platform = ref.read(shortcutsProvider);
+    if (!enabled) {
+      await platform.setBubble(enabled: false);
+      ref.invalidate(bubbleStateProvider);
+      return;
+    }
+    final state = await platform.bubbleState();
+    if (state.permitted) {
+      await platform.setBubble(enabled: true);
+      ref.invalidate(bubbleStateProvider);
+      _snack(l10n.bubbleEnabled);
+      return;
+    }
+    if (!mounted) return;
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (context) => const _BubbleDialog(),
+    );
+    if (go != true) return;
+    _awaitingPermission = true;
+    if (!await platform.openOverlaySettings()) {
+      _awaitingPermission = false;
+      _snack(l10n.bubbleNotPermitted);
+    }
+  }
+
+  Future<void> _addTile() async {
+    final l10n = AppLocalizations.of(context);
     final result = await ref.read(shortcutsProvider).requestTile();
-    final text = switch (result) {
+    _snack(switch (result) {
       TileRequest.added => l10n.settingsTileAdded,
       TileRequest.already => l10n.settingsTileAlready,
       TileRequest.refused => l10n.settingsTileRefused,
       TileRequest.unsupported => l10n.settingsTileManual,
-    };
-    messenger.showSnackBar(SnackBar(content: Text(text)));
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = SafeLinkColors.of(context);
+    final primary = Theme.of(context).colorScheme.primary;
     final canRequest = ref.watch(canRequestTileProvider).value ?? false;
+    final bubble = ref.watch(bubbleStateProvider).value ?? const BubbleState();
+    final bubbleBadge = PictoBadge(
+      icon: Icons.bubble_chart_outlined,
+      color: bubble.supported ? colors.warning : colors.textSecondary,
+      size: 40,
+    );
     return GroupedCard(
       children: [
+        if (bubble.supported)
+          SwitchListTile(
+            secondary: bubbleBadge,
+            title: Text(l10n.settingsBubbleTitle),
+            subtitle: Text(l10n.settingsBubbleBody),
+            value: bubble.enabled,
+            onChanged: (value) => _toggleBubble(enabled: value),
+          )
+        else
+          CardRow(
+            leading: bubbleBadge,
+            title: l10n.settingsBubbleTitle,
+            subtitle: l10n.settingsBubbleUnsupported,
+          ),
         CardRow(
           leading: PictoBadge(
             icon: Icons.swipe_down_alt_rounded,
-            color: Theme.of(context).colorScheme.primary,
+            color: primary,
             size: 40,
           ),
           title: l10n.settingsTileTitle,
@@ -243,7 +335,7 @@ class _ShortcutSettings extends ConsumerWidget {
                     minimumSize: const Size(0, 44),
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                   ),
-                  onPressed: () => _addTile(context, ref),
+                  onPressed: _addTile,
                   child: Text(l10n.settingsTileAdd),
                 )
               : null,
@@ -256,6 +348,62 @@ class _ShortcutSettings extends ConsumerWidget {
           ),
           title: l10n.settingsSelectionTitle,
           subtitle: l10n.settingsSelectionBody,
+        ),
+      ],
+    );
+  }
+}
+
+/// Explique, en trois pictogrammes, le réglage Android à activer pour la
+/// bulle, et ce qu'elle ne fait pas.
+class _BubbleDialog extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    return AlertDialog(
+      title: Text(l10n.bubbleDialogTitle),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PictoRow(
+              icon: Icons.settings_outlined,
+              color: primary,
+              text: l10n.bubbleDialogStep1,
+            ),
+            PictoRow(
+              icon: Icons.toggle_on_outlined,
+              color: primary,
+              text: l10n.bubbleDialogStep2,
+            ),
+            PictoRow(
+              icon: Icons.bubble_chart_outlined,
+              color: primary,
+              text: l10n.bubbleDialogStep3,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.bubbleDialogNote,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: SafeLinkColors.of(context).textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.bubbleDialogCancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.bubbleDialogOpen),
         ),
       ],
     );

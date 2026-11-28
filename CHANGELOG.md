@@ -6,6 +6,15 @@ Versions : [gestion sémantique](https://semver.org/lang/fr/), tags
 
 ## [Non publié]
 
+### Ajouté — Bulle flottante (optionnelle)
+
+- Paramètres › Raccourcis › « Bulle flottante », désactivée par défaut :
+  une pastille au bord de l'écran ; la toucher vérifie le lien copié sans
+  chercher SafeLink ; glisser pour la déplacer, sur la croix pour la fermer.
+- Autorisation « Afficher par-dessus d'autres applis » expliquée avant
+  d'ouvrir le réglage Android ; indisponible sur Android Go ; notification
+  discrète avec « Arrêter » (ADR 0014).
+
 ### Ajouté — Raccourcis : sélection de texte et tuile du volet
 
 - « Vérifier avec SafeLink » dans le menu de sélection de texte des autres

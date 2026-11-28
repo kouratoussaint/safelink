@@ -772,7 +772,7 @@
   "privacyNever2": "SafeLink ne lit ni vos SMS ni ce que vous copiez : seulement ce que vous lui donnez",
   "privacyNever3": "Aucune vente ni aucun partage de vos données",
   "privacyPermissionTitle": "Autorisation demandée",
-  "privacyPermission": "Une seule : Internet, pour la vérification en ligne.",
+  "privacyPermission": "Internet, pour la vérification en ligne. Et seulement si vous activez la bulle : « Afficher par-dessus d’autres applis ».",
   "privacyOpenSource": "Le code de SafeLink est public et libre : chacun peut vérifier ce qu’il fait.",
   "settingsHelpTile": "Aide",
   "settingsHelpSubtitle": "Comment faire, comprendre le résultat, exemples",
@@ -842,5 +842,18 @@
   "settingsTileRefused": "Tuile non ajoutée.",
   "settingsTileManual": "Pour l’ajouter : tirez le volet du haut, touchez le crayon, puis glissez SafeLink.",
   "settingsSelectionTitle": "Sélection de texte",
-  "settingsSelectionBody": "Sélectionnez un lien dans une autre appli, puis « Vérifier avec SafeLink »."
+  "settingsSelectionBody": "Sélectionnez un lien dans une autre appli, puis « Vérifier avec SafeLink ».",
+  "settingsBubbleTitle": "Bulle flottante",
+  "settingsBubbleBody": "Touchez la bulle pour vérifier le lien copié, sans quitter vos applis.",
+  "settingsBubbleUnsupported": "Non disponible sur ce téléphone.",
+  "bubbleDialogTitle": "Autoriser la bulle",
+  "bubbleDialogStep1": "Android va ouvrir un réglage",
+  "bubbleDialogStep2": "Activez « Afficher par-dessus d’autres applis » pour SafeLink",
+  "bubbleDialogStep3": "Revenez : la bulle apparaît au bord de l’écran",
+  "bubbleDialogNote": "La bulle ne lit ni votre écran ni ce que vous copiez : elle ouvre SafeLink quand vous la touchez.",
+  "bubbleDialogOpen": "Ouvrir le réglage",
+  "bubbleDialogCancel": "Annuler",
+  "bubbleEnabled": "Bulle activée. Glissez-la sur la croix pour la fermer.",
+  "bubbleNotPermitted": "Autorisation non donnée : la bulle reste désactivée.",
+  "helpShareBubble": "Ou activez la bulle flottante (Paramètres) et touchez-la"
 }

@@ -38,10 +38,18 @@ sont jamais enregistrés.
   fichier partagé n'est jamais ouvert.
 - Aucune vente ni aucun partage de vos données.
 
-## Autorisation Android
+## Autorisations Android
 
-Une seule : Internet, pour la vérification en ligne. Recevoir un texte
-partagé ne demande aucune autorisation.
+- Internet, pour la vérification en ligne.
+- Seulement si vous activez la **bulle flottante** (Paramètres ›
+  Raccourcis, désactivée par défaut) : « Afficher par-dessus d'autres
+  applis », que vous accordez vous-même dans les réglages d'Android, et un
+  service au premier plan qui la garde affichée (notification « Bulle
+  SafeLink active »). La bulle ne lit ni votre écran ni ce que vous
+  copiez : la toucher ouvre SafeLink, qui lit alors le texte copié, comme
+  la tuile du volet. Indisponible sur Android Go.
+- Recevoir un texte partagé ou sélectionné, et la tuile du volet, ne
+  demandent aucune autorisation.
 
 ## Code source
 
